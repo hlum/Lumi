@@ -127,7 +127,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 10
 
 **Phase 11: Video**
-- [ ] T69 Timeline core
+- [~] T69 Timeline core
 - [ ] T70 Clip operations and transitions
 - [ ] T71 Per-clip color and effects
 - [ ] T72 Text, stickers, keyframes
