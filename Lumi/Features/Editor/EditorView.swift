@@ -2,10 +2,10 @@ import PhotosUI
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling" }
     }
 }
 
@@ -29,6 +29,7 @@ struct EditorView: View {
                     case .remove: RemoverPanel(editor: model)
                     case .cutout: CutoutPanel(model: model)
                     case .filter: FilterPanel(model: model)
+                    case .sticker: StickerPanel(model: model)
                     }
                 }
                 .frame(maxHeight: 220)
@@ -224,5 +225,38 @@ struct FilterPanel: View {
                 if !editing { model.commit() }
             }.padding(.horizontal).disabled(model.draft.filter == nil)
         }
+    }
+}
+
+struct StickerPanel: View {
+    @Bindable var model: EditorModel
+    @State private var query = ""
+    @State private var outline = 0.0
+
+    var body: some View {
+        VStack {
+            TextField("Search", text: $query).textFieldStyle(.roundedBorder).padding(.horizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(StickerLibrary.search(query)) { s in
+                        Button { add(s.id) } label: {
+                            if let ci = StickerLibrary.image(s.id, side: 96), let cg = CIContext().createCGImage(ci, from: ci.extent) {
+                                Image(decorative: cg, scale: 1).resizable().frame(width: 44, height: 44)
+                            } else { Text(s.name) }
+                        }
+                        .accessibilityLabel(s.name)
+                    }
+                }.padding(.horizontal)
+            }
+            HStack {
+                Text("Outline").font(.caption)
+                Slider(value: $outline, in: 0...0.05)
+            }.padding(.horizontal)
+        }
+    }
+
+    private func add(_ id: String) {
+        let layer = Layer(content: .sticker(id: id, outline: outline))
+        model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }
     }
 }

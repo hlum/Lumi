@@ -48,14 +48,18 @@ enum LayerRenderer {
         return img.composited(over: base).cropped(to: e)
     }
 
-    static func render(_ stack: LayerStack, over base: CIImage, stickerImage: (String) -> CIImage? = { _ in nil }) -> CIImage {
+    static func render(_ stack: LayerStack, over base: CIImage, stickerImage: (String) -> CIImage? = { StickerLibrary.image($0) }) -> CIImage {
         stack.layers.reduce(base) { acc, layer in
             switch layer.content {
             case .text(let s, let style):
                 guard let ti = textImage(s, style: style, imageHeight: base.extent.height) else { return acc }
                 return composite(ti, transform: layer.transform, opacity: layer.opacity, over: acc)
-            case .sticker(let id, _):
-                guard let si = stickerImage(id) else { return acc }
+            case .sticker(let id, let outline):
+                guard var si = stickerImage(id) else { return acc }
+                if outline > 0 { si = OutlineOps.apply(to: si, width: outline) }
+                // sticker size is relative to the photo's short side, like text is relative to height
+                let scale = min(base.extent.width, base.extent.height) * 0.3 / max(si.extent.width, 1)
+                si = si.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
                 return composite(si, transform: layer.transform, opacity: layer.opacity, over: acc)
             }
         }
