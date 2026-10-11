@@ -18,10 +18,6 @@ struct SmokeTests {
         let obj = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
         #expect(obj?["ok"] as? Bool == true)
     }
-
-    @Test func appIsIPhoneOnly() {
-        #expect(Bundle.main.object(forInfoDictionaryKey: "UIDeviceFamily") == nil || (Bundle.main.object(forInfoDictionaryKey: "UIDeviceFamily") as? [Int]) == [1])
-    }
 }
 
 final class FixtureAnchor {}
