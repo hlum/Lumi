@@ -17,3 +17,6 @@ Tests never run on the dev Mac (too slow). Xcode Cloud runs them.
 - Bundle fixtures into LumiTests (`LumiTests/Fixtures/`); Xcode Cloud has no access to other repo paths at test time.
 - The generated `Lumi.xcodeproj` is committed so CI needs no XcodeGen. Re-run `xcodegen generate` after editing `project.yml`.
 - Hardware-dependent code goes behind protocols with fakes.
+
+## Status
+Xcode Cloud workflow "CI" created; first PR verifies it triggers.
