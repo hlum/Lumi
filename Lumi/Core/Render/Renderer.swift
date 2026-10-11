@@ -15,6 +15,9 @@ enum Renderer {
         document.operations.reduce(frame) { img, op in
             switch op {
             case .exposure(let v): render(img, exposure: v)
+            case .crop(let c): GeometryOps.apply(c, to: img)
+            case .adjust(let a): AdjustOps.apply(a, to: img)
+            case .curve(let c): AdjustOps.apply(c, to: img)
             }
         }
     }
