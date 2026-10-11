@@ -331,6 +331,20 @@ struct EnhancePanel: View {
             } else {
                 Text("Enhance works on photos up to 2048 px on the long side.").font(.caption).foregroundStyle(.secondary).padding()
             }
+            if Renderer.services.colorizer != nil, let o = model.original, max(o.extent.width, o.extent.height) <= CGFloat(SiggraphColorizer.maxInputSide) {
+                HStack {
+                    Text("Colorize").font(.caption)
+                    Button("Off") { model.edit { $0.colorize = nil } }.buttonStyle(.bordered)
+                    Button("50%") { model.edit { $0.colorize = 0.5 } }.buttonStyle(.bordered)
+                    Button("100%") { model.edit { $0.colorize = 1 } }.buttonStyle(.bordered)
+                }
+            }
+            if let o = model.original {
+                Button("Restore old photo", systemImage: "wand.and.stars") {
+                    let plan = OldPhotoRestore.plan(for: o, canUpscale: model.canUpscale, canColorize: Renderer.services.colorizer != nil)
+                    model.edit { $0 = OldPhotoRestore.apply(plan, to: $0) }
+                }.buttonStyle(.borderedProminent)
+            }
         }
     }
 }

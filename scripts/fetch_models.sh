@@ -17,3 +17,10 @@ if [ ! -d RealESRGAN_x4.mlpackage ]; then
   curl -fsSL "$base/Manifest.json" -o RealESRGAN_x4.mlpackage/Manifest.json
   curl -fsSL "$base/Data/com.apple.CoreML/model.mlmodel" -o RealESRGAN_x4.mlpackage/Data/com.apple.CoreML/model.mlmodel
 fi
+
+if [ ! -d SIGGraph17Colorizer.mlpackage ]; then
+  curl -fsSL "https://huggingface.co/c2p-cmd/bw_colorizer_coreml/resolve/main/SIGGraph17Colorizer.mlpackage.zip" -o sig17.zip
+  unzip -q -o sig17.zip
+  rm -f sig17.zip
+  rm -rf __MACOSX
+fi

@@ -85,6 +85,12 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.flatMap { [2, 4].contains($0) ? EditOperation.upscale(factor: $0) : nil }) { if case .upscale = $0 { true } else { false } } }
     }
 
+    /// Colorize a black-and-white photo; strength 0...1 blends from the original.
+    var colorize: Double? {
+        get { operations.lazy.compactMap { if case .colorize(let v) = $0 { v } else { nil } }.last }
+        set { set(newValue.map { .colorize(strength: min(max($0, 0), 1)) }) { if case .colorize = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

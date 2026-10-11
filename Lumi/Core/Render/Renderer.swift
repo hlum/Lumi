@@ -18,6 +18,7 @@ enum Renderer {
         var subjectMasker: SubjectMasking?
         var faceFinder: FaceFinding?
         var upscaler: Upscaling?
+        var colorizer: Colorizing?
         private var cache: [String: CIImage] = [:]
         private(set) var inpaintCalls = 0
         private(set) var keysSeen: [String] = []
@@ -47,6 +48,7 @@ enum Renderer {
             case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
+            case .colorize(let t): img = colorized(t, from: img, prefix: Array(document.operations[0..<i]))
             case .upscale(let f): img = upscaled(f, from: img, prefix: Array(document.operations[0..<i]))
             case .frame(let c): img = FrameOps.apply(c, to: img)
             case .doodle(let d): img = Doodle.render(d, over: img)
@@ -89,6 +91,15 @@ enum Renderer {
         guard let big = (try? services.cached(key) { try up.upscale4x(image) }) ?? nil else { return image }
         guard factor == 2 else { return big }
         return big.transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))            // 4x result brought to 2x
+    }
+
+    static func colorized(_ strength: Double, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard let c = services.colorizer, strength > 0 else { return image }
+        let key = "colorize|" + cacheKey(image, prefix)
+        guard let full = (try? services.cached(key) { try c.colorize(image) }) ?? nil else { return image }
+        guard strength < 1 else { return full }
+        let mix = CIFilter(name: "CIDissolveTransition", parameters: [kCIInputImageKey: image, kCIInputTargetImageKey: full, kCIInputTimeKey: strength])!
+        return mix.outputImage?.cropped(to: image.extent) ?? full
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

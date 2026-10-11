@@ -17,10 +17,11 @@ enum EditOperation: Codable, Equatable {
     case mosaic(MosaicConfig)
     case watermark(Watermark)
     case upscale(factor: Int)
+    case colorize(strength: Double)
 }
 
 extension EditOperation {
-    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle, mosaic, watermark, upscale }
+    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle, mosaic, watermark, upscale, colorize }
     var kind: Kind {
         switch self {
         case .exposure: .exposure
@@ -38,6 +39,7 @@ extension EditOperation {
         case .mosaic: .mosaic
         case .watermark: .watermark
         case .upscale: .upscale
+        case .colorize: .colorize
         }
     }
     /// Recipe category: what part of the look this belongs to.
@@ -56,6 +58,7 @@ extension EditOperation {
         case .mosaic: .filter
         case .watermark: .filter
         case .upscale: .geometry
+        case .colorize: .color
         }
     }
 }

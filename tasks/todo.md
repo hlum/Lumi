@@ -142,7 +142,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 
 **Phase 12: On-device AI**
 - [~] T80 Enhancer and upscaler
-- [ ] T81 Old-photo restoration
+- [~] T81 Old-photo restoration
 - [ ] T82 Image Playground creations
 - [x] ~~T83 AI Assistant~~ (dropped)
 - [ ] T84 AI text replace and AI copywriting

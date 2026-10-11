@@ -2305,6 +2305,38 @@
           }
         }
       }
+    },
+    "Colorize": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colorize"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カラー化"
+          }
+        }
+      }
+    },
+    "Restore old photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore old photo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "古い写真を修復"
+          }
+        }
+      }
     }
   }
 }

@@ -343,5 +343,20 @@
     "modifiedNote": null,
     "dateAdded": "2026-10-12",
     "selfMade": false
+  },
+  {
+    "files": [
+      "Models/SIGGraph17Colorizer.mlpackage"
+    ],
+    "title": "SIGGRAPH 2017 colorization (Core ML conversion)",
+    "author": "Richard Zhang, Jun-Yan Zhu, Phillip Isola et al. (richzhang/colorization); Core ML conversion by c2p-cmd",
+    "sourceURL": "https://huggingface.co/c2p-cmd/bw_colorizer_coreml",
+    "license": "BSD",
+    "licenseURL": "https://github.com/richzhang/colorization/blob/master/LICENSE",
+    "attribution": "Real-Time User-Guided Image Colorization with Learned Deep Priors, BSD 2-Clause License. Core ML conversion by c2p-cmd (MIT).",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
   }
 ]
