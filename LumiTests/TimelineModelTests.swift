@@ -145,4 +145,51 @@ struct TimelineModelTests {
         #expect(o.normalizedFPS == 30)
         o.fps = 60; #expect(o.normalizedFPS == 60)
     }
+
+    @Test func transitionOverlapsNeighboursAndShortensTheTimeline() throws {
+        let a = Self.clip("a", 4), b = Self.clip("b", 4); var t = Self.timeline([a, b])
+        #expect(t.duration == 8)
+        try t.setTransition(b.id, .fade, duration: 1)
+        #expect(t.duration == 7 && t.starts == [0, 3] && t.overlap(at: 1) == 1)
+        #expect(t.start(of: b.id) == 3)
+        #expect(t.overlap(at: 0) == 0 && t.overlap(at: 9) == 0)
+    }
+
+    @Test func overlapIsLimitedToHalfTheShorterClipAndFirstClipHasNone() throws {
+        let a = Self.clip("a", 4), b = Self.clip("b", 0.4); var t = Self.timeline([a, b])
+        try t.setTransition(a.id, .fade, duration: 2)            // first clip: transition in is meaningless
+        try t.setTransition(b.id, .wipe, duration: 3)
+        #expect(t.overlap(at: 0) == 0 && abs(t.overlap(at: 1) - 0.2) < 1e-9)
+        try t.setTransition(b.id, .none)
+        #expect(t.overlap(at: 1) == 0 && t.duration == 4.4)
+    }
+
+    @Test func locateDuringAnOverlapPicksTheIncomingClip() throws {
+        let a = Self.clip("a", 4), b = Self.clip("b", 4); var t = Self.timeline([a, b])
+        try t.setTransition(b.id, .fade, duration: 1)
+        #expect(t.locate(2.9)?.index == 0 && t.locate(3.2)?.index == 1)
+        #expect(t.locate(6.99) != nil && t.locate(7) == nil)
+    }
+
+    @Test func splittingKeepsTheTransitionOnTheFirstHalfOnly() throws {
+        let a = Self.clip("a", 4), b = Self.clip("b", 6); var t = Self.timeline([a, b])
+        try t.setTransition(b.id, .slideLeft, duration: 0.5)
+        _ = try t.split(at: 5)
+        #expect(t.clips[1].transition == .slideLeft && t.clips[2].transition == .none)
+    }
+
+    @Test func transitionDurationIsClamped() throws {
+        let a = Self.clip("a"), b = Self.clip("b"); var t = Self.timeline([a, b])
+        try t.setTransition(b.id, .fade, duration: 99); #expect(t.clips[1].transitionDuration == 3)
+        try t.setTransition(b.id, .fade, duration: 0); #expect(t.clips[1].transitionDuration == 0.1)
+        #expect(throws: Timeline.EditError.noSuchClip) { try t.setTransition(UUID(), .fade) }
+        #expect(throws: Timeline.EditError.noSuchClip) { try t.setLook(UUID(), EditDocument()) }
+    }
+
+    @Test func perClipLookRoundTrips() throws {
+        let a = Self.clip("a"); var t = Self.timeline([a])
+        var look = EditDocument(); look.adjust = AdjustParams(brightness: 0.3)
+        try t.setLook(a.id, look)
+        #expect(try JSONDecoder().decode(Timeline.self, from: JSONEncoder().encode(t)).clips[0].look == look)
+    }
 }

@@ -38,69 +38,94 @@ enum StillVideo {
 }
 
 enum VideoComposer {
-    struct Built { var composition: AVMutableComposition; var audioMix: AVAudioMix?; var videoComposition: AVVideoComposition? }
+    struct Built { var composition: AVMutableComposition; var audioMix: AVAudioMix?; var videoComposition: AVVideoComposition?; var renderSize: CGSize = .zero }
 
-    /// Lays the timeline's clips end to end. `resolve` turns a clip source into a playable asset (photos: a still video).
-    static func build(_ timeline: Timeline, resolve: (TimelineClip.Source) async throws -> AVAsset) async throws -> Built {
+    /// Lays clips on two alternating video tracks so neighbours can overlap for a transition, and builds the instructions the compositor follows.
+    static func build(_ timeline: Timeline, options: VideoExportOptions = VideoExportOptions(), resolve: (TimelineClip.Source) async throws -> AVAsset) async throws -> Built {
         guard !timeline.isEmpty else { throw VideoError.emptyTimeline }
         let comp = AVMutableComposition()
-        guard let vTrack = comp.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else { throw VideoError.noVideoTrack }
-        // the audio track is created only when a clip really has audio: an empty track makes export fail
-        var aTrack: AVMutableCompositionTrack?
-        var audioParams: AVMutableAudioMixInputParameters?
-        var cursor = CMTime.zero
+        var vTracks: [AVMutableCompositionTrack] = []
+        for _ in 0..<2 {
+            guard let t = comp.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else { throw VideoError.noVideoTrack }
+            vTracks.append(t)
+        }
+        // audio tracks are created only when a clip really has audio: an empty track makes export fail
+        var aTracks: [AVMutableCompositionTrack?] = [nil, nil]
+        var aParams: [AVMutableAudioMixInputParameters?] = [nil, nil]
+        let starts = timeline.starts
+        var size = CGSize.zero
 
-        for clip in timeline.clips {
+        for (i, clip) in timeline.clips.enumerated() {
+            let lane = i % 2
             let asset = try await resolve(clip.source)
             guard let srcV = try await asset.loadTracks(withMediaType: .video).first else { throw VideoError.noVideoTrack }
+            if size == .zero {
+                let n = try await srcV.load(.naturalSize), tf = try await srcV.load(.preferredTransform), d = n.applying(tf)
+                size = CGSize(width: abs(d.width), height: abs(d.height))
+            }
             let assetDuration = try await asset.load(.duration)
             let start = CMTime(seconds: min(clip.sourceStart, max(assetDuration.seconds - 0.01, 0)), preferredTimescale: 600)
             let len = CMTime(seconds: min(clip.sourceDuration, max(assetDuration.seconds - start.seconds, 0.01)), preferredTimescale: 600)
             let range = CMTimeRange(start: start, duration: len)
-            try vTrack.insertTimeRange(range, of: srcV, at: cursor)
+            let at = CMTime(seconds: starts[i], preferredTimescale: 600)
+            try vTracks[lane].insertTimeRange(range, of: srcV, at: at)
             if let srcA = try await asset.loadTracks(withMediaType: .audio).first {
-                if aTrack == nil {
-                    aTrack = comp.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
-                    audioParams = aTrack.map { AVMutableAudioMixInputParameters(track: $0) }
+                if aTracks[lane] == nil {
+                    aTracks[lane] = comp.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+                    aParams[lane] = aTracks[lane].map { AVMutableAudioMixInputParameters(track: $0) }
                 }
-                try aTrack?.insertTimeRange(range, of: srcA, at: cursor)
-                audioParams?.setVolume(Float(clip.volume), at: cursor)
+                try aTracks[lane]?.insertTimeRange(range, of: srcA, at: at)
+                aParams[lane]?.setVolume(Float(clip.volume), at: at)
             }
             let speed = min(max(clip.speed, 0.1), 8)
             if speed != 1 {
-                let inserted = CMTimeRange(start: cursor, duration: len)
-                comp.scaleTimeRange(inserted, toDuration: CMTime(seconds: len.seconds / speed, preferredTimescale: 600))
+                let inserted = CMTimeRange(start: at, duration: len)
+                let newLen = CMTime(seconds: len.seconds / speed, preferredTimescale: 600)
+                vTracks[lane].scaleTimeRange(inserted, toDuration: newLen)
+                aTracks[lane]?.scaleTimeRange(inserted, toDuration: newLen)
             }
-            cursor = CMTimeAdd(cursor, CMTime(seconds: len.seconds / speed, preferredTimescale: 600))
         }
+
+        let render = options.outputSize(for: size)
+        // Instructions tile the whole timeline: clip bodies and transition overlaps.
+        var instructions: [LumiInstruction] = []
+        let clips = timeline.clips
+        func layer(_ i: Int) -> LumiInstruction.Layer {
+            LumiInstruction.Layer(trackID: vTracks[i % 2].trackID, look: clips[i].look, layout: clips[i].layout)
+        }
+        func time(_ s: Double) -> CMTime { CMTime(seconds: s, preferredTimescale: 600) }
+        for i in clips.indices {
+            let end = starts[i] + clips[i].duration
+            let bodyStart = starts[i] + timeline.overlap(at: i)
+            let nextOverlap = i + 1 < clips.count ? timeline.overlap(at: i + 1) : 0
+            let bodyEnd = end - nextOverlap
+            if bodyEnd > bodyStart + 0.0005 {
+                instructions.append(LumiInstruction(timeRange: CMTimeRange(start: time(bodyStart), end: time(bodyEnd)), from: layer(i), to: nil, transition: .none, renderSize: render))
+            }
+            if nextOverlap > 0 {
+                instructions.append(LumiInstruction(timeRange: CMTimeRange(start: time(bodyEnd), end: time(end)), from: layer(i), to: layer(i + 1), transition: clips[i + 1].transition, renderSize: render))
+            }
+        }
+        let vc = AVMutableVideoComposition()
+        vc.customVideoCompositorClass = LumiCompositor.self
+        vc.renderSize = render
+        vc.frameDuration = CMTime(value: 1, timescale: CMTimeScale(options.normalizedFPS))
+        vc.instructions = instructions
+
+        let used = aParams.compactMap { $0 }
         var mix: AVMutableAudioMix?
-        if let audioParams { mix = AVMutableAudioMix(); mix?.inputParameters = [audioParams] }
-        return Built(composition: comp, audioMix: mix, videoComposition: nil)
+        if !used.isEmpty { mix = AVMutableAudioMix(); mix?.inputParameters = used }
+        return Built(composition: comp, audioMix: mix, videoComposition: vc, renderSize: render)
     }
 }
 
 enum VideoExporter {
     static func export(_ built: VideoComposer.Built, options: VideoExportOptions, to url: URL) async throws {
         try? FileManager.default.removeItem(at: url)
-        let asset = built.composition
-        guard let track = try await asset.loadTracks(withMediaType: .video).first else { throw VideoError.noVideoTrack }
-        let natural = try await track.load(.naturalSize), transform = try await track.load(.preferredTransform)
-        let displayed = natural.applying(transform)
-        let size = options.outputSize(for: CGSize(width: abs(displayed.width), height: abs(displayed.height)))
-
-        let vc = AVMutableVideoComposition(propertiesOf: asset)
-        vc.renderSize = size
-        vc.frameDuration = CMTime(value: 1, timescale: CMTimeScale(options.normalizedFPS))
-        // scale the single video track to the render size
-        let inst = AVMutableVideoCompositionInstruction(); inst.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
-        let layer = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
-        layer.setTransform(transform.concatenating(CGAffineTransform(scaleX: size.width / max(abs(displayed.width), 1), y: size.height / max(abs(displayed.height), 1))), at: .zero)
-        inst.layerInstructions = [layer]; vc.instructions = [inst]
-
         let preset: String
         switch options.resolution { case .p720: preset = AVAssetExportPreset1280x720; case .p1080: preset = AVAssetExportPreset1920x1080; case .p2160: preset = AVAssetExportPreset3840x2160 }
-        guard let session = AVAssetExportSession(asset: asset, presetName: preset) else { throw VideoError.exportFailed("no session") }
-        session.videoComposition = vc; session.audioMix = built.audioMix
+        guard let session = AVAssetExportSession(asset: built.composition, presetName: preset) else { throw VideoError.exportFailed("no session") }
+        session.videoComposition = built.videoComposition; session.audioMix = built.audioMix
         do { try await session.export(to: url, as: .mp4) } catch { throw VideoError.exportFailed(String(describing: error)) }
     }
 }

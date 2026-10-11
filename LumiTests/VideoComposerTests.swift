@@ -64,4 +64,45 @@ struct VideoComposerTests {
         // known gap: AVAssetExportSession keeps the source frame rate, so the fps option is not honored yet (needs an AVAssetWriter export)
         #expect(try await track.load(.nominalFrameRate) > 0)
     }
+
+    static func frameColor(_ url: URL, at t: Double) async throws -> [UInt8] {
+        let g = AVAssetImageGenerator(asset: AVURLAsset(url: url)); g.requestedTimeToleranceBefore = .zero; g.requestedTimeToleranceAfter = .zero
+        let cg = try await g.image(at: CMTime(seconds: t, preferredTimescale: 600)).image
+        return GeometryTests.rgb(CIImage(cgImage: cg), x: 32, y: 32)
+    }
+
+    @Test func fadeTransitionOverlapsClipsAndBlendsFrames() async throws {
+        let lib = try await Self.library(["r": (Self.solid(1, 0, 0), 1), "b": (Self.solid(0, 0, 1), 1)])
+        var t = Timeline()
+        t.append(TimelineClip(source: .video("r"), sourceDuration: 1))
+        var b = TimelineClip(source: .video("b"), sourceDuration: 1); b.transition = .fade; b.transitionDuration = 0.4
+        t.append(b)
+        #expect(abs(t.duration - 1.6) < 1e-9)
+        let built = try await VideoComposer.build(t) { src in if case .video(let k) = src { return lib[k]! } else { throw VideoError.noVideoTrack } }
+        #expect(abs(built.composition.duration.seconds - 1.6) < 0.1)
+        var o = VideoExportOptions(); o.resolution = .p720
+        let out = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".mp4")
+        try await VideoExporter.export(built, options: o, to: out)
+        let early = try await Self.frameColor(out, at: 0.2), mid = try await Self.frameColor(out, at: 0.8), late = try await Self.frameColor(out, at: 1.4)
+        #expect(early[0] > 180 && early[2] < 80)                 // still red
+        #expect(mid[0] > 40 && mid[2] > 40)                      // halfway through the fade: both colors present
+        #expect(late[2] > 180 && late[0] < 80)                   // now blue
+    }
+
+    @Test func perClipLookAndLayoutAreAppliedToTheExportedFrames() async throws {
+        let src = AVURLAsset(url: try await StillVideo.make(Self.solid(0.4, 0.4, 0.4), seconds: 1, size: CGSize(width: 64, height: 64)))
+        var plain = Timeline(); plain.append(TimelineClip(source: .video("x"), sourceDuration: 1))
+        var bright = plain
+        var look = EditDocument(); look.adjust = AdjustParams(brightness: 1)
+        try bright.setLook(bright.clips[0].id, look)
+        var o = VideoExportOptions(); o.resolution = .p720
+        var results: [Int] = []
+        for t in [plain, bright] {
+            let built = try await VideoComposer.build(t, options: o) { _ in src }
+            let out = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".mp4")
+            try await VideoExporter.export(built, options: o, to: out)
+            results.append(Int(try await Self.frameColor(out, at: 0.5)[0]))
+        }
+        #expect(results[1] > results[0] + 15, "brightness look did not reach the video: \(results)")
+    }
 }
