@@ -20,3 +20,7 @@ Tests never run on the dev Mac (too slow). Xcode Cloud runs them.
 
 ## Status
 Xcode Cloud workflow "CI" created; first PR verifies it triggers.
+
+## Failure reports on the PR
+`ci_scripts/ci_post_xcodebuild.sh` posts the xcresult failure summary as a PR comment when tests fail.
+Setup (once): create a fine-grained GitHub token for `hlum/Lumi` with Pull requests: write, then in Xcode Cloud workflow → Environment → add a **secret** variable `GITHUB_TOKEN`. Never commit the token.

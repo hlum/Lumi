@@ -26,8 +26,8 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint D: designs approved
 
 **Phase 0: Scaffold, CI and risk spikes**
-- [ ] T01 Project scaffold
-- [ ] T02 Xcode Cloud CI and TDD harness
+- [x] T01 Project scaffold
+- [x] T02 Xcode Cloud CI and TDD harness
 - [ ] T03 Spike: LaMa on device
 - [ ] T04 Spike: real-time preview
 - [ ] T05 Spike: mesh-warp engine
@@ -35,12 +35,12 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint 0
 
 **Phase 1: Editing foundation**
-- [ ] T07 Import → edit → save, end to end
-- [ ] T08 Undo / redo / before–after compare
-- [ ] T09 Projects and drafts
-- [ ] T10 Brush and mask infrastructure
-- [ ] T11 Analysis service
-- [ ] T12 Face / person picker and portrait manager
+- [x] T07 Import → edit → save, end to end
+- [x] T08 Undo / redo / before–after compare
+- [x] T09 Projects and drafts
+- [x] T10 Brush and mask infrastructure
+- [x] T11 Analysis service
+- [x] T12 Face / person picker and portrait manager
 - [ ] ⏸ Checkpoint 1
 
 **Phase 2: Basic edit and color**
