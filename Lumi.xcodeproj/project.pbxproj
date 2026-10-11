@@ -8,8 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		01500DBC9F403E7D92B02912 /* LumiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */; };
+		04EE05B54308799E287B857B /* FilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */; };
 		0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC95A6F45C46B646F93E2D4 /* ProjectsView.swift */; };
 		0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */; };
+		1079F56E5E18A451A19C4DC0 /* LUT.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB1CE07E21CEDB73699D2DB /* LUT.swift */; };
 		11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */; };
 		14DAF77265B638DB6BC2BCEA /* MetalPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */; };
 		1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */; };
@@ -18,10 +20,12 @@
 		218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */; };
 		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
+		39DCF5316E4C2A6FFD6298B2 /* ColorTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */; };
 		3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4A66AD237D031E560D4083 /* AnalysisCache.swift */; };
 		3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */; };
 		3F879262D545D16CF7056A5E /* Credits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0497315D4AF8836E8C429B /* Credits.swift */; };
 		426E9F04EE4F1AA2A3B3A820 /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C2A8865BAA7EB3472CECAA /* ProjectStore.swift */; };
+		44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */; };
 		45B917F1FAE953E37309C1D4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C877CE8B244EF3D2C0593F7 /* Renderer.swift */; };
 		47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */; };
 		5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850D7C49D60EA488C83EDB92 /* RendererTests.swift */; };
@@ -35,10 +39,12 @@
 		8FADC2D4E8F71CF5D13B29E2 /* EditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */; };
 		90341E5BC7AD514792DD3A91 /* EditDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793287607F799E4C21A4A092 /* EditDocument.swift */; };
 		92F3F08537B5F30A5A44977C /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3037684EC9790617FB2CFC8A /* SmokeTests.swift */; };
+		96D6CC789BC312B6C1F357D1 /* ColorTransferTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */; };
 		97BCEDBB2289EFD5120897F8 /* fixture.json in Resources */ = {isa = PBXBuildFile; fileRef = 5E78D5B610E53FA8AD5383B2 /* fixture.json */; };
 		9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE13258B4F65203F283ABBC /* GeometryOps.swift */; };
 		9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */; };
 		A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */; };
+		AE7380328C936A4527FD94AB /* LUTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */; };
 		B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */; };
 		BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D2DF1A16B93F34F960633 /* EditOperation.swift */; };
 		BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */; };
@@ -73,14 +79,17 @@
 		14C8B0CC494B2360A9091052 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorModel.swift; sourceTree = "<group>"; };
 		2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTargetTests.swift; sourceTree = "<group>"; };
+		2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStore.swift; sourceTree = "<group>"; };
 		3037684EC9790617FB2CFC8A /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumiApp.swift; sourceTree = "<group>"; };
 		37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStackTests.swift; sourceTree = "<group>"; };
 		45966C6CA5A5390BAC7F83FB /* UndoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStack.swift; sourceTree = "<group>"; };
 		4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analyzer.swift; sourceTree = "<group>"; };
 		491867C4A15830F8C5BBEF55 /* Credits.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Credits.json; sourceTree = "<group>"; };
+		4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTTests.swift; sourceTree = "<group>"; };
 		4C877CE8B244EF3D2C0593F7 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarp.swift; sourceTree = "<group>"; };
+		4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransfer.swift; sourceTree = "<group>"; };
 		5E78D5B610E53FA8AD5383B2 /* fixture.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fixture.json; sourceTree = "<group>"; };
 		5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpTests.swift; sourceTree = "<group>"; };
 		6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
@@ -98,6 +107,8 @@
 		B46D2DF1A16B93F34F960633 /* EditOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOperation.swift; sourceTree = "<group>"; };
 		B860DC41FCF350889B4EF1F1 /* Lumi.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Lumi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8F49C52541F35A4F285D365 /* MaskCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskCanvas.swift; sourceTree = "<group>"; };
+		BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransferTests.swift; sourceTree = "<group>"; };
+		C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStoreTests.swift; sourceTree = "<group>"; };
 		C774554353642B4CCB68C0E1 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
 		DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
 		E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPreviewView.swift; sourceTree = "<group>"; };
@@ -107,6 +118,7 @@
 		F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocumentTests.swift; sourceTree = "<group>"; };
 		F794373EABE83DA0F90C6B5A /* LumiTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LumiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F85827E04B5DD5DA38A53552 /* ExportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettings.swift; sourceTree = "<group>"; };
+		FFB1CE07E21CEDB73699D2DB /* LUT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUT.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -209,11 +221,21 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		BEBFB4DE08AAD066136A234B /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */,
+			);
+			path = Filters;
+			sourceTree = "<group>";
+		};
 		C25DC74852E7FDD3EA0522BF /* Render */ = {
 			isa = PBXGroup;
 			children = (
 				936C1AF23918152C57AE4A68 /* AdjustOps.swift */,
+				4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */,
 				0AE13258B4F65203F283ABBC /* GeometryOps.swift */,
+				FFB1CE07E21CEDB73699D2DB /* LUT.swift */,
 				4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */,
 				E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */,
 				4C877CE8B244EF3D2C0593F7 /* Renderer.swift */,
@@ -227,11 +249,14 @@
 			children = (
 				00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */,
 				F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */,
+				BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */,
 				0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */,
 				A94F6D20B0D9131790C14898 /* CurveTests.swift */,
 				F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */,
 				0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */,
+				C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */,
 				8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */,
+				4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */,
 				6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */,
 				5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */,
 				2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */,
@@ -259,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				177CFFE24C503CC63F753430 /* Editor */,
+				BEBFB4DE08AAD066136A234B /* Filters */,
 				D9E147EB84DF526C17CDB599 /* Projects */,
 			);
 			path = Features;
@@ -377,13 +403,16 @@
 				22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */,
 				3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */,
 				11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */,
+				39DCF5316E4C2A6FFD6298B2 /* ColorTransfer.swift in Sources */,
 				3F879262D545D16CF7056A5E /* Credits.swift in Sources */,
 				90341E5BC7AD514792DD3A91 /* EditDocument.swift in Sources */,
 				BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */,
 				8FADC2D4E8F71CF5D13B29E2 /* EditorModel.swift in Sources */,
 				7790F3D91D0795A7FAAA5488 /* EditorView.swift in Sources */,
 				62321582DF77C5697193257F /* ExportSettings.swift in Sources */,
+				04EE05B54308799E287B857B /* FilterStore.swift in Sources */,
 				9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */,
+				1079F56E5E18A451A19C4DC0 /* LUT.swift in Sources */,
 				01500DBC9F403E7D92B02912 /* LumiApp.swift in Sources */,
 				255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */,
 				FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */,
@@ -407,11 +436,14 @@
 			files = (
 				47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */,
 				B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */,
+				96D6CC789BC312B6C1F357D1 /* ColorTransferTests.swift in Sources */,
 				724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */,
 				E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */,
 				ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */,
 				3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */,
+				44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */,
 				1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */,
+				AE7380328C936A4527FD94AB /* LUTTests.swift in Sources */,
 				8E70BB46E8688EF9F20597E3 /* MaskTests.swift in Sources */,
 				0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */,
 				9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */,
