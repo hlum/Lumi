@@ -19,6 +19,7 @@ targets:
       properties:
         CFBundleDisplayName: Lumi
         UILaunchScreen: {}
+        NSPhotoLibraryAddUsageDescription: Save your edited photos to your library.
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
     settings:
       base:
