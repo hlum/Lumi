@@ -81,7 +81,7 @@ enum ClipOps {
         let target = CGRect(origin: .zero, size: canvas)
         let e = img.extent
         let s = min(canvas.width / max(e.width, 1), canvas.height / max(e.height, 1))
-        let fitted = img.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY).scaledBy(x: s, y: s))
+        let fitted = img.transformed(by: CGAffineTransform(scaleX: s, y: s).translatedBy(x: -e.minX, y: -e.minY))
         let placed = fitted.transformed(by: CGAffineTransform(translationX: (canvas.width - fitted.extent.width) / 2, y: (canvas.height - fitted.extent.height) / 2))
         let bg = CIImage(color: CIColor(red: l.background.r, green: l.background.g, blue: l.background.b)).cropped(to: target)
         return placed.composited(over: bg).cropped(to: target)

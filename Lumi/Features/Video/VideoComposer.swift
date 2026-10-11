@@ -19,7 +19,7 @@ enum StillVideo {
 
         // scale the image to fill the frame
         let e = image.extent
-        let fitted = image.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY).scaledBy(x: CGFloat(w) / e.width, y: CGFloat(h) / e.height))
+        let fitted = image.transformed(by: CGAffineTransform(scaleX: CGFloat(w) / e.width, y: CGFloat(h) / e.height).translatedBy(x: -e.minX, y: -e.minY))
         let ctx = CIContext()
         let frames = max(1, Int((seconds * Double(fps)).rounded()))
         for i in 0..<frames {

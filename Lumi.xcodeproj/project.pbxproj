@@ -37,6 +37,7 @@
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
 		26F152CB55562C0BDF70DC59 /* BrushMaterials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */; };
 		2DCC9D0ACAE306EFA4366917 /* Upscaler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */; };
+		3000A029E09623068E131F57 /* CollageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */; };
 		305862DC81592F78F94CA527 /* StickerLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68F615D6BB3D71E94B3D34A /* StickerLibrary.swift */; };
 		30D91C257C34D1091A684B33 /* MeshWarpRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */; };
 		31DB8323406C1443954751F6 /* BatchRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5640ED3C828F66CC06F9C3 /* BatchRunner.swift */; };
@@ -98,6 +99,7 @@
 		99A436F6C64A32889BCDB426 /* BodyReshapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721EBCF30A38FD687AAADCEF /* BodyReshapeTests.swift */; };
 		99D653B8C904143C21F97409 /* MakeupRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6FE36300AD7B97C5B1994 /* MakeupRenderer.swift */; };
 		9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */; };
+		9F8C2AB60EED891570437160 /* CollageRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3296174D0A02A8DFD1B83D /* CollageRenderTests.swift */; };
 		9FC75B88023089400072764C /* MeshWarpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */; };
 		A3A928882F4F01F997BE2971 /* AutoBeauty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B54BF1BE2AE588D43004916 /* AutoBeauty.swift */; };
 		A410B883767CB10E1F9A3ACE /* LayerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A44F49745B7174EC0A2918 /* LayerRenderer.swift */; };
@@ -112,6 +114,7 @@
 		B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */; };
 		B253D23B0BE457A2CB5C5B7E /* HairTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6B10E44FEEB7A758F73E57 /* HairTests.swift */; };
 		B2A3854739C3AE4E9185C6C9 /* FilterLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB29CD8FF14D12934C84376D /* FilterLibrary.swift */; };
+		B3D95597F2A370678BF74B9F /* CollageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFB0E250D702AE35BBAD6AC /* CollageRenderer.swift */; };
 		B7B4B3B63B9FC68FF8922FA5 /* InpainterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */; };
 		B99B08640B1E2407CB560C15 /* LayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B63F36950C679A1C4FC7975 /* LayerTests.swift */; };
 		BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D2DF1A16B93F34F960633 /* EditOperation.swift */; };
@@ -177,6 +180,7 @@
 		16E38351FDAF036F93AFF551 /* SkinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinTests.swift; sourceTree = "<group>"; };
 		1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorModel.swift; sourceTree = "<group>"; };
 		1DDAF2607ACDF083D01568FA /* RealESRGAN_x4.mlpackage */ = {isa = PBXFileReference; path = RealESRGAN_x4.mlpackage; sourceTree = "<group>"; };
+		1E3296174D0A02A8DFD1B83D /* CollageRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageRenderTests.swift; sourceTree = "<group>"; };
 		20E74D4A0DDE2E2A39EBB069 /* RemoverPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoverPanel.swift; sourceTree = "<group>"; };
 		2248574B322F87BAF16D744D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		25C459A2F56ACFF1F4D3C614 /* CreditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsView.swift; sourceTree = "<group>"; };
@@ -206,6 +210,7 @@
 		4C877CE8B244EF3D2C0593F7 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarp.swift; sourceTree = "<group>"; };
 		4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransfer.swift; sourceTree = "<group>"; };
+		56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageView.swift; sourceTree = "<group>"; };
 		5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpscalerTests.swift; sourceTree = "<group>"; };
 		5D68FC2907097196C8F56737 /* CameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTests.swift; sourceTree = "<group>"; };
 		5E78D5B610E53FA8AD5383B2 /* fixture.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fixture.json; sourceTree = "<group>"; };
@@ -218,6 +223,7 @@
 		681568430459B80D1CACBFE9 /* HairMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HairMask.swift; sourceTree = "<group>"; };
 		68BFE211254C95958D5476D6 /* SpotAndBeautyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotAndBeautyTests.swift; sourceTree = "<group>"; };
 		69EA3A082E4527360B4F44E8 /* ToolCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolCatalog.swift; sourceTree = "<group>"; };
+		6BFB0E250D702AE35BBAD6AC /* CollageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageRenderer.swift; sourceTree = "<group>"; };
 		6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapFinderTests.swift; sourceTree = "<group>"; };
 		6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
 		6F0159F8BE79D28E537D81F6 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -337,6 +343,8 @@
 		11A6F019BE86C8D9C26E3C0B /* Collage */ = {
 			isa = PBXGroup;
 			children = (
+				6BFB0E250D702AE35BBAD6AC /* CollageRenderer.swift */,
+				56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */,
 				F3753A050A36D6AA1F5FF2D7 /* LayoutModel.swift */,
 				29DD2F4D0FA68157AA975166 /* OverlapFinder.swift */,
 			);
@@ -640,6 +648,7 @@
 				721EBCF30A38FD687AAADCEF /* BodyReshapeTests.swift */,
 				5D68FC2907097196C8F56737 /* CameraTests.swift */,
 				F822D62F56B0A38FB22FCF47 /* ClipOpsTests.swift */,
+				1E3296174D0A02A8DFD1B83D /* CollageRenderTests.swift */,
 				E915C402422DE978B52F081C /* ColorizerTests.swift */,
 				BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */,
 				0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */,
@@ -882,6 +891,8 @@
 				0E898AB1CA47068DEA9A5D3C /* CameraSettings.swift in Sources */,
 				53837C799D4B72F923BE0C81 /* CameraView.swift in Sources */,
 				57863CC293DA030648DC4BCF /* ClipOps.swift in Sources */,
+				B3D95597F2A370678BF74B9F /* CollageRenderer.swift in Sources */,
+				3000A029E09623068E131F57 /* CollageView.swift in Sources */,
 				39DCF5316E4C2A6FFD6298B2 /* ColorTransfer.swift in Sources */,
 				A763F197145E77726D1CCD75 /* Colorizer.swift in Sources */,
 				7492F14FB2292096698590B2 /* Compositor.swift in Sources */,
@@ -966,6 +977,7 @@
 				99A436F6C64A32889BCDB426 /* BodyReshapeTests.swift in Sources */,
 				A8025977FF521374FD34F750 /* CameraTests.swift in Sources */,
 				33B70138785D4256A5F20425 /* ClipOpsTests.swift in Sources */,
+				9F8C2AB60EED891570437160 /* CollageRenderTests.swift in Sources */,
 				96D6CC789BC312B6C1F357D1 /* ColorTransferTests.swift in Sources */,
 				6F38BBAA6211CED47BE2976F /* ColorizerTests.swift in Sources */,
 				724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */,

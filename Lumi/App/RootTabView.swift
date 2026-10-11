@@ -20,7 +20,7 @@ struct RootTabView: View {
             ForEach(RootTab.allCases) { tab in
                 Tab(tab.rawValue, systemImage: tab.symbol) {
                     NavigationStack {
-                        if tab == .home { EditorView() }
+                        if tab == .home { HomeView() }
                         else if tab == .camera { CameraView() }
                         else if tab == .video { VideoEditorView() }
                         else if tab == .projects { ProjectsView().navigationTitle("Projects") }

@@ -8,7 +8,7 @@ enum OldPhotoRestore {
         let e = image.extent
         guard e.width > 0, e.height > 0 else { return false }
         let n = 32
-        let thumb = image.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY).scaledBy(x: CGFloat(n) / e.width, y: CGFloat(n) / e.height))
+        let thumb = image.transformed(by: CGAffineTransform(scaleX: CGFloat(n) / e.width, y: CGFloat(n) / e.height).translatedBy(x: -e.minX, y: -e.minY))
         var px = [UInt8](repeating: 0, count: n * n * 4)
         CIContext().render(thumb, toBitmap: &px, rowBytes: n * 4, bounds: CGRect(x: 0, y: 0, width: n, height: n), format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
         var total = 0.0

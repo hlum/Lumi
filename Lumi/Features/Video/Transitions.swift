@@ -29,7 +29,7 @@ enum Transitions {
             // outgoing zooms in and fades; incoming settles from slightly large
             let sa = 1 + 0.5 * CGFloat(t), sb = 1.25 - 0.25 * CGFloat(t)
             func scaled(_ i: CIImage, _ s: CGFloat) -> CIImage {
-                i.transformed(by: CGAffineTransform(translationX: -e.midX, y: -e.midY).scaledBy(x: s, y: s).translatedBy(x: e.midX / s, y: e.midY / s)).cropped(to: e)
+                i.transformed(by: CGAffineTransform(scaleX: s, y: s).translatedBy(x: -e.midX, y: -e.midY).translatedBy(x: e.midX / s, y: e.midY / s)).cropped(to: e)
             }
             let f = CIFilter.dissolveTransition(); f.inputImage = scaled(a, sa); f.targetImage = scaled(b, sb); f.time = Float(t)
             return f.outputImage?.cropped(to: e) ?? a
