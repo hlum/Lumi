@@ -217,5 +217,116 @@
     "modifiedNote": null,
     "dateAdded": "2026-10-12",
     "selfMade": true
+  },
+  {
+    "files": [
+      "Fonts/Pacifico-Regular.ttf",
+      "Fonts/OFL-pacifico.txt"
+    ],
+    "title": "Pacifico",
+    "author": "The Pacifico Project Authors (https://github.com/googlefonts/Pacifico)",
+    "sourceURL": "https://github.com/google/fonts/tree/main/ofl/pacifico",
+    "license": "OFL",
+    "licenseURL": "https://openfontlicense.org",
+    "attribution": "Copyright 2018 The Pacifico Project Authors (https://github.com/googlefonts/Pacifico) Licensed under the SIL Open Font License 1.1.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  },
+  {
+    "files": [
+      "Fonts/BebasNeue-Regular.ttf",
+      "Fonts/OFL-bebasneue.txt"
+    ],
+    "title": "Bebas Neue",
+    "author": "Copyright © 2010 by Dharma Type.",
+    "sourceURL": "https://github.com/google/fonts/tree/main/ofl/bebasneue",
+    "license": "OFL",
+    "licenseURL": "https://openfontlicense.org",
+    "attribution": "Copyright © 2010 by Dharma Type. Licensed under the SIL Open Font License 1.1.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  },
+  {
+    "files": [
+      "Fonts/ZenMaruGothic-Bold.ttf",
+      "Fonts/OFL-zenmarugothic.txt"
+    ],
+    "title": "Zen Maru Gothic Bold",
+    "author": "The Zen Maru Gothic Project Authors (https://github.com/googlefonts/zen-marugothic)",
+    "sourceURL": "https://github.com/google/fonts/tree/main/ofl/zenmarugothic",
+    "license": "OFL",
+    "licenseURL": "https://openfontlicense.org",
+    "attribution": "Copyright 2021 The Zen Maru Gothic Project Authors (https://github.com/googlefonts/zen-marugothic) Licensed under the SIL Open Font License 1.1.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  },
+  {
+    "files": [
+      "Fonts/DelaGothicOne-Regular.ttf",
+      "Fonts/OFL-delagothicone.txt"
+    ],
+    "title": "Dela Gothic One",
+    "author": "The Dela Gothic Project Authors (https://github.com/syakuzen/DelaGothic)",
+    "sourceURL": "https://github.com/google/fonts/tree/main/ofl/delagothicone",
+    "license": "OFL",
+    "licenseURL": "https://openfontlicense.org",
+    "attribution": "Copyright 2020 The Dela Gothic Project Authors (https://github.com/syakuzen/DelaGothic) Licensed under the SIL Open Font License 1.1.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  },
+  {
+    "files": [
+      "Fonts/RampartOne-Regular.ttf",
+      "Fonts/OFL-rampartone.txt"
+    ],
+    "title": "Rampart One",
+    "author": "The Rampart Project Authors (https://github.com/fontworks-fonts/Rampart)",
+    "sourceURL": "https://github.com/google/fonts/tree/main/ofl/rampartone",
+    "license": "OFL",
+    "licenseURL": "https://openfontlicense.org",
+    "attribution": "Copyright 2020 The Rampart Project Authors (https://github.com/fontworks-fonts/Rampart) Licensed under the SIL Open Font License 1.1.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  },
+  {
+    "files": [
+      "Fonts/Caveat-Variable.ttf",
+      "Fonts/OFL-caveat.txt"
+    ],
+    "title": "Caveat",
+    "author": "The Caveat Project Authors (https://github.com/googlefonts/caveat)",
+    "sourceURL": "https://github.com/google/fonts/tree/main/ofl/caveat",
+    "license": "OFL",
+    "licenseURL": "https://openfontlicense.org",
+    "attribution": "Copyright 2014 The Caveat Project Authors (https://github.com/googlefonts/caveat) Licensed under the SIL Open Font License 1.1.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  },
+  {
+    "files": [
+      "Fonts/catalog.json"
+    ],
+    "title": "Font catalog",
+    "author": "Lumi",
+    "sourceURL": "",
+    "license": "Self-made",
+    "licenseURL": "",
+    "attribution": "Font list by Lumi.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": true
   }
 ]

@@ -120,13 +120,16 @@ struct CropPanel: View {
 struct TextPanel: View {
     @Bindable var model: EditorModel
     @State private var text = ""
+    @State private var font = FontLibrary.all.first!.postScript
 
     var body: some View {
         VStack {
+            Picker("Font", selection: $font) { ForEach(FontLibrary.all) { Text($0.name).tag($0.postScript) } }.pickerStyle(.menu)
             HStack {
                 TextField("Add text", text: $text).textFieldStyle(.roundedBorder)
                 Button("Add") {
-                    let layer = Layer(content: .text(text, TextStyle()))
+                    var style = TextStyle(); style.fontName = font
+                    let layer = Layer(content: .text(text, style))
                     model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }   // the stack rejects empty text
                     text = ""
                 }.disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
