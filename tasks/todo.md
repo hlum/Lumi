@@ -55,9 +55,9 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 2
 
 **Phase 3: Overlays**
-- [~] T21 Text basics
+- [x] T21 Text basics
 - [x] T22 Text styles
-- [~] T23 Stickers
+- [x] T23 Stickers
 - [ ] T24 Custom stickers
 - [~] T25 Frames, doodle and marker
 - [x] T26 Mosaic and face cover

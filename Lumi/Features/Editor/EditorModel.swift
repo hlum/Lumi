@@ -39,6 +39,8 @@ final class EditorModel {
     var doodleBrush = DoodleStroke.Brush.solid
     var warpBrush = WarpBrush()
     var filterEraserActive = false
+    /// The text or sticker layer the gestures act on.
+    var selectedLayer: UUID?
     /// The eraser mask as of the last committed edit; a drag adds to it.
     var committedEraser: MaskCanvas? { stack.current.filterEraser }
     /// The last committed document (before the drag in progress).
@@ -86,6 +88,26 @@ final class EditorModel {
 
     /// The enhance tool is offered only when the model is present and the photo is small enough to upscale.
     var canUpscale: Bool { Renderer.services.upscaler != nil && max(original?.extent.width ?? .infinity, original?.extent.height ?? .infinity) <= CGFloat(RealESRGANUpscaler.maxInputSide) }
+
+    // MARK: layer gestures (live while dragging; `commit()` records one undo step when the gesture ends)
+
+    private func updateSelected(_ change: (inout Layer) -> Void) {
+        guard let id = selectedLayer else { return }
+        var stack = draft.layers
+        stack.update(id, change)
+        draft.layers = stack
+    }
+    /// Moves the layer's center to a normalized point (0...1, top-left origin), clamped to the photo.
+    func moveSelected(to p: CGPoint) { updateSelected { $0.transform.center = CGPoint(x: min(max(p.x, 0), 1), y: min(max(p.y, 0), 1)) } }
+    /// Multiplies the layer's scale (pinch); `base` is the scale when the gesture began.
+    func scaleSelected(base: Double, by factor: Double) { updateSelected { $0.transform.scale = base * factor } }
+    func rotateSelected(base: Double, by radians: Double) { updateSelected { $0.transform.rotation = base + radians } }
+    func flipSelected() { updateSelected { $0.transform.flipH.toggle() }; commit() }
+    func deleteSelectedLayer() {
+        guard let id = selectedLayer else { return }
+        var s = draft.layers; s.remove(id); draft.layers = s; selectedLayer = nil; commit()
+    }
+    var selectedLayerValue: Layer? { selectedLayer.flatMap { id in draft.layers.layers.first { $0.id == id } } }
 
     func commit() { stack.commit(draft); autosave() }
 

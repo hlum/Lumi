@@ -25,6 +25,7 @@ struct EditorView: View {
         VStack(spacing: 0) {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
+                    .overlay { if tool == .text || tool == .sticker { LayerGestureOverlay(model: model) } }
                     .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
@@ -164,7 +165,7 @@ struct TextPanel: View {
                 Button("Add") {
                     var style = preset?.style ?? TextStyle(); style.fontName = font
                     var layer = Layer(content: .text(text, style)); layer.behindSubject = behind
-                    model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }   // the stack rejects empty text
+                    model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }; model.selectedLayer = layer.id   // the stack rejects empty text
                     text = ""
                 }.disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
             }.padding(.horizontal)
@@ -180,7 +181,7 @@ struct TextPanel: View {
                 ForEach(model.draft.layers.layers) { l in
                     if case .text(let s, _) = l.content {
                         HStack {
-                            Text(s)
+                            Text(s).fontWeight(model.selectedLayer == l.id ? .bold : .regular).onTapGesture { model.selectedLayer = l.id }
                             Spacer()
                             Menu("Style") { ForEach(TextStylePresets.all) { p in Button(LocalizedStringKey(p.name)) { let id = l.id; model.edit { d in var st = d.layers; st.update(id) { $0 = TextStylePresets.apply(p, to: $0) }; d.layers = st } } } }
                         }
@@ -330,7 +331,7 @@ struct StickerPanel: View {
 
     private func add(_ id: String) {
         let layer = Layer(content: .sticker(id: id, outline: outline))
-        model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }
+        model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }; model.selectedLayer = layer.id
     }
 }
 
@@ -697,5 +698,31 @@ struct MosaicBrushOverlay: View {
     private func merged(_ earlier: [MaskCanvas], _ current: MaskCanvas) -> [MaskCanvas] {
         guard var base = earlier.first, base.width == current.width, base.height == current.height else { return earlier + [current] }
         base.union(current); return [base]
+    }
+}
+
+struct LayerGestureOverlay: View {
+    @Bindable var model: EditorModel
+    @State private var baseScale = 1.0
+    @State private var baseRotation = 0.0
+
+    var body: some View {
+        GeometryReader { geo in
+            let box = geo.size
+            Color.clear.contentShape(Rectangle())
+                .gesture(DragGesture(minimumDistance: 4)
+                    .onChanged { v in
+                        guard let o = model.original else { return }
+                        let map = FitMapping(view: box, image: o.extent.size), d = map.displayed
+                        model.moveSelected(to: CGPoint(x: (v.location.x - d.minX) / max(d.width, 1), y: (v.location.y - d.minY) / max(d.height, 1)))
+                    }.onEnded { _ in model.commit() })
+                .simultaneousGesture(MagnifyGesture()
+                    .onChanged { v in if baseScale == 1 { baseScale = model.selectedLayerValue?.transform.scale ?? 1 }; model.scaleSelected(base: baseScale, by: v.magnification) }
+                    .onEnded { _ in baseScale = 1; model.commit() })
+                .simultaneousGesture(RotateGesture()
+                    .onChanged { v in if baseRotation == 0 { baseRotation = model.selectedLayerValue?.transform.rotation ?? 0 }; model.rotateSelected(base: baseRotation, by: v.rotation.radians) }
+                    .onEnded { _ in baseRotation = 0; model.commit() })
+        }
+        .allowsHitTesting(model.selectedLayer != nil)
     }
 }
