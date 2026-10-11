@@ -20,6 +20,7 @@ struct HomeView: View {
 
     @ViewBuilder private func row(_ t: ToolInfo) -> some View {
         switch t.id {
+        case "recipes": NavigationLink { RecipesView() } label: { Label(LocalizedStringKey(t.name), systemImage: t.symbol) }
         case "collage": NavigationLink { CollageView() } label: { Label(LocalizedStringKey(t.name), systemImage: t.symbol) }
         default: NavigationLink { EditorView() } label: { Label(LocalizedStringKey(t.name), systemImage: t.symbol) }
         }

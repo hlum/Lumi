@@ -20,6 +20,7 @@ enum ToolCatalog {
         ToolInfo(id: "id-photo", name: "ID photo", symbol: "person.text.rectangle", category: .utility, keywords: ["passport", "visa", "証明写真"]),
         ToolInfo(id: "scanner", name: "Scanner", symbol: "doc.viewfinder", category: .utility, keywords: ["document", "pdf", "ocr", "スキャン"]),
         ToolInfo(id: "gif", name: "GIF maker", symbol: "film.stack", category: .utility, keywords: ["animation", "emoji", "sticker", "ジフ"]),
+        ToolInfo(id: "recipes", name: "Recipes", symbol: "wand.and.stars", category: .creative, keywords: ["batch", "preset", "look", "レシピ", "一括"]),
         ToolInfo(id: "collage", name: "Collage", symbol: "square.grid.2x2", category: .creative, keywords: ["grid", "layout", "stitch", "コラージュ"]),
     ]
 

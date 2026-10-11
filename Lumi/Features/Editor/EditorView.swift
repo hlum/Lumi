@@ -18,6 +18,8 @@ struct EditorView: View {
     @State private var item: PhotosPickerItem?
     @State private var loadFailed = false
     @State private var tool = EditorTool.adjust
+    @State private var library = RecipeLibrary()
+    @State private var recipeSaved = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -60,6 +62,7 @@ struct EditorView: View {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button("Undo", systemImage: "arrow.uturn.backward") { model.undo() }.disabled(!model.canUndo)
                 Button("Redo", systemImage: "arrow.uturn.forward") { model.redo() }.disabled(!model.canRedo)
+                Button("Save recipe", systemImage: "wand.and.stars.inverse") { saveRecipe() }.disabled(model.original == nil || model.draft.operations.isEmpty)
                 Button("Save", systemImage: "square.and.arrow.down") { Task { await model.save() } }.disabled(model.original == nil)
             }
         }
@@ -70,9 +73,14 @@ struct EditorView: View {
                 else { loadFailed = true }
             }
         }
+        .alert("Recipe saved", isPresented: $recipeSaved) {}
         .alert("Couldn't open that photo", isPresented: $loadFailed) {}
         .alert("Couldn't save", isPresented: .constant(model.saveError != nil)) {}
     }
+}
+
+extension EditorView {
+    func saveRecipe() { if library.save(name: "", from: model.draft) != nil { recipeSaved = true } }
 }
 
 struct AdjustPanel: View {
