@@ -25,6 +25,8 @@ targets:
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [en, ja]
         UILaunchScreen: {}
+        NSCameraUsageDescription: Take photos with live filters and beauty.
+        NSMicrophoneUsageDescription: Record sound with your videos.
         NSPhotoLibraryAddUsageDescription: Save your edited photos to your library.
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
     settings:

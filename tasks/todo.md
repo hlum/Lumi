@@ -113,8 +113,8 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 8
 
 **Phase 9: Camera**
-- [ ] T61 Camera core
-- [ ] T62 Live beauty camera
+- [~] T61 Camera core
+- [~] T62 Live beauty camera
 - [ ] T63 Camera modes
 - [ ] T64 AR "Cutie" mode and camera music
 - [ ] T65 Camera extras
