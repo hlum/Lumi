@@ -3,8 +3,8 @@ import Testing
 @testable import Lumi
 
 struct SmokeTests {
-    @Test func tabsAreHomeProjectsSettings() {
-        #expect(RootTab.allCases.map(\.rawValue) == ["Home", "Projects", "Settings"])
+    @Test func tabsAreHomeCameraVideoProjectsSettings() {
+        #expect(RootTab.allCases.map(\.rawValue) == ["Home", "Camera", "Video", "Projects", "Settings"])
     }
 
     @Test func tabSymbolsAreDistinctAndNonEmpty() {

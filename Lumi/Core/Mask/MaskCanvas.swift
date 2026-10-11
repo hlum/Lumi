@@ -64,3 +64,20 @@ struct MaskCanvas: Codable, Equatable {
                 format: .L8, colorSpace: nil)
     }
 }
+
+extension MaskCanvas {
+    /// RGBA overlay (premultiplied): the mask as a translucent color, for showing a selection.
+    func tintedImage(red: Double = 1, green: Double = 0.2, blue: Double = 0.2, opacity: Double = 0.5) -> CGImage? {
+        guard !isEmpty else { return nil }
+        var rgba = [UInt8](repeating: 0, count: width * height * 4)
+        for i in 0..<pixels.count {
+            let a = Double(pixels[i]) / 255 * opacity
+            rgba[i * 4] = UInt8((red * a * 255).rounded()); rgba[i * 4 + 1] = UInt8((green * a * 255).rounded())
+            rgba[i * 4 + 2] = UInt8((blue * a * 255).rounded()); rgba[i * 4 + 3] = UInt8((a * 255).rounded())
+        }
+        return rgba.withUnsafeMutableBytes { buf in
+            CGContext(data: buf.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                      space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)?.makeImage()
+        }
+    }
+}

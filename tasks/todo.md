@@ -20,7 +20,7 @@ Tests run on Xcode Cloud without the repository present. Any fixture a test need
 Scope: S = 1–2 files · M = 3–5 files. Anything larger has been split.
 
 ## Status
-Tick a task when it's done. The details for each task are below.
+Tick a task when it's done. `[~]` = core logic built and tested, screen or device check still pending. The details for each task are below.
 
 **Phase D: Design (before any build)**
 - [ ] ⏸ Checkpoint D: designs approved
@@ -28,10 +28,10 @@ Tick a task when it's done. The details for each task are below.
 **Phase 0: Scaffold, CI and risk spikes**
 - [x] T01 Project scaffold
 - [x] T02 Xcode Cloud CI and TDD harness
-- [ ] T03 Spike: LaMa on device
-- [ ] T04 Spike: real-time preview
-- [ ] T05 Spike: mesh-warp engine
-- [ ] T06 Spike: hair segmentation
+- [x] T03 Spike: LaMa on device
+- [x] T04 Spike: real-time preview
+- [x] T05 Spike: mesh-warp engine
+- [x] T06 Spike: hair segmentation
 - [ ] ⏸ Checkpoint 0
 
 **Phase 1: Editing foundation**
@@ -44,77 +44,77 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint 1
 
 **Phase 2: Basic edit and color**
-- [ ] T13 Crop, rotate, straighten
-- [ ] T14 Resize, canvas, export settings
-- [ ] T15 Adjust panel
-- [ ] T16 HSL, curves, split tone, color picker
-- [ ] T17 Filter engine
-- [ ] T18 Content: filter pack v1
-- [ ] T19 Smart color tools
-- [ ] T20 AI Flash and face fill light
+- [x] T13 Crop, rotate, straighten
+- [x] T14 Resize, canvas, export settings
+- [x] T15 Adjust panel
+- [x] T16 HSL, curves, split tone, color picker
+- [x] T17 Filter engine
+- [x] T18 Content: filter pack v1
+- [~] T19 Smart color tools
+- [x] T20 AI Flash and face fill light
 - [ ] ⏸ Checkpoint 2
 
 **Phase 3: Overlays**
-- [ ] T21 Text basics
-- [ ] T22 Text styles
-- [ ] T23 Stickers
-- [ ] T24 Custom stickers
-- [ ] T25 Frames, doodle and marker
-- [ ] T26 Mosaic and face cover
-- [ ] T27 Watermarks
-- [ ] T28 Content: stickers, fonts, frames, brush materials
+- [x] T21 Text basics
+- [x] T22 Text styles
+- [x] T23 Stickers
+- [x] T24 Custom stickers
+- [~] T25 Frames, doodle and marker
+- [x] T26 Mosaic and face cover
+- [x] T27 Watermarks
+- [~] T28 Content: stickers, fonts, frames, brush materials
 - [ ] ⏸ Checkpoint 3
 
 **Phase 4: Remover, cutout, expand**
-- [ ] T29 Remover v1, brush and box
+- [~] T29 Remover v1, brush and box
 - [ ] T30 Remover auto chips
 - [ ] T31 Clone tab and specialty removers
-- [ ] T32 Cutout and background
-- [ ] T33 Batch cutout
-- [ ] T34 AI Expand
+- [~] T32 Cutout and background
+- [x] T33 Batch cutout
+- [~] T34 AI Expand
 - [ ] ⏸ Checkpoint 4
 
 **Phase 5: Face retouch**
-- [ ] T35 Skin smoothing and texture
-- [ ] T36 Skin tone
-- [ ] T37 Blemishes
-- [ ] T38 Under-eye and wrinkles
-- [ ] T39 Face-shape warps
+- [x] T35 Skin smoothing and texture
+- [~] T36 Skin tone
+- [~] T37 Blemishes
+- [~] T38 Under-eye and wrinkles
+- [~] T39 Face-shape warps
 - [ ] T40 Ratio, 3D and protection
-- [ ] T41 Eye, nose, mouth and brow warps
-- [ ] T42 Eye detail and teeth
-- [ ] T43 Manual face slim and volume
-- [ ] T44 Auto beauty
+- [~] T41 Eye, nose, mouth and brow warps
+- [~] T42 Eye detail and teeth
+- [x] T43 Manual face slim and volume
+- [~] T44 Auto beauty
 - [ ] ⏸ Checkpoint 5
 
 **Phase 6: Makeup and hair**
-- [ ] T45 Makeup engine: lips, blush, contour
+- [~] T45 Makeup engine: lips, blush, contour
 - [ ] T46 Eye makeup and brows
 - [ ] T47 Makeup content, looks, recreate
 - [ ] T48 Nail try-on
-- [ ] T49 Hair color
+- [~] T49 Hair color
 - [ ] T50 Hair shape
 - [ ] ⏸ Checkpoint 6
 
 **Phase 7: Body**
-- [ ] T51 Lower-body and torso warps
-- [ ] T52 Upper body, presets, auto
-- [ ] T53 Manual body brushes
-- [ ] T54 Background protection
+- [~] T51 Lower-body and torso warps
+- [~] T52 Upper body, presets, auto
+- [x] T53 Manual body brushes
+- [~] T54 Background protection
 - [ ] ⏸ Checkpoint 7
 
 **Phase 8: Recipes, batch, collage, materials**
-- [ ] T55 Recipes
-- [ ] T56 Batch edit
-- [ ] T57 Collage templates
+- [~] T55 Recipes
+- [~] T56 Batch edit
+- [~] T57 Collage templates
 - [ ] T58 Freeform, split, seamless collage
-- [ ] T59 Long stitch and screenshot stitch
+- [~] T59 Long stitch and screenshot stitch
 - [ ] T60 Materials, templates, wallpapers
 - [ ] ⏸ Checkpoint 8
 
 **Phase 9: Camera**
-- [ ] T61 Camera core
-- [ ] T62 Live beauty camera
+- [~] T61 Camera core
+- [~] T62 Live beauty camera
 - [ ] T63 Camera modes
 - [ ] T64 AR "Cutie" mode and camera music
 - [ ] T65 Camera extras
@@ -127,9 +127,9 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint 10
 
 **Phase 11: Video**
-- [ ] T69 Timeline core
-- [ ] T70 Clip operations and transitions
-- [ ] T71 Per-clip color and effects
+- [~] T69 Timeline core
+- [~] T70 Clip operations and transitions
+- [~] T71 Per-clip color and effects
 - [ ] T72 Text, stickers, keyframes
 - [ ] T73 Overlay video, masks, tracking
 - [ ] T74 Audio
@@ -141,8 +141,8 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint 11
 
 **Phase 12: On-device AI**
-- [ ] T80 Enhancer and upscaler
-- [ ] T81 Old-photo restoration
+- [~] T80 Enhancer and upscaler
+- [~] T81 Old-photo restoration
 - [ ] T82 Image Playground creations
 - [x] ~~T83 AI Assistant~~ (dropped)
 - [ ] T84 AI text replace and AI copywriting
@@ -150,19 +150,19 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint 12
 
 **Phase 13: Utilities**
-- [ ] T86 ID photo
-- [ ] T87 Scanner
-- [ ] T88 GIF and emoji maker
+- [~] T86 ID photo
+- [~] T87 Scanner
+- [~] T88 GIF and emoji maker
 - [ ] ⏸ Checkpoint 13
 
 **Phase 14: App shell, polish, release**
-- [ ] T89 Home, Tools, search, tutorials
-- [ ] T90 Settings and attributions
+- [~] T89 Home, Tools, search, tutorials
+- [~] T90 Settings and attributions
 - [ ] T91 Widgets, Control, Shortcuts
-- [ ] T92 Long jobs and recent tasks
-- [ ] T93 Localization
+- [~] T92 Long jobs and recent tasks
+- [~] T93 Localization
 - [ ] T94 Performance, memory, accessibility
-- [ ] T95 Release prep
+- [~] T95 Release prep
 - [ ] ⏸ Final checkpoint
 
 

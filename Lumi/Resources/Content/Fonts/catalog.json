@@ -1,0 +1,32 @@
+[
+ {
+  "name": "Pacifico",
+  "postScript": "Pacifico-Regular",
+  "file": "Pacifico-Regular.ttf"
+ },
+ {
+  "name": "Bebas Neue",
+  "postScript": "BebasNeue-Regular",
+  "file": "BebasNeue-Regular.ttf"
+ },
+ {
+  "name": "Zen Maru Gothic Bold",
+  "postScript": "ZenMaruGothic-Bold",
+  "file": "ZenMaruGothic-Bold.ttf"
+ },
+ {
+  "name": "Dela Gothic One",
+  "postScript": "DelaGothicOne-Regular",
+  "file": "DelaGothicOne-Regular.ttf"
+ },
+ {
+  "name": "Rampart One",
+  "postScript": "RampartOne-Regular",
+  "file": "RampartOne-Regular.ttf"
+ },
+ {
+  "name": "Caveat",
+  "postScript": "Caveat-Regular",
+  "file": "Caveat-Variable.ttf"
+ }
+]
