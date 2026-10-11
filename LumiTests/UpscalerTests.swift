@@ -4,11 +4,15 @@ import Testing
 @testable import Lumi
 
 /// The simulator has no Neural Engine, so a real 4x model run takes over a minute there. Real-model runs are device-only.
-enum RunsOn { static var isSimulator: Bool { #if targetEnvironment(simulator)
- true
- #else
- false
- #endif } }
+enum RunsOn {
+    static var isSimulator: Bool {
+        #if targetEnvironment(simulator)
+        return true
+        #else
+        return false
+        #endif
+    }
+}
 
 struct FakeUpscaler: Upscaling {
     func upscale4x(_ image: CIImage) throws -> CIImage {
