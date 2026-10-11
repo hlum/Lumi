@@ -35,7 +35,9 @@
 		45B917F1FAE953E37309C1D4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C877CE8B244EF3D2C0593F7 /* Renderer.swift */; };
 		46364E99557352F8FD9CC391 /* MosaicOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B443E2575575BE475C5FB9B /* MosaicOps.swift */; };
 		47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */; };
+		4864F1A4285E9457486A0E02 /* SkinMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B811579D45E6D169E012A01C /* SkinMask.swift */; };
 		48E2388570DC973B1DCC5D83 /* BatchRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */; };
+		567FA7C840479B944E7CE660 /* SkinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16E38351FDAF036F93AFF551 /* SkinTests.swift */; };
 		5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850D7C49D60EA488C83EDB92 /* RendererTests.swift */; };
 		6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A84271AE2975CD30F866726 /* ResizeTests.swift */; };
 		62321582DF77C5697193257F /* ExportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85827E04B5DD5DA38A53552 /* ExportSettings.swift */; };
@@ -43,6 +45,7 @@
 		724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */; };
 		73162FAF45A4B6259C2BCF30 /* OverlapFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */; };
 		7790F3D91D0795A7FAAA5488 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6FD85211E45314EB0ED25 /* EditorView.swift */; };
+		82F007AC683370CFADB5E3C0 /* SkinOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5BFF55F06515FDDB7BD22F6 /* SkinOps.swift */; };
 		84246047A286D716C1077A36 /* LayoutModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3753A050A36D6AA1F5FF2D7 /* LayoutModel.swift */; };
 		8BA22EEC094E106AEB121798 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C774554353642B4CCB68C0E1 /* RootTabView.swift */; };
 		8E70BB46E8688EF9F20597E3 /* MaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */; };
@@ -98,6 +101,7 @@
 		13A63C89407FE7AD33C7ED2A /* Smoothing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Smoothing.swift; sourceTree = "<group>"; };
 		14C2A8865BAA7EB3472CECAA /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
 		14C8B0CC494B2360A9091052 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		16E38351FDAF036F93AFF551 /* SkinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinTests.swift; sourceTree = "<group>"; };
 		1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorModel.swift; sourceTree = "<group>"; };
 		285DE6546B441D0BEC50F540 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
 		29DD2F4D0FA68157AA975166 /* OverlapFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapFinder.swift; sourceTree = "<group>"; };
@@ -139,6 +143,7 @@
 		AD4A66AD237D031E560D4083 /* AnalysisCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisCache.swift; sourceTree = "<group>"; };
 		B46D2DF1A16B93F34F960633 /* EditOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOperation.swift; sourceTree = "<group>"; };
 		B75EC58A061903DB807EB806 /* FaceReshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReshape.swift; sourceTree = "<group>"; };
+		B811579D45E6D169E012A01C /* SkinMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinMask.swift; sourceTree = "<group>"; };
 		B860DC41FCF350889B4EF1F1 /* Lumi.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Lumi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8F49C52541F35A4F285D365 /* MaskCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskCanvas.swift; sourceTree = "<group>"; };
 		BA5640ED3C828F66CC06F9C3 /* BatchRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunner.swift; sourceTree = "<group>"; };
@@ -150,6 +155,7 @@
 		DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
 		E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPreviewView.swift; sourceTree = "<group>"; };
 		E4411F910665922CEBCCE048 /* PersonTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTarget.swift; sourceTree = "<group>"; };
+		E5BFF55F06515FDDB7BD22F6 /* SkinOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinOps.swift; sourceTree = "<group>"; };
 		E5F6FD85211E45314EB0ED25 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisTests.swift; sourceTree = "<group>"; };
 		F3753A050A36D6AA1F5FF2D7 /* LayoutModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutModel.swift; sourceTree = "<group>"; };
@@ -271,6 +277,7 @@
 			children = (
 				AD4A66AD237D031E560D4083 /* AnalysisCache.swift */,
 				4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */,
+				B811579D45E6D169E012A01C /* SkinMask.swift */,
 				13A63C89407FE7AD33C7ED2A /* Smoothing.swift */,
 			);
 			path = Analysis;
@@ -317,6 +324,7 @@
 				E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */,
 				3B443E2575575BE475C5FB9B /* MosaicOps.swift */,
 				4C877CE8B244EF3D2C0593F7 /* Renderer.swift */,
+				E5BFF55F06515FDDB7BD22F6 /* SkinOps.swift */,
 				79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */,
 			);
 			path = Render;
@@ -349,6 +357,7 @@
 				C601C878EAB11731365C44CD /* RecipeTests.swift */,
 				850D7C49D60EA488C83EDB92 /* RendererTests.swift */,
 				8A84271AE2975CD30F866726 /* ResizeTests.swift */,
+				16E38351FDAF036F93AFF551 /* SkinTests.swift */,
 				3037684EC9790617FB2CFC8A /* SmokeTests.swift */,
 				8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */,
 				37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */,
@@ -534,6 +543,8 @@
 				D7AD8B53E5E51940F310F0D2 /* Recipe.swift in Sources */,
 				45B917F1FAE953E37309C1D4 /* Renderer.swift in Sources */,
 				8BA22EEC094E106AEB121798 /* RootTabView.swift in Sources */,
+				4864F1A4285E9457486A0E02 /* SkinMask.swift in Sources */,
+				82F007AC683370CFADB5E3C0 /* SkinOps.swift in Sources */,
 				19910705AD1775CD49C02379 /* Smoothing.swift in Sources */,
 				A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */,
 				DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */,
@@ -569,6 +580,7 @@
 				0A021A54E63AED940A54802C /* RecipeTests.swift in Sources */,
 				5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */,
 				6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */,
+				567FA7C840479B944E7CE660 /* SkinTests.swift in Sources */,
 				92F3F08537B5F30A5A44977C /* SmokeTests.swift in Sources */,
 				211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */,
 				BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */,

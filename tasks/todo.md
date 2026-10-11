@@ -75,13 +75,13 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 4
 
 **Phase 5: Face retouch**
-- [ ] T35 Skin smoothing and texture
-- [ ] T36 Skin tone
+- [~] T35 Skin smoothing and texture
+- [~] T36 Skin tone
 - [ ] T37 Blemishes
 - [ ] T38 Under-eye and wrinkles
-- [ ] T39 Face-shape warps
+- [~] T39 Face-shape warps
 - [ ] T40 Ratio, 3D and protection
-- [ ] T41 Eye, nose, mouth and brow warps
+- [~] T41 Eye, nose, mouth and brow warps
 - [ ] T42 Eye detail and teeth
 - [ ] T43 Manual face slim and volume
 - [ ] T44 Auto beauty
