@@ -42,6 +42,7 @@ enum Renderer {
             case .warp(let w): img = MeshWarpRenderer.apply(w.field, to: img)
             case .layers(let l): img = LayerRenderer.render(l, over: img)
             case .remove(let masks): img = removed(masks, from: img, prefix: Array(document.operations[0...i]))
+            case .expand(let c): img = expanded(c, from: img, prefix: Array(document.operations[0..<i]))
             case .cutout(let c): img = cutOut(c, from: img, prefix: Array(document.operations[0..<i]))
             }
         }
@@ -54,6 +55,12 @@ enum Renderer {
         let key = "mask|" + cacheKey(image, prefix)
         guard let mask = (try? services.cached(key) { try masker.subjectMask(for: image) }) ?? nil else { return image }
         return CutoutOps.apply(c, to: image, subjectMask: mask)
+    }
+
+    static func expanded(_ c: ExpandConfig, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard let inpainter = services.inpainter, !c.isIdentity else { return image }
+        let key = "expand|\(c)|" + cacheKey(image, prefix)
+        return (try? services.cached(key) { try ExpandOps.apply(c, to: image, inpainter: inpainter) }) ?? image
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

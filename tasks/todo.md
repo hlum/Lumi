@@ -71,7 +71,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] T31 Clone tab and specialty removers
 - [~] T32 Cutout and background
 - [ ] T33 Batch cutout
-- [ ] T34 AI Expand
+- [~] T34 AI Expand
 - [ ] ⏸ Checkpoint 4
 
 **Phase 5: Face retouch**

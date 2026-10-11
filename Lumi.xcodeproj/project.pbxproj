@@ -73,11 +73,13 @@
 		BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D2DF1A16B93F34F960633 /* EditOperation.swift */; };
 		BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */; };
 		C1419303283E45506C8629FB /* PersonTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4411F910665922CEBCCE048 /* PersonTarget.swift */; };
+		C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338C1ECF08D0026F2F0775CB /* ExpandTests.swift */; };
 		CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */; };
 		CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */; };
 		CEFB67261AB35CDDD936C623 /* AutoMosaic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EABD3FEF98A7D610ACA8EE3 /* AutoMosaic.swift */; };
 		D22BBF02A05E37D9E06152A5 /* Credits.json in Resources */ = {isa = PBXBuildFile; fileRef = 491867C4A15830F8C5BBEF55 /* Credits.json */; };
 		D7AD8B53E5E51940F310F0D2 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EB1B596C23861FE0CBE17A /* Recipe.swift */; };
+		D83608EE7515CE4F81544548 /* ExpandOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */; };
 		DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45966C6CA5A5390BAC7F83FB /* UndoStack.swift */; };
 		DC1DC989B13C717126FDE014 /* RemoverPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E74D4A0DDE2E2A39EBB069 /* RemoverPanel.swift */; };
 		DC6F782B0F185442A1D6EADD /* WatermarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419820D970D79F2603383070 /* WatermarkStore.swift */; };
@@ -119,6 +121,7 @@
 		2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTargetTests.swift; sourceTree = "<group>"; };
 		2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStore.swift; sourceTree = "<group>"; };
 		3037684EC9790617FB2CFC8A /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
+		338C1ECF08D0026F2F0775CB /* ExpandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandTests.swift; sourceTree = "<group>"; };
 		36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumiApp.swift; sourceTree = "<group>"; };
 		37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStackTests.swift; sourceTree = "<group>"; };
 		39B7F4161657C6A31D619794 /* MakeupPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeupPlacementTests.swift; sourceTree = "<group>"; };
@@ -159,6 +162,7 @@
 		A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpRenderer.swift; sourceTree = "<group>"; };
 		A94F6D20B0D9131790C14898 /* CurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveTests.swift; sourceTree = "<group>"; };
 		AD4A66AD237D031E560D4083 /* AnalysisCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisCache.swift; sourceTree = "<group>"; };
+		AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandOps.swift; sourceTree = "<group>"; };
 		B46D2DF1A16B93F34F960633 /* EditOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOperation.swift; sourceTree = "<group>"; };
 		B75EC58A061903DB807EB806 /* FaceReshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReshape.swift; sourceTree = "<group>"; };
 		B811579D45E6D169E012A01C /* SkinMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinMask.swift; sourceTree = "<group>"; };
@@ -364,6 +368,7 @@
 				936C1AF23918152C57AE4A68 /* AdjustOps.swift */,
 				4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */,
 				822743120DCD963E72152CDB /* CutoutOps.swift */,
+				AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */,
 				0AE13258B4F65203F283ABBC /* GeometryOps.swift */,
 				F8A44F49745B7174EC0A2918 /* LayerRenderer.swift */,
 				FFB1CE07E21CEDB73699D2DB /* LUT.swift */,
@@ -392,6 +397,7 @@
 				730D4AA73C47234B92073E64 /* CutoutTests.swift */,
 				F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */,
 				0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */,
+				338C1ECF08D0026F2F0775CB /* ExpandTests.swift */,
 				946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */,
 				C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */,
 				8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */,
@@ -575,6 +581,7 @@
 				BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */,
 				8FADC2D4E8F71CF5D13B29E2 /* EditorModel.swift in Sources */,
 				7790F3D91D0795A7FAAA5488 /* EditorView.swift in Sources */,
+				D83608EE7515CE4F81544548 /* ExpandOps.swift in Sources */,
 				62321582DF77C5697193257F /* ExportSettings.swift in Sources */,
 				3593E8C2A5D2CD5282187C7F /* FaceReshape.swift in Sources */,
 				04EE05B54308799E287B857B /* FilterStore.swift in Sources */,
@@ -626,6 +633,7 @@
 				DCFBD0C0527D24FDEE72F237 /* CutoutTests.swift in Sources */,
 				ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */,
 				3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */,
+				C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */,
 				CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */,
 				44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */,
 				1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */,
