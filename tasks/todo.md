@@ -28,7 +28,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 **Phase 0: Scaffold, CI and risk spikes**
 - [x] T01 Project scaffold
 - [x] T02 Xcode Cloud CI and TDD harness
-- [~] T03 Spike: LaMa on device
+- [x] T03 Spike: LaMa on device
 - [x] T04 Spike: real-time preview
 - [x] T05 Spike: mesh-warp engine
 - [x] T06 Spike: hair segmentation
@@ -60,7 +60,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T23 Stickers
 - [ ] T24 Custom stickers
 - [~] T25 Frames, doodle and marker
-- [~] T26 Mosaic and face cover
+- [x] T26 Mosaic and face cover
 - [x] T27 Watermarks
 - [~] T28 Content: stickers, fonts, frames, brush materials
 - [ ] ⏸ Checkpoint 3

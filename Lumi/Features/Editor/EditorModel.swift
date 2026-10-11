@@ -41,6 +41,8 @@ final class EditorModel {
     var filterEraserActive = false
     /// The eraser mask as of the last committed edit; a drag adds to it.
     var committedEraser: MaskCanvas? { stack.current.filterEraser }
+    /// The last committed document (before the drag in progress).
+    var stack0: EditDocument { stack.current }
     var doodleColor = RGBA(r: 1, g: 0.3, b: 0.35, a: 1)
     /// Set while the remover tool is open so the preview can draw its brush gestures.
     var remover: RemoverModel?

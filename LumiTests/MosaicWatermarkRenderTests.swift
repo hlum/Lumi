@@ -90,5 +90,39 @@ struct MosaicWatermarkRenderTests {
         #expect(Self.litPixels(Renderer.render(Self.black(), document: d)) > 0)
         d.watermark = nil; #expect(d.operations.isEmpty)
     }
+
+    // MARK: chat-screenshot mode
+    struct FakeText: TextFinding { var boxes: [CGRect]; func textBoxes(in image: CIImage) throws -> [CGRect] { boxes } }
+
+    @Test func chatModeCoversNamesAndAvatarsButNotMessages() {
+        // a portrait chat: name on the left near the top, a long message in the middle
+        let name = CGRect(x: 0.2, y: 0.80, width: 0.15, height: 0.02), message = CGRect(x: 0.2, y: 0.60, width: 0.6, height: 0.03)
+        var c = MosaicConfig(); c.chatMode = true; c.block = 0.2
+        let img = CIFilter(name: "CICheckerboardGenerator", parameters: ["inputWidth": 2, "inputColor0": CIColor.white, "inputColor1": CIColor.black])!.outputImage!.cropped(to: CGRect(x: 0, y: 0, width: 200, height: 400))
+        let out = MosaicRender.apply(c, to: img, faces: [], textBoxes: [name, message])
+        func changed(_ r: CGRect) -> Bool {
+            (Int(r.minX * 200)..<Int(r.maxX * 200)).contains { x in (Int(r.minY * 400)..<Int(r.maxY * 400)).contains { y in GeometryTests.rgb(out, x: x, y: y) != GeometryTests.rgb(img, x: x, y: y) } }
+        }
+        #expect(changed(name))                                                  // the name is pixelated
+        #expect(!changed(message))                                              // the long message is left readable
+        #expect(changed(CGRect(x: 0.04, y: 0.78, width: 0.14, height: 0.07)))   // the avatar square left of the name
+    }
+
+    @Test func rendererUsesTheTextFinderOnlyInChatMode() {
+        Renderer.services = Renderer.Services(); Renderer.services.textFinder = FakeText(boxes: [CGRect(x: 0.2, y: 0.8, width: 0.15, height: 0.02)])
+        defer { Renderer.services = Renderer.Services() }
+        let img = CIFilter(name: "CICheckerboardGenerator", parameters: ["inputWidth": 2, "inputColor0": CIColor.white, "inputColor1": CIColor.black])!.outputImage!.cropped(to: CGRect(x: 0, y: 0, width: 200, height: 400))
+        var d = EditDocument(); var c = MosaicConfig(); c.chatMode = true; c.block = 0.2; d.mosaic = c
+        let out = Renderer.render(img, document: d)
+        #expect((40..<70).contains { x in (320..<330).contains { y in GeometryTests.rgb(out, x: x, y: y) != GeometryTests.rgb(img, x: x, y: y) } })
+        c.chatMode = false; c.coverFaces = true; d.mosaic = c                    // faces mode with no face finder: nothing to do
+        #expect(!(0..<200).contains { x in GeometryTests.rgb(Renderer.render(img, document: d), x: x, y: 325) != GeometryTests.rgb(img, x: x, y: 325) })
+    }
+
+    @Test func oldMosaicDraftsWithoutChatModeStillOpen() throws {
+        let old = #"{"style":"pixel","block":0.02,"masks":[],"coverFaces":true}"#
+        let c = try JSONDecoder().decode(MosaicConfig.self, from: Data(old.utf8))
+        #expect(c.coverFaces && !c.chatMode)
+    }
 }
 }

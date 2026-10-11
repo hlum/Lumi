@@ -1,6 +1,6 @@
 # Spike T03: LaMa on device
 
-**Go** on iPhone 15 Pro-class hardware (A17). Not yet measured on a ~4 GB iPhone 11-class device.
+**Go.** Measured on the owner's iPhone 15 Pro-class device (A17), which is the agreed spike target; a ~4 GB iPhone 11-class device was not available, so older-device memory remains unmeasured (the model card lists ~600 MB peak).
 
 - **Model:** `mlboydaisuke/LaMa-CoreML` (Core ML conversion of advimman/lama). License: Apache-2.0 for both the conversion and the upstream weights (model card and `coremlcompiler metadata` both say Apache 2.0). Entry added to `Lumi/Resources/Credits.json`.
 - **I/O:** `image` 800x800 RGB + `mask` 800x800 gray (1 = remove) -> `output` 800x800 RGB. Fixed size, `computeUnits = .all` as converted.

@@ -17,6 +17,7 @@ enum Renderer {
         var inpainter: Inpainting?
         var subjectMasker: SubjectMasking?
         var faceFinder: FaceFinding?
+        var textFinder: TextFinding?
         var upscaler: Upscaling?
         var colorizer: Colorizing?
         var faceLandmarker: FaceLandmarking?
@@ -96,7 +97,9 @@ enum Renderer {
             _ = key
             faces = boxes
         }
-        return MosaicRender.apply(c, to: image, faces: faces)
+        var text: [CGRect] = []
+        if c.chatMode, let finder = services.textFinder { text = (try? finder.textBoxes(in: image)) ?? [] }
+        return MosaicRender.apply(c, to: image, faces: faces, textBoxes: text)
     }
 
     static func upscaled(_ factor: Int, from image: CIImage, prefix: [EditOperation]) -> CIImage {

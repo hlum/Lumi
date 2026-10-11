@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", mark = "Mark", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .mark: "checkmark.seal"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -25,6 +25,7 @@ struct EditorView: View {
         VStack(spacing: 0) {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
+                    .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
@@ -41,6 +42,7 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .mosaic: MosaicPanel(model: model)
                     case .mark: MarkPanel(model: model)
                     case .liquify: LiquifyPanel(model: model)
                     case .face: FacePanel(model: model)
@@ -652,5 +654,48 @@ struct FilterEraserOverlay: View {
     private func union(_ base: MaskCanvas?, _ add: MaskCanvas) -> MaskCanvas {
         guard var b = base, b.width == add.width, b.height == add.height else { return add }
         b.union(add); return b
+    }
+}
+
+struct MosaicPanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack(spacing: 8) {
+            Picker("Style", selection: Binding(get: { model.draft.mosaic.style }, set: { v in model.edit { var m = $0.mosaic; m.style = v; $0.mosaic = m } })) {
+                Text("Pixel").tag(MosaicOps.Style.pixel); Text("Blur").tag(MosaicOps.Style.blur)
+            }.pickerStyle(.segmented).padding(.horizontal)
+            HStack { Text("Strength").font(.caption); Slider(value: Binding(get: { model.draft.mosaic.block }, set: { model.draft.mosaic.block = $0 }), in: 0.005...0.08) { if !$0 { model.commit() } } }.padding(.horizontal)
+            HStack {
+                Toggle("Faces", isOn: Binding(get: { model.draft.mosaic.coverFaces }, set: { v in model.edit { var m = $0.mosaic; m.coverFaces = v; $0.mosaic = m } })).fixedSize()
+                Toggle("Chat", isOn: Binding(get: { model.draft.mosaic.chatMode }, set: { v in model.edit { var m = $0.mosaic; m.chatMode = v; $0.mosaic = m } })).fixedSize()
+                Button("Clear") { model.edit { $0.mosaic = MosaicConfig() } }.buttonStyle(.bordered)
+            }
+            Text("Drag on the photo to cover an area by hand.").font(.caption).foregroundStyle(.secondary)
+        }
+    }
+}
+
+struct MosaicBrushOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var brush: RemoverModel?
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    let p = map.toImageClamped(v.location)
+                    if brush == nil { brush = RemoverModel(imageSize: imageSize); brush?.brushSize = 0.05; brush?.begin(at: p) } else { brush?.move(to: p) }
+                    if let b = brush { var m = model.draft.mosaic; m.masks = merged(model.stack0.mosaic.masks, b.mask); model.draft.mosaic = m }
+                }
+                .onEnded { _ in brush = nil; model.commit() })
+        }
+    }
+
+    /// One accumulated mask: earlier strokes plus the current drag.
+    private func merged(_ earlier: [MaskCanvas], _ current: MaskCanvas) -> [MaskCanvas] {
+        guard var base = earlier.first, base.width == current.width, base.height == current.height else { return earlier + [current] }
+        base.union(current); return [base]
     }
 }
