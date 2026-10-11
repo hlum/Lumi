@@ -4,11 +4,12 @@ import Foundation
 /// Slider values, each -1...1 (0 = off).
 struct FaceReshapeParams: Codable, Equatable {
     var jawSlim = 0.0, chinLength = 0.0, eyeSize = 0.0, noseSlim = 0.0, mouthSize = 0.0, faceWidth = 0.0
+    var cheekVolume = 0.0, lift = 0.0
 
     var isIdentity: Bool { self == FaceReshapeParams() }
     mutating func clamp() {
         func c(_ v: inout Double) { v = min(max(v, -1), 1) }
-        c(&jawSlim); c(&chinLength); c(&eyeSize); c(&noseSlim); c(&mouthSize); c(&faceWidth)
+        c(&jawSlim); c(&chinLength); c(&eyeSize); c(&noseSlim); c(&mouthSize); c(&faceWidth); c(&cheekVolume); c(&lift)
     }
 }
 
@@ -85,6 +86,21 @@ enum FaceReshape {
             if let c = center(pts), width(pts) > 0 {
                 out.append(BrushStroke(kind: p.mouthSize > 0 ? .bloat : .pinch, x: Float(c.x), y: Float(c.y),
                                        radius: Float(width(pts)) * 1.2, strength: Float(abs(p.mouthSize)) * 0.4))
+            }
+        }
+        // Cheek volume: bloat (fuller) or pinch (slimmer) on each cheek, found under the eyes toward the ear.
+        if p.cheekVolume != 0 {
+            for spot in MakeupRenderer.blushSpots(face, style: .round) {
+                out.append(BrushStroke(kind: p.cheekVolume > 0 ? .bloat : .pinch, x: Float(spot.center.x), y: Float(spot.center.y + spot.radius * 0.3),
+                                       radius: Float(spot.radius) * 1.6, strength: Float(abs(p.cheekVolume)) * 0.45))
+            }
+        }
+        // Lift: nudge the cheeks and jawline up and slightly outward (a subtle face-lift).
+        if p.lift != 0, contour.count >= 5 {
+            let lowest = contour.map(\.y).max()!, highest = contour.map(\.y).min()!
+            for c in contour where (c.y - highest) > (lowest - highest) * 0.45 {
+                let side: Float = Float(c.x) < mid ? -1 : 1
+                out.append(BrushStroke(kind: .push, x: Float(c.x), y: Float(c.y), radius: faceW * 0.3, strength: 1, dirX: side * Float(p.lift) * faceW * 0.015, dirY: -Float(p.lift) * faceW * 0.05))
             }
         }
         return out

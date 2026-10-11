@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -25,6 +25,7 @@ struct EditorView: View {
         VStack(spacing: 0) {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
+                    .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
                     .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
@@ -39,6 +40,7 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .liquify: LiquifyPanel(model: model)
                     case .face: FacePanel(model: model)
                     case .color: ColorPanel(model: model)
                     case .enhance: EnhancePanel(model: model)
@@ -484,7 +486,7 @@ struct FacePanel: View {
                     case .skin:
                         row("Smooth", f(\.skin.smooth), 0...1); row("Texture", f(\.skin.texture), 0...1); row("Whiten", f(\.skin.whiten), 0...1); row("Rosy", f(\.skin.rosy), 0...1); row("Tan", f(\.skin.tan), 0...1)
                     case .shape:
-                        row("Jaw", f(\.reshape.jawSlim)); row("Face width", f(\.reshape.faceWidth)); row("Chin", f(\.reshape.chinLength)); row("Eyes", f(\.reshape.eyeSize)); row("Nose", f(\.reshape.noseSlim)); row("Mouth", f(\.reshape.mouthSize))
+                        row("Jaw", f(\.reshape.jawSlim)); row("Face width", f(\.reshape.faceWidth)); row("Chin", f(\.reshape.chinLength)); row("Eyes", f(\.reshape.eyeSize)); row("Nose", f(\.reshape.noseSlim)); row("Mouth", f(\.reshape.mouthSize)); row("Cheek volume", f(\.reshape.cheekVolume)); row("Lift", f(\.reshape.lift))
                     case .makeup:
                         row("Lipstick", f(\.makeup.lipOpacity), 0...1); row("Blush", f(\.makeup.blushOpacity), 0...1); row("Lip shine", f(\.makeup.ombre), 0...1)
                     case .detail:
@@ -506,5 +508,41 @@ struct FacePanel: View {
             Text(LocalizedStringKey(title)).font(.caption).frame(width: 84, alignment: .leading)
             Slider(value: value, in: range) { if !$0 { if let onEnd { onEnd() } else { model.commit() } } }
         }.padding(.horizontal)
+    }
+}
+
+struct LiquifyPanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack(spacing: 8) {
+            Picker("Brush", selection: Binding(get: { model.warpBrush.kind }, set: { model.warpBrush.kind = $0 })) {
+                Text("Slim").tag(BrushStroke.Kind.push); Text("Zoom in").tag(BrushStroke.Kind.bloat); Text("Zoom out").tag(BrushStroke.Kind.pinch)
+            }.pickerStyle(.segmented).padding(.horizontal)
+            HStack { Text("Size").font(.caption); Slider(value: Binding(get: { model.warpBrush.size }, set: { model.warpBrush.size = $0 }), in: 0.03...0.3) }.padding(.horizontal)
+            HStack { Text("Strength").font(.caption); Slider(value: Binding(get: { model.warpBrush.strength }, set: { model.warpBrush.strength = $0 }), in: 0.1...1) }.padding(.horizontal)
+            Text("Drag on the photo. Undo steps back one drag.").font(.caption).foregroundStyle(.secondary)
+        }
+    }
+}
+
+struct LiquifyOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var path: [CGPoint] = []
+    @State private var before: WarpEdit?
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    let p = map.toImageClamped(v.location)
+                    if path.isEmpty { before = model.draft.warp }
+                    path.append(CGPoint(x: p.x / imageSize.width, y: p.y / imageSize.height))
+                    var w = before ?? WarpEdit()
+                    model.warpBrush.strokes(for: path).forEach { w.add($0) }     // rebuilt from the whole drag, so the live preview matches the final result
+                    model.draft.warp = w
+                }
+                .onEnded { _ in path = []; before = nil; model.commit() })
+        }
     }
 }

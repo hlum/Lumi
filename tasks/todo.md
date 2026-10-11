@@ -83,7 +83,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] T40 Ratio, 3D and protection
 - [~] T41 Eye, nose, mouth and brow warps
 - [~] T42 Eye detail and teeth
-- [ ] T43 Manual face slim and volume
+- [x] T43 Manual face slim and volume
 - [~] T44 Auto beauty
 - [ ] ⏸ Checkpoint 5
 
@@ -99,7 +99,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 **Phase 7: Body**
 - [~] T51 Lower-body and torso warps
 - [~] T52 Upper body, presets, auto
-- [~] T53 Manual body brushes
+- [x] T53 Manual body brushes
 - [~] T54 Background protection
 - [ ] ⏸ Checkpoint 7
 
