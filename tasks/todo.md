@@ -97,10 +97,10 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 6
 
 **Phase 7: Body**
-- [ ] T51 Lower-body and torso warps
-- [ ] T52 Upper body, presets, auto
-- [ ] T53 Manual body brushes
-- [ ] T54 Background protection
+- [~] T51 Lower-body and torso warps
+- [~] T52 Upper body, presets, auto
+- [~] T53 Manual body brushes
+- [~] T54 Background protection
 - [ ] ⏸ Checkpoint 7
 
 **Phase 8: Recipes, batch, collage, materials**
