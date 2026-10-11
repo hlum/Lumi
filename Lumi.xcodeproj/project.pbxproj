@@ -12,16 +12,21 @@
 		0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */; };
 		11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */; };
 		14DAF77265B638DB6BC2BCEA /* MetalPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */; };
+		1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */; };
 		19910705AD1775CD49C02379 /* Smoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A63C89407FE7AD33C7ED2A /* Smoothing.swift */; };
 		211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */; };
 		218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */; };
+		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
 		3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4A66AD237D031E560D4083 /* AnalysisCache.swift */; };
 		3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */; };
 		3F879262D545D16CF7056A5E /* Credits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0497315D4AF8836E8C429B /* Credits.swift */; };
 		426E9F04EE4F1AA2A3B3A820 /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C2A8865BAA7EB3472CECAA /* ProjectStore.swift */; };
 		45B917F1FAE953E37309C1D4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C877CE8B244EF3D2C0593F7 /* Renderer.swift */; };
+		47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */; };
 		5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850D7C49D60EA488C83EDB92 /* RendererTests.swift */; };
+		6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A84271AE2975CD30F866726 /* ResizeTests.swift */; };
+		62321582DF77C5697193257F /* ExportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85827E04B5DD5DA38A53552 /* ExportSettings.swift */; };
 		68F294FA6535A8E0ACA342E3 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8B0CC494B2360A9091052 /* Project.swift */; };
 		724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */; };
 		7790F3D91D0795A7FAAA5488 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6FD85211E45314EB0ED25 /* EditorView.swift */; };
@@ -31,7 +36,9 @@
 		90341E5BC7AD514792DD3A91 /* EditDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793287607F799E4C21A4A092 /* EditDocument.swift */; };
 		92F3F08537B5F30A5A44977C /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3037684EC9790617FB2CFC8A /* SmokeTests.swift */; };
 		97BCEDBB2289EFD5120897F8 /* fixture.json in Resources */ = {isa = PBXBuildFile; fileRef = 5E78D5B610E53FA8AD5383B2 /* fixture.json */; };
+		9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE13258B4F65203F283ABBC /* GeometryOps.swift */; };
 		9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */; };
+		A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */; };
 		B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */; };
 		BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D2DF1A16B93F34F960633 /* EditOperation.swift */; };
 		BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */; };
@@ -39,6 +46,7 @@
 		CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */; };
 		D22BBF02A05E37D9E06152A5 /* Credits.json in Resources */ = {isa = PBXBuildFile; fileRef = 491867C4A15830F8C5BBEF55 /* Credits.json */; };
 		DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45966C6CA5A5390BAC7F83FB /* UndoStack.swift */; };
+		E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F6D20B0D9131790C14898 /* CurveTests.swift */; };
 		ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */; };
 		FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA64D5414C71B52DE53B625 /* MaskStore.swift */; };
 /* End PBXBuildFile section */
@@ -54,7 +62,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustOpsTests.swift; sourceTree = "<group>"; };
 		0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsTests.swift; sourceTree = "<group>"; };
+		0AE13258B4F65203F283ABBC /* GeometryOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryOps.swift; sourceTree = "<group>"; };
 		0CA64D5414C71B52DE53B625 /* MaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskStore.swift; sourceTree = "<group>"; };
 		0CC95A6F45C46B646F93E2D4 /* ProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsView.swift; sourceTree = "<group>"; };
 		0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorModelTests.swift; sourceTree = "<group>"; };
@@ -75,10 +85,15 @@
 		5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpTests.swift; sourceTree = "<group>"; };
 		6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
 		793287607F799E4C21A4A092 /* EditDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocument.swift; sourceTree = "<group>"; };
+		79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToneCurve.swift; sourceTree = "<group>"; };
 		850D7C49D60EA488C83EDB92 /* RendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererTests.swift; sourceTree = "<group>"; };
+		8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
+		8A84271AE2975CD30F866726 /* ResizeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeTests.swift; sourceTree = "<group>"; };
 		8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmoothingTests.swift; sourceTree = "<group>"; };
+		936C1AF23918152C57AE4A68 /* AdjustOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustOps.swift; sourceTree = "<group>"; };
 		97E2F88951C047018D76E36B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9D0497315D4AF8836E8C429B /* Credits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credits.swift; sourceTree = "<group>"; };
+		A94F6D20B0D9131790C14898 /* CurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveTests.swift; sourceTree = "<group>"; };
 		AD4A66AD237D031E560D4083 /* AnalysisCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisCache.swift; sourceTree = "<group>"; };
 		B46D2DF1A16B93F34F960633 /* EditOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOperation.swift; sourceTree = "<group>"; };
 		B860DC41FCF350889B4EF1F1 /* Lumi.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Lumi.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -91,6 +106,7 @@
 		F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisTests.swift; sourceTree = "<group>"; };
 		F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocumentTests.swift; sourceTree = "<group>"; };
 		F794373EABE83DA0F90C6B5A /* LumiTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LumiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F85827E04B5DD5DA38A53552 /* ExportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -137,6 +153,7 @@
 			children = (
 				793287607F799E4C21A4A092 /* EditDocument.swift */,
 				B46D2DF1A16B93F34F960633 /* EditOperation.swift */,
+				F85827E04B5DD5DA38A53552 /* ExportSettings.swift */,
 				E4411F910665922CEBCCE048 /* PersonTarget.swift */,
 				14C8B0CC494B2360A9091052 /* Project.swift */,
 				45966C6CA5A5390BAC7F83FB /* UndoStack.swift */,
@@ -195,9 +212,12 @@
 		C25DC74852E7FDD3EA0522BF /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				936C1AF23918152C57AE4A68 /* AdjustOps.swift */,
+				0AE13258B4F65203F283ABBC /* GeometryOps.swift */,
 				4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */,
 				E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */,
 				4C877CE8B244EF3D2C0593F7 /* Renderer.swift */,
+				79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */,
 			);
 			path = Render;
 			sourceTree = "<group>";
@@ -205,15 +225,19 @@
 		C5AC802557A296E65BE20EFD /* LumiTests */ = {
 			isa = PBXGroup;
 			children = (
+				00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */,
 				F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */,
 				0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */,
+				A94F6D20B0D9131790C14898 /* CurveTests.swift */,
 				F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */,
 				0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */,
+				8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */,
 				6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */,
 				5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */,
 				2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */,
 				DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */,
 				850D7C49D60EA488C83EDB92 /* RendererTests.swift */,
+				8A84271AE2975CD30F866726 /* ResizeTests.swift */,
 				3037684EC9790617FB2CFC8A /* SmokeTests.swift */,
 				8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */,
 				37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */,
@@ -350,6 +374,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */,
 				3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */,
 				11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */,
 				3F879262D545D16CF7056A5E /* Credits.swift in Sources */,
@@ -357,6 +382,8 @@
 				BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */,
 				8FADC2D4E8F71CF5D13B29E2 /* EditorModel.swift in Sources */,
 				7790F3D91D0795A7FAAA5488 /* EditorView.swift in Sources */,
+				62321582DF77C5697193257F /* ExportSettings.swift in Sources */,
+				9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */,
 				01500DBC9F403E7D92B02912 /* LumiApp.swift in Sources */,
 				255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */,
 				FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */,
@@ -369,6 +396,7 @@
 				45B917F1FAE953E37309C1D4 /* Renderer.swift in Sources */,
 				8BA22EEC094E106AEB121798 /* RootTabView.swift in Sources */,
 				19910705AD1775CD49C02379 /* Smoothing.swift in Sources */,
+				A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */,
 				DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -377,15 +405,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */,
 				B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */,
 				724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */,
+				E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */,
 				ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */,
 				3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */,
+				1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */,
 				8E70BB46E8688EF9F20597E3 /* MaskTests.swift in Sources */,
 				0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */,
 				9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */,
 				CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */,
 				5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */,
+				6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */,
 				92F3F08537B5F30A5A44977C /* SmokeTests.swift in Sources */,
 				211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */,
 				BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */,
