@@ -19,6 +19,7 @@ struct RootTabView: View {
                 Tab(tab.rawValue, systemImage: tab.symbol) {
                     NavigationStack {
                         if tab == .home { EditorView() }
+                        else if tab == .projects { ProjectsView().navigationTitle("Projects") }
                         else { ContentUnavailableView(tab.rawValue, systemImage: tab.symbol).navigationTitle(tab.rawValue) }
                     }
                 }
