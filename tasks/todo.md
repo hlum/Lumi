@@ -44,9 +44,9 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 1
 
 **Phase 2: Basic edit and color**
-- [~] T13 Crop, rotate, straighten
+- [x] T13 Crop, rotate, straighten
 - [~] T14 Resize, canvas, export settings
-- [~] T15 Adjust panel
+- [x] T15 Adjust panel
 - [~] T16 HSL, curves, split tone, color picker
 - [~] T17 Filter engine
 - [x] T18 Content: filter pack v1

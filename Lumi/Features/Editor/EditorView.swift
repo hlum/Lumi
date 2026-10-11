@@ -118,6 +118,7 @@ struct CropPanel: View {
                 Button("Rotate", systemImage: "rotate.right") { model.edit { $0.crop.quarterTurns = ($0.crop.quarterTurns + 1) % 4 } }
                 Button("Flip H", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") { model.edit { $0.crop.flipH.toggle() } }
                 Button("Flip V", systemImage: "arrow.up.and.down.righttriangle.up.righttriangle.down") { model.edit { $0.crop.flipV.toggle() } }
+                Button("Auto", systemImage: "level") { if let o = model.original, let a = AutoStraighten.angle(for: Renderer.proxy(o, maxDimension: 1024)) { model.edit { $0.crop.angle = a } } }
                 Button("Reset", systemImage: "arrow.counterclockwise") { model.edit { $0.crop = CropSpec() } }
             }.labelStyle(.iconOnly).buttonStyle(.bordered)
             ScrollView(.horizontal, showsIndicators: false) {
