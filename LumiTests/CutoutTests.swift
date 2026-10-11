@@ -103,5 +103,14 @@ struct CutoutTests {
         m.edit { $0.cutout = nil }
         #expect(Array(try m.exportData().prefix(2)) == [0xFF, 0xD8])    // JPEG again
     }
+
+    @MainActor @Test func transparentCutoutForcesAlphaFormatEvenIfJPEGIsChosen() throws {
+        Renderer.services = Renderer.Services(); Renderer.services.subjectMasker = FakeMasker()
+        defer { Renderer.services = Renderer.Services() }
+        let m = ExportSettingsEditorTests.model(64, 64)
+        m.edit { $0.cutout = CutoutConfig() }
+        m.exportSettings.format = .jpeg
+        #expect(ExportSettingsEditorTests.type(try m.exportData()) == "public.png")
+    }
 }
 }

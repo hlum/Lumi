@@ -86,6 +86,7 @@
 		7B45FDCE5160357EDE5D6CC3 /* OldPhotoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66CACA5EFDB0052A871CB79 /* OldPhotoTests.swift */; };
 		7CCE26ACDB38E30D8CD65959 /* IDSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5107722F421BA333413EB76 /* IDSpecTests.swift */; };
 		82F007AC683370CFADB5E3C0 /* SkinOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5BFF55F06515FDDB7BD22F6 /* SkinOps.swift */; };
+		83674C9CD76993A36AA0DC52 /* ExportSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D78D42373B602DC28F02BF2 /* ExportSettingsTests.swift */; };
 		83F608A618C7B330B403D311 /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86DACCEA338C9DDD79BE140D /* VideoEditorModel.swift */; };
 		84246047A286D716C1077A36 /* LayoutModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3753A050A36D6AA1F5FF2D7 /* LayoutModel.swift */; };
 		8688B3D9817E40BCD09156F0 /* RecipeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B0E9270308864D7250819E /* RecipeStorage.swift */; };
@@ -273,6 +274,7 @@
 		98A35D36608CEFCA9D306681 /* IDSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDSpecs.swift; sourceTree = "<group>"; };
 		9CE6FE36300AD7B97C5B1994 /* MakeupRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeupRenderer.swift; sourceTree = "<group>"; };
 		9D0497315D4AF8836E8C429B /* Credits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credits.swift; sourceTree = "<group>"; };
+		9D78D42373B602DC28F02BF2 /* ExportSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsTests.swift; sourceTree = "<group>"; };
 		9F746E3533CD9BC48EFB7252 /* ScanAndGIFTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAndGIFTests.swift; sourceTree = "<group>"; };
 		9F91992465D157A7E3AB46D7 /* SpotDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotDetector.swift; sourceTree = "<group>"; };
 		A1C49C6DC8BC8C243524BCD2 /* SIGGraph17Colorizer.mlpackage */ = {isa = PBXFileReference; path = SIGGraph17Colorizer.mlpackage; sourceTree = "<group>"; };
@@ -678,6 +680,7 @@
 				F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */,
 				0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */,
 				338C1ECF08D0026F2F0775CB /* ExpandTests.swift */,
+				9D78D42373B602DC28F02BF2 /* ExportSettingsTests.swift */,
 				946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */,
 				439B9C572B1C0592D68FAD34 /* FilterCatalogTests.swift */,
 				C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */,
@@ -1035,6 +1038,7 @@
 				ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */,
 				3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */,
 				C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */,
+				83674C9CD76993A36AA0DC52 /* ExportSettingsTests.swift in Sources */,
 				CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */,
 				94EF1728746C50D342A27656 /* FilterCatalogTests.swift in Sources */,
 				44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */,

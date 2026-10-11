@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", enhance = "Enhance"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .enhance: "arrow.up.left.and.arrow.down.right" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -40,6 +40,7 @@ struct EditorView: View {
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
                     case .enhance: EnhancePanel(model: model)
+                    case .export: ExportPanel(model: model)
                     }
                 }
                 .frame(maxHeight: 220)
@@ -361,6 +362,24 @@ struct EnhancePanel: View {
                     let plan = OldPhotoRestore.plan(for: o, canUpscale: model.canUpscale, canColorize: Renderer.services.colorizer != nil)
                     model.edit { $0 = OldPhotoRestore.apply(plan, to: $0) }
                 }.buttonStyle(.borderedProminent)
+            }
+        }
+    }
+}
+
+struct ExportPanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack(spacing: 10) {
+            Picker("Format", selection: $model.exportSettings.format) { ForEach(ImageFormat.allCases, id: \.self) { Text($0.rawValue.uppercased()).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            if model.exportSettings.format != .png {
+                HStack { Text("Quality").font(.caption); Slider(value: $model.exportSettings.quality, in: 0.3...1) }.padding(.horizontal)
+            }
+            Picker("Max size", selection: Binding(get: { model.exportSettings.maxLongSide ?? 0 }, set: { model.exportSettings.maxLongSide = $0 == 0 ? nil : $0 })) {
+                Text("Original").tag(0); Text("4096").tag(4096); Text("2048").tag(2048); Text("1080").tag(1080)
+            }.pickerStyle(.segmented).padding(.horizontal)
+            if let s = model.exportPixelSize, let b = model.estimatedBytes {
+                Text("\(s.w) × \(s.h) px · about \(ByteCountFormatter.string(fromByteCount: Int64(b), countStyle: .file))").font(.caption).foregroundStyle(.secondary)
             }
         }
     }

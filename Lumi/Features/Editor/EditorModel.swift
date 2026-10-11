@@ -101,15 +101,37 @@ final class EditorModel {
     func undo() { stack.undo(); draft = stack.current; autosave() }
     func redo() { stack.redo(); draft = stack.current; autosave() }
 
-    /// Full-resolution render of the current document.
+    var exportSettings = ExportSettings()
+    /// Size the saved file will have, for the settings screen.
+    var exportPixelSize: (w: Int, h: Int)? {
+        guard let o = original else { return nil }
+        let out = Renderer.render(o, document: draft).extent
+        return exportSettings.fitted((Int(out.width), Int(out.height)))
+    }
+    /// Rough file size for the current settings.
+    var estimatedBytes: Int? { exportPixelSize.map { exportSettings.estimatedBytes(width: $0.w, height: $0.h) } }
+
+    /// Full-resolution render of the current document, encoded with `exportSettings`.
     func exportData() throws -> Data {
         guard let original else { throw EditorError.noImage }
-        let out = Renderer.render(original, document: draft)
+        var out = Renderer.render(original, document: draft)
+        let target = exportSettings.fitted((Int(out.extent.width), Int(out.extent.height)))
+        if target.w < Int(out.extent.width) {                       // downscale to the chosen maximum, never upscale
+            let k = CGFloat(target.w) / out.extent.width
+            out = out.transformed(by: CGAffineTransform(scaleX: k, y: k)).cropped(to: CGRect(x: out.extent.minX * k, y: out.extent.minY * k, width: CGFloat(target.w), height: CGFloat(target.h)))
+        }
         guard let space = CGColorSpace(name: CGColorSpace.sRGB) else { throw EditorError.exportFailed }
-        // transparency needs PNG; JPEG would flatten it to black
-        let keepsAlpha = draft.cutout?.background == .transparent
-        guard let data = keepsAlpha ? context.pngRepresentation(of: out, format: .RGBA8, colorSpace: space)
-                                    : context.jpegRepresentation(of: out, colorSpace: space) else { throw EditorError.exportFailed }
+        // transparency needs an alpha format: a transparent cutout is forced to PNG even if JPEG/HEIC was chosen
+        let needsAlpha = draft.cutout?.background == .transparent
+        let format: ImageFormat = needsAlpha && !exportSettings.format.supportsAlpha ? .png : exportSettings.format
+        let q = [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: exportSettings.quality]
+        let data: Data?
+        switch format {
+        case .png: data = context.pngRepresentation(of: out, format: .RGBA8, colorSpace: space)
+        case .jpeg: data = context.jpegRepresentation(of: out, colorSpace: space, options: q)
+        case .heic: data = context.heifRepresentation(of: out, format: .RGBA8, colorSpace: space, options: q)
+        }
+        guard let data else { throw EditorError.exportFailed }
         return data
     }
 
