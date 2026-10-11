@@ -16,6 +16,7 @@
 		0ADC466E8278302A0E3E2126 /* ScanTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9281ACAA8C6371A0C0267962 /* ScanTools.swift */; };
 		0C56460A4271CB78FCC27DC1 /* GIFMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C21D2081DEB7065DD17200A /* GIFMaker.swift */; };
 		0C91A2CBB6E19A72F82926C5 /* CutoutOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822743120DCD963E72152CDB /* CutoutOps.swift */; };
+		0F186A6F26C5A5750AA2FC7E /* MosaicWatermarkRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */; };
 		0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */; };
 		1079F56E5E18A451A19C4DC0 /* LUT.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB1CE07E21CEDB73699D2DB /* LUT.swift */; };
 		10BD4110137A5974945978A8 /* LaMa.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = CEF418AC311167A36E69E1C9 /* LaMa.mlpackage */; };
@@ -94,6 +95,7 @@
 		BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */; };
 		C1419303283E45506C8629FB /* PersonTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4411F910665922CEBCCE048 /* PersonTarget.swift */; };
 		C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338C1ECF08D0026F2F0775CB /* ExpandTests.swift */; };
+		C28D4F3905F5DE49C2942375 /* WatermarkRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4268CE74382D6CF44D34E /* WatermarkRenderer.swift */; };
 		C8C37D4236473946C8982EDE /* StickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D9C338123EE52D44EBB93E /* StickerTests.swift */; };
 		CB42CE4AD60C00CD1A948136 /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27AF610CC6461065AED466A /* LocalizationTests.swift */; };
 		CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */; };
@@ -117,6 +119,7 @@
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
 		F4EB922F3593D5A9D7BC4031 /* FrameOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7449BB3478E8BCC8F1A69434 /* FrameOps.swift */; };
 		F67AD6F02B9512BA43801A9B /* Content in Resources */ = {isa = PBXBuildFile; fileRef = 3E077721CC782EB59A850370 /* Content */; };
+		F7840F7A78F842A9518A303C /* MosaicConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */; };
 		FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA64D5414C71B52DE53B625 /* MaskStore.swift */; };
 		FFA3FBFD29635B07F0D1081C /* WatermarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F815AFAF590676D5E14C0518 /* WatermarkTests.swift */; };
 		FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285DE6546B441D0BEC50F540 /* LayoutTests.swift */; };
@@ -156,6 +159,7 @@
 		2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStore.swift; sourceTree = "<group>"; };
 		3037684EC9790617FB2CFC8A /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		338C1ECF08D0026F2F0775CB /* ExpandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandTests.swift; sourceTree = "<group>"; };
+		34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicWatermarkRenderTests.swift; sourceTree = "<group>"; };
 		36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumiApp.swift; sourceTree = "<group>"; };
 		37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStackTests.swift; sourceTree = "<group>"; };
 		39B7F4161657C6A31D619794 /* MakeupPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeupPlacementTests.swift; sourceTree = "<group>"; };
@@ -215,6 +219,7 @@
 		A68F615D6BB3D71E94B3D34A /* StickerLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerLibrary.swift; sourceTree = "<group>"; };
 		A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpRenderer.swift; sourceTree = "<group>"; };
 		A94F6D20B0D9131790C14898 /* CurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveTests.swift; sourceTree = "<group>"; };
+		AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicConfig.swift; sourceTree = "<group>"; };
 		AD4A66AD237D031E560D4083 /* AnalysisCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisCache.swift; sourceTree = "<group>"; };
 		AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandOps.swift; sourceTree = "<group>"; };
 		B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealOps.swift; sourceTree = "<group>"; };
@@ -225,6 +230,7 @@
 		B8F49C52541F35A4F285D365 /* MaskCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskCanvas.swift; sourceTree = "<group>"; };
 		BA5640ED3C828F66CC06F9C3 /* BatchRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunner.swift; sourceTree = "<group>"; };
 		BB29CD8FF14D12934C84376D /* FilterLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterLibrary.swift; sourceTree = "<group>"; };
+		BCF4268CE74382D6CF44D34E /* WatermarkRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkRenderer.swift; sourceTree = "<group>"; };
 		BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransferTests.swift; sourceTree = "<group>"; };
 		C27AF610CC6461065AED466A /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		C601C878EAB11731365C44CD /* RecipeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeTests.swift; sourceTree = "<group>"; };
@@ -332,6 +338,7 @@
 			isa = PBXGroup;
 			children = (
 				8EABD3FEF98A7D610ACA8EE3 /* AutoMosaic.swift */,
+				AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */,
 			);
 			path = Mosaic;
 			sourceTree = "<group>";
@@ -419,6 +426,7 @@
 		8D35E89A73902418D3438417 /* Watermark */ = {
 			isa = PBXGroup;
 			children = (
+				BCF4268CE74382D6CF44D34E /* WatermarkRenderer.swift */,
 				419820D970D79F2603383070 /* WatermarkStore.swift */,
 			);
 			path = Watermark;
@@ -565,6 +573,7 @@
 				6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */,
 				73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */,
 				5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */,
+				34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */,
 				6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */,
 				2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */,
 				DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */,
@@ -792,6 +801,7 @@
 				218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */,
 				9FC75B88023089400072764C /* MeshWarpRenderer.swift in Sources */,
 				14DAF77265B638DB6BC2BCEA /* MetalPreviewView.swift in Sources */,
+				F7840F7A78F842A9518A303C /* MosaicConfig.swift in Sources */,
 				46364E99557352F8FD9CC391 /* MosaicOps.swift in Sources */,
 				088FCC0C3D051A929590020B /* OutlineOps.swift in Sources */,
 				AB4ADA92DA72CD7279D86656 /* OverlapFinder.swift in Sources */,
@@ -814,6 +824,7 @@
 				A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */,
 				DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */,
 				DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */,
+				C28D4F3905F5DE49C2942375 /* WatermarkRenderer.swift in Sources */,
 				DC6F782B0F185442A1D6EADD /* WatermarkStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -850,6 +861,7 @@
 				8E70BB46E8688EF9F20597E3 /* MaskTests.swift in Sources */,
 				30D91C257C34D1091A684B33 /* MeshWarpRendererTests.swift in Sources */,
 				0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */,
+				0F186A6F26C5A5750AA2FC7E /* MosaicWatermarkRenderTests.swift in Sources */,
 				73162FAF45A4B6259C2BCF30 /* OverlapFinderTests.swift in Sources */,
 				9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */,
 				CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */,

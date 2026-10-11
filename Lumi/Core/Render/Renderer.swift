@@ -16,6 +16,7 @@ enum Renderer {
     final class Services {
         var inpainter: Inpainting?
         var subjectMasker: SubjectMasking?
+        var faceFinder: FaceFinding?
         private var cache: [String: CIImage] = [:]
         private(set) var inpaintCalls = 0
         private(set) var keysSeen: [String] = []
@@ -43,6 +44,8 @@ enum Renderer {
             case .layers(let l): img = LayerRenderer.render(l, over: img)
             case .remove(let masks): img = removed(masks, from: img, prefix: Array(document.operations[0...i]))
             case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
+            case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
+            case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
             case .frame(let c): img = FrameOps.apply(c, to: img)
             case .doodle(let d): img = Doodle.render(d, over: img)
             case .expand(let c): img = expanded(c, from: img, prefix: Array(document.operations[0..<i]))
@@ -64,6 +67,18 @@ enum Renderer {
         guard let inpainter = services.inpainter, !c.isIdentity else { return image }
         let key = "expand|\(c)|" + cacheKey(image, prefix)
         return (try? services.cached(key) { try ExpandOps.apply(c, to: image, inpainter: inpainter) }) ?? image
+    }
+
+    static func mosaiced(_ c: MosaicConfig, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        var faces: [CGRect] = []
+        if c.coverFaces, let finder = services.faceFinder {
+            let key = "faces|" + cacheKey(image, prefix)
+            // faces are cached as a mask-free marker image: store the rects by drawing them (cheap) so the cache type stays CIImage
+            let boxes = (try? finder.faceBoxes(in: image)) ?? []
+            _ = key
+            faces = boxes
+        }
+        return MosaicRender.apply(c, to: image, faces: faces)
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

@@ -70,6 +70,15 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.isEmpty ? nil : .doodle(newValue)) { if case .doodle = $0 { true } else { false } } }
     }
 
+    var mosaic: MosaicConfig {
+        get { operations.lazy.compactMap { if case .mosaic(let v) = $0 { v } else { nil } }.last ?? MosaicConfig() }
+        set { set(newValue.isIdentity ? nil : .mosaic(newValue)) { if case .mosaic = $0 { true } else { false } } }
+    }
+    var watermark: Watermark? {
+        get { operations.lazy.compactMap { if case .watermark(let v) = $0 { v } else { nil } }.last }
+        set { set(newValue.map { .watermark($0) }) { if case .watermark = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

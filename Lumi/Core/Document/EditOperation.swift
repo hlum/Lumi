@@ -14,10 +14,12 @@ enum EditOperation: Codable, Equatable {
     case filter(id: String, intensity: Double)
     case frame(FrameConfig)
     case doodle([DoodleStroke])
+    case mosaic(MosaicConfig)
+    case watermark(Watermark)
 }
 
 extension EditOperation {
-    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle }
+    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle, mosaic, watermark }
     var kind: Kind {
         switch self {
         case .exposure: .exposure
@@ -32,6 +34,8 @@ extension EditOperation {
         case .filter: .filter
         case .frame: .frame
         case .doodle: .doodle
+        case .mosaic: .mosaic
+        case .watermark: .watermark
         }
     }
     /// Recipe category: what part of the look this belongs to.
@@ -47,6 +51,8 @@ extension EditOperation {
         case .filter: .filter
         case .frame: .geometry
         case .doodle: .filter
+        case .mosaic: .filter
+        case .watermark: .filter
         }
     }
 }
