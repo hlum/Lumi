@@ -1,4 +1,5 @@
 import PhotosUI
+import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
@@ -10,6 +11,9 @@ enum EditorTool: String, CaseIterable, Identifiable {
 }
 
 struct EditorView: View {
+    @Environment(\.modelContext) private var context
+    /// Pass a project to reopen its draft.
+    var project: Project?
     @State private var model = EditorModel()
     @State private var item: PhotosPickerItem?
     @State private var loadFailed = false
@@ -46,6 +50,11 @@ struct EditorView: View {
             }
         }
         .navigationTitle("Editor")
+        .task {
+            let store = ProjectStore(context: context, directory: ProjectStore.defaultDirectory)
+            model.session = ProjectSession(store: store, project: project)
+            if project != nil { try? model.openDraft() }
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) { PhotosPicker("Photo", selection: $item, matching: .images) }
             ToolbarItemGroup(placement: .topBarTrailing) {

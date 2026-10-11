@@ -25,6 +25,8 @@ final class EditorModel {
     private var proxy: CIImage?
     private var stack = UndoStack(EditDocument())
     private let saver: PhotoSaving
+    /// When set, every committed edit is saved to this draft.
+    var session: ProjectSession?
     private let context = CIContext()
 
     /// The document being edited live; `commit()` records it as an undo step.
@@ -59,6 +61,14 @@ final class EditorModel {
     func load(data: Data) throws {
         guard let img = CIImage(data: data, options: [.applyOrientationProperty: true]) else { throw EditorError.undecodable }
         load(image: img)
+        try session?.begin(original: data)
+    }
+
+    /// Reopens a saved draft: its original photo plus its edit list, with undo starting from the saved state.
+    func openDraft() throws {
+        guard let loaded = session?.load(), let img = CIImage(data: loaded.data, options: [.applyOrientationProperty: true]) else { throw EditorError.undecodable }
+        load(image: img)
+        stack = UndoStack(loaded.document); draft = loaded.document
     }
 
     func load(image: CIImage) {
@@ -71,14 +81,25 @@ final class EditorModel {
     /// The enhance tool is offered only when the model is present and the photo is small enough to upscale.
     var canUpscale: Bool { Renderer.services.upscaler != nil && max(original?.extent.width ?? .infinity, original?.extent.height ?? .infinity) <= CGFloat(RealESRGANUpscaler.maxInputSide) }
 
-    func commit() { stack.commit(draft) }
+    func commit() { stack.commit(draft); autosave() }
+
+    private func autosave() {
+        guard let session else { return }
+        session.save(stack.current, thumbnail: thumbnailData())
+    }
+
+    /// Small JPEG of the current look for the Projects grid.
+    func thumbnailData(side: CGFloat = 256) -> Data? {
+        guard let p = preview, let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
+        return context.jpegRepresentation(of: Renderer.proxy(p, maxDimension: side), colorSpace: space, options: [:])
+    }
     func commitExposure() { commit() }
 
     /// One-shot edit that is recorded immediately (buttons, toggles).
     func edit(_ change: (inout EditDocument) -> Void) { change(&draft); commit() }
 
-    func undo() { stack.undo(); draft = stack.current }
-    func redo() { stack.redo(); draft = stack.current }
+    func undo() { stack.undo(); draft = stack.current; autosave() }
+    func redo() { stack.redo(); draft = stack.current; autosave() }
 
     /// Full-resolution render of the current document.
     func exportData() throws -> Data {

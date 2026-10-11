@@ -7,6 +7,8 @@ struct ProjectStore {
     let context: ModelContext
     let directory: URL
 
+    static var defaultDirectory: URL { URL.applicationSupportDirectory.appendingPathComponent("Originals", isDirectory: true) }
+
     @discardableResult
     func create(original: Data, now: Date = .now) throws -> Project {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -44,5 +46,28 @@ struct ProjectStore {
         try? FileManager.default.removeItem(at: originalURL(p))
         context.delete(p)
         try context.save()
+    }
+}
+
+/// Connects one open photo to its draft: creates the record when a photo is opened and saves after every edit.
+@MainActor
+final class ProjectSession {
+    let store: ProjectStore
+    private(set) var project: Project?
+
+    init(store: ProjectStore, project: Project? = nil) { self.store = store; self.project = project }
+
+    /// Starts a draft for freshly picked photo data.
+    func begin(original: Data) throws { project = try store.create(original: original) }
+
+    /// Original bytes and saved edits of an existing draft; nil if the original file is gone.
+    func load() -> (data: Data, document: EditDocument)? {
+        guard let p = project, store.hasOriginal(p), let d = try? Data(contentsOf: store.originalURL(p)) else { return nil }
+        return (d, p.document)
+    }
+
+    func save(_ document: EditDocument, thumbnail: Data?) {
+        guard let p = project else { return }
+        try? store.save(document, to: p, thumbnail: thumbnail)
     }
 }
