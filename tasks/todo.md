@@ -31,7 +31,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T03 Spike: LaMa on device
 - [~] T04 Spike: real-time preview
 - [x] T05 Spike: mesh-warp engine
-- [ ] T06 Spike: hair segmentation
+- [x] T06 Spike: hair segmentation
 - [ ] ⏸ Checkpoint 0
 
 **Phase 1: Editing foundation**
@@ -92,7 +92,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] T46 Eye makeup and brows
 - [ ] T47 Makeup content, looks, recreate
 - [ ] T48 Nail try-on
-- [ ] T49 Hair color
+- [~] T49 Hair color
 - [ ] T50 Hair shape
 - [ ] ⏸ Checkpoint 6
 
