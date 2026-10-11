@@ -13,5 +13,20 @@
     "modifiedNote": null,
     "dateAdded": "2026-10-12",
     "selfMade": false
+  },
+  {
+    "files": [
+      "Specs/id-specs.json"
+    ],
+    "title": "ID photo spec table",
+    "author": "Lumi",
+    "sourceURL": "",
+    "license": "Self-made",
+    "licenseURL": "",
+    "attribution": "Photo size specifications compiled by Lumi from public government guidelines; verify before official use.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": true
   }
 ]

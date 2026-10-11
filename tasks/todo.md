@@ -150,9 +150,9 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 12
 
 **Phase 13: Utilities**
-- [ ] T86 ID photo
-- [ ] T87 Scanner
-- [ ] T88 GIF and emoji maker
+- [~] T86 ID photo
+- [~] T87 Scanner
+- [~] T88 GIF and emoji maker
 - [ ] ⏸ Checkpoint 13
 
 **Phase 14: App shell, polish, release**

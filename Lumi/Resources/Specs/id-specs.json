@@ -1,0 +1,8 @@
+[
+  {"id": "cn-1inch", "name": "1 inch", "widthMM": 25, "heightMM": 35, "headMin": 0.58, "headMax": 0.72, "eyeLine": 0.42, "background": [0.2, 0.45, 0.85]},
+  {"id": "cn-2inch", "name": "2 inch", "widthMM": 35, "heightMM": 49, "headMin": 0.58, "headMax": 0.72, "eyeLine": 0.42, "background": [0.2, 0.45, 0.85]},
+  {"id": "jp-passport", "name": "Japan passport", "widthMM": 35, "heightMM": 45, "headMin": 0.70, "headMax": 0.80, "eyeLine": 0.45, "background": [1, 1, 1]},
+  {"id": "us-passport", "name": "US passport", "widthMM": 51, "heightMM": 51, "headMin": 0.50, "headMax": 0.69, "eyeLine": 0.45, "background": [1, 1, 1]},
+  {"id": "eu-passport", "name": "EU / Schengen", "widthMM": 35, "heightMM": 45, "headMin": 0.70, "headMax": 0.80, "eyeLine": 0.45, "background": [0.92, 0.92, 0.92]},
+  {"id": "jp-resume", "name": "Japan résumé", "widthMM": 30, "heightMM": 40, "headMin": 0.60, "headMax": 0.75, "eyeLine": 0.45, "background": [1, 1, 1]}
+]
