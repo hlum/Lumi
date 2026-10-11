@@ -527,8 +527,16 @@ struct FacePanel: View {
     @State private var group = Group.looks
     @State private var strength = 1.0
     @State private var lookID = AutoBeauty.looks[0].id
+    @State private var reference: PhotosPickerItem?
+    @State private var referenceFailed = false
 
     var body: some View {
+        content
+            .onChange(of: reference) { _, new in Task { await recreate(new) } }
+            .alert("Couldn't read a face", isPresented: $referenceFailed) {}
+    }
+
+    private var content: some View {
         VStack(spacing: 4) {
             Picker("Group", selection: $group) { ForEach(Group.allCases, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
             ScrollView {
@@ -540,6 +548,15 @@ struct FacePanel: View {
                             Button("Off") { model.edit { $0.face = FaceRetouch() } }.buttonStyle(.bordered)
                         }
                         row("Strength", $strength, 0...1) { apply() }
+                        Text("Makeup looks").font(.caption).foregroundStyle(.secondary)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(MakeupLooks.all) { l in
+                                    Button(LocalizedStringKey(l.name)) { applyMakeup(l) }.buttonStyle(.bordered)
+                                }
+                            }.padding(.horizontal)
+                        }
+                        PhotosPicker("Recreate from photo", selection: $reference, matching: .images).padding(.top, 2)
                     case .skin:
                         row("Smooth", f(\.skin.smooth), 0...1); row("Texture", f(\.skin.texture), 0...1); row("Whiten", f(\.skin.whiten), 0...1); row("Rosy", f(\.skin.rosy), 0...1); row("Tan", f(\.skin.tan), 0...1)
                     case .shape:
@@ -563,6 +580,19 @@ struct FacePanel: View {
     /// One slider that drives both eyes.
     private func e(_ l: WritableKeyPath<FaceRetouch, Double>, _ r: WritableKeyPath<FaceRetouch, Double>) -> Binding<Double> {
         Binding(get: { model.draft.face[keyPath: l] }, set: { model.draft.face[keyPath: l] = $0; model.draft.face[keyPath: r] = $0 })
+    }
+
+    private func applyMakeup(_ l: MakeupLook) {
+        let s = MakeupLooks.scaled(l, strength: strength)
+        model.edit { var f = $0.face; f.makeup = s.makeup; f.eyes = s.eyes; $0.face = f }
+    }
+
+    private func recreate(_ item: PhotosPickerItem?) async {
+        guard let item, let data = try? await item.loadTransferable(type: Data.self),
+              let img = CIImage(data: data, options: [.applyOrientationProperty: true]),
+              let face = (try? VisionFaceLandmarker().faces(in: img))?.first else { referenceFailed = true; return }
+        let look = RecreateLook.look(from: RecreateLook.sample(img, face: face))
+        model.edit { var f = $0.face; f.makeup = look.makeup; f.eyes = look.eyes; $0.face = f }
     }
 
     private func apply() { if let l = AutoBeauty.looks.first(where: { $0.id == lookID }) { model.edit { $0.face = FaceRetouch.look(l, strength: strength) } } }
