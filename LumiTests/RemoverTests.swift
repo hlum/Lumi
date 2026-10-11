@@ -94,7 +94,7 @@ struct RemoverTests {
         let out = Renderer.render(img, document: d)
         let left = GeometryTests.rgb(out, x: 10, y: 32), right = GeometryTests.rgb(out, x: 54, y: 32)
         #expect(left[1] > 200 && left[0] < 60)                      // filled
-        #expect(right == GeometryTests.rgb(img, x: 54, y: 32))      // untouched
+        #expect(GeometryTests.near(right, GeometryTests.rgb(img, x: 54, y: 32)))      // untouched
     }
 
     @Test func maskIsScaledToTheImageSize() {

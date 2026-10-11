@@ -91,6 +91,6 @@ struct SkinTests {
         let img = RendererTests.solid(0.5, size: 16)
         var p = SkinParams(); p.whiten = 1; p.smooth = 1
         let out = SkinOps.apply(p, to: img, mask: CIImage(color: .black).cropped(to: img.extent))
-        #expect(RendererTests.pixel(out) == RendererTests.pixel(img))
+        #expect(GeometryTests.near(RendererTests.pixel(out), RendererTests.pixel(img)))
     }
 }

@@ -19,6 +19,10 @@ struct GeometryTests {
                    format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
         return p
     }
+    /// Pixel equality allowing for GPU/CPU rounding differences (the simulator and a device can differ by 1-2 levels).
+    static func near(_ a: [UInt8], _ b: [UInt8], tolerance: Int = 2) -> Bool {
+        a.count == b.count && zip(a, b).allSatisfy { abs(Int($0) - Int($1)) <= tolerance }
+    }
     static func isRed(_ p: [UInt8]) -> Bool { p[0] > 200 && p[2] < 50 }
     static func isBlue(_ p: [UInt8]) -> Bool { p[2] > 200 && p[0] < 50 }
 

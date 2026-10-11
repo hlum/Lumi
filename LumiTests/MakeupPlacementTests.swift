@@ -60,7 +60,7 @@ struct MakeupPlacementTests {
         let ring = outer[0]
         let px = GeometryTests.rgb(out, x: Int(ring.x * 400), y: Int((1 - ring.y) * 400))
         #expect(px[0] > px[2])
-        #expect(GeometryTests.rgb(out, x: 5, y: 5) == GeometryTests.rgb(img, x: 5, y: 5))
+        #expect(GeometryTests.near(GeometryTests.rgb(out, x: 5, y: 5), GeometryTests.rgb(img, x: 5, y: 5)))
     }
 
     @Test func blushChangesCheeksOnly() {
@@ -70,7 +70,7 @@ struct MakeupPlacementTests {
         let s = MakeupRenderer.blushSpots(Self.face(), style: .round)[0]
         let at = GeometryTests.rgb(out, x: Int(s.center.x * 400), y: Int((1 - s.center.y) * 400))
         #expect(at != GeometryTests.rgb(img, x: 0, y: 0) && at[0] > at[2])
-        #expect(GeometryTests.rgb(out, x: 395, y: 395) == GeometryTests.rgb(img, x: 395, y: 395))
+        #expect(GeometryTests.near(GeometryTests.rgb(out, x: 395, y: 395), GeometryTests.rgb(img, x: 395, y: 395)))
     }
 
     @Test func zeroOpacityIsIdentity() {

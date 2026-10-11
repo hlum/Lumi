@@ -65,7 +65,7 @@ struct LaMaDeviceTests {
         let c = GeometryTests.rgb(out, x: 580, y: 430)
         #expect(Int(c[0]) < 200, "red square should be gone, got \(c)")          // no longer pure red
         #expect(abs(Int(c[0]) - Int(c[2])) < 80)
-        #expect(GeometryTests.rgb(out, x: 20, y: 20) == GeometryTests.rgb(photo, x: 20, y: 20))   // outside the mask: untouched
+        #expect(GeometryTests.near(GeometryTests.rgb(out, x: 20, y: 20), GeometryTests.rgb(photo, x: 20, y: 20)))   // outside the mask: untouched
         print("LaMa first-call latency (incl. model load): \(seconds)s")
         #expect(seconds < 30)
     }
