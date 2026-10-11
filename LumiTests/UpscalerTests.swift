@@ -3,6 +3,13 @@ import Foundation
 import Testing
 @testable import Lumi
 
+/// The simulator has no Neural Engine, so a real 4x model run takes over a minute there. Real-model runs are device-only.
+enum RunsOn { static var isSimulator: Bool { #if targetEnvironment(simulator)
+ true
+ #else
+ false
+ #endif } }
+
 struct FakeUpscaler: Upscaling {
     func upscale4x(_ image: CIImage) throws -> CIImage {
         image.transformed(by: CGAffineTransform(scaleX: 4, y: 4))
@@ -74,7 +81,7 @@ struct UpscaleRenderTests {
         #expect(Renderer.render(RendererTests.solid(0.5, size: 40), document: d).extent.width == 40)
     }
 
-    @Test(.enabled(if: RealESRGANUpscaler.isModelAvailable))
+    @Test(.enabled(if: RealESRGANUpscaler.isModelAvailable && !RunsOn.isSimulator))
     func realModelUpscalesAndPreservesTheLook() throws {
         let grad = CIFilter(name: "CILinearGradient", parameters: ["inputPoint0": CIVector(x: 0, y: 0), "inputPoint1": CIVector(x: 300, y: 0), "inputColor0": CIColor.black, "inputColor1": CIColor.white])!.outputImage!.cropped(to: CGRect(x: 0, y: 0, width: 300, height: 200))
         let start = Date()
