@@ -25,9 +25,9 @@ enum WatermarkMath {
         var row = 0, y = 0.0
         while y <= 1 + stepY {
             var x = row % 2 == 0 ? 0.0 : stepX / 2
-            while x <= 1 + stepX { out.append(CGPoint(x: x, y: y)); x += stepX }
+            while x <= 1 + stepX, out.count < 5_000 { out.append(CGPoint(x: x, y: y)); x += stepX }
             y += stepY; row += 1
-            if out.count > 5_000 { break }       // guard against absurdly small marks
+            if out.count >= 5_000 { break }      // guard against absurdly small marks
         }
         return out
     }
