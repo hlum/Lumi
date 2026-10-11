@@ -74,6 +74,7 @@
 		99D653B8C904143C21F97409 /* MakeupRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6FE36300AD7B97C5B1994 /* MakeupRenderer.swift */; };
 		9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */; };
 		9FC75B88023089400072764C /* MeshWarpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */; };
+		A3A928882F4F01F997BE2971 /* AutoBeauty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B54BF1BE2AE588D43004916 /* AutoBeauty.swift */; };
 		A410B883767CB10E1F9A3ACE /* LayerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A44F49745B7174EC0A2918 /* LayerRenderer.swift */; };
 		A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */; };
 		A9794D96172F4440242D9DD7 /* ScanAndGIFTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F746E3533CD9BC48EFB7252 /* ScanAndGIFTests.swift */; };
@@ -98,10 +99,13 @@
 		DC6F782B0F185442A1D6EADD /* WatermarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419820D970D79F2603383070 /* WatermarkStore.swift */; };
 		DCFBD0C0527D24FDEE72F237 /* CutoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 730D4AA73C47234B92073E64 /* CutoutTests.swift */; };
 		DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69EA3A082E4527360B4F44E8 /* ToolCatalog.swift */; };
+		DE76D9A30B68F54C16A16823 /* SpotAndBeautyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BFE211254C95958D5476D6 /* SpotAndBeautyTests.swift */; };
 		DF7761A3CBBCF7D23EE560CF /* BodyReshape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4056C5884735CA99A57205A6 /* BodyReshape.swift */; };
 		E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F6D20B0D9131790C14898 /* CurveTests.swift */; };
+		E69EDFA4552457DB87473135 /* HealOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */; };
 		E8E092FF72FAE33A15E26EA1 /* MakeupPlacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B7F4161657C6A31D619794 /* MakeupPlacementTests.swift */; };
 		ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */; };
+		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
 		FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA64D5414C71B52DE53B625 /* MaskStore.swift */; };
 		FFA3FBFD29635B07F0D1081C /* WatermarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F815AFAF590676D5E14C0518 /* WatermarkTests.swift */; };
 		FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285DE6546B441D0BEC50F540 /* LayoutTests.swift */; };
@@ -135,6 +139,7 @@
 		25C459A2F56ACFF1F4D3C614 /* CreditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsView.swift; sourceTree = "<group>"; };
 		285DE6546B441D0BEC50F540 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
 		29DD2F4D0FA68157AA975166 /* OverlapFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapFinder.swift; sourceTree = "<group>"; };
+		2B54BF1BE2AE588D43004916 /* AutoBeauty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoBeauty.swift; sourceTree = "<group>"; };
 		2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTargetTests.swift; sourceTree = "<group>"; };
 		2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStore.swift; sourceTree = "<group>"; };
 		3037684EC9790617FB2CFC8A /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
@@ -157,6 +162,7 @@
 		5E78D5B610E53FA8AD5383B2 /* fixture.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fixture.json; sourceTree = "<group>"; };
 		5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpTests.swift; sourceTree = "<group>"; };
 		62B11508DB0D8D14D15FDA02 /* Inpainter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inpainter.swift; sourceTree = "<group>"; };
+		68BFE211254C95958D5476D6 /* SpotAndBeautyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotAndBeautyTests.swift; sourceTree = "<group>"; };
 		69EA3A082E4527360B4F44E8 /* ToolCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolCatalog.swift; sourceTree = "<group>"; };
 		6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapFinderTests.swift; sourceTree = "<group>"; };
 		6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
@@ -185,12 +191,14 @@
 		9CE6FE36300AD7B97C5B1994 /* MakeupRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeupRenderer.swift; sourceTree = "<group>"; };
 		9D0497315D4AF8836E8C429B /* Credits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credits.swift; sourceTree = "<group>"; };
 		9F746E3533CD9BC48EFB7252 /* ScanAndGIFTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAndGIFTests.swift; sourceTree = "<group>"; };
+		9F91992465D157A7E3AB46D7 /* SpotDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotDetector.swift; sourceTree = "<group>"; };
 		A32CDB2F90F7675C1FC3FBE1 /* Layer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layer.swift; sourceTree = "<group>"; };
 		A32D907B200F01A399C6B4A8 /* ToolCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolCatalogTests.swift; sourceTree = "<group>"; };
 		A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpRenderer.swift; sourceTree = "<group>"; };
 		A94F6D20B0D9131790C14898 /* CurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveTests.swift; sourceTree = "<group>"; };
 		AD4A66AD237D031E560D4083 /* AnalysisCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisCache.swift; sourceTree = "<group>"; };
 		AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandOps.swift; sourceTree = "<group>"; };
+		B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealOps.swift; sourceTree = "<group>"; };
 		B46D2DF1A16B93F34F960633 /* EditOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOperation.swift; sourceTree = "<group>"; };
 		B75EC58A061903DB807EB806 /* FaceReshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReshape.swift; sourceTree = "<group>"; };
 		B811579D45E6D169E012A01C /* SkinMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinMask.swift; sourceTree = "<group>"; };
@@ -338,6 +346,7 @@
 		7B2B3554D6DF27F27A2726E1 /* Retouch */ = {
 			isa = PBXGroup;
 			children = (
+				2B54BF1BE2AE588D43004916 /* AutoBeauty.swift */,
 				B75EC58A061903DB807EB806 /* FaceReshape.swift */,
 			);
 			path = Retouch;
@@ -391,6 +400,7 @@
 				4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */,
 				B811579D45E6D169E012A01C /* SkinMask.swift */,
 				13A63C89407FE7AD33C7ED2A /* Smoothing.swift */,
+				9F91992465D157A7E3AB46D7 /* SpotDetector.swift */,
 			);
 			path = Analysis;
 			sourceTree = "<group>";
@@ -451,6 +461,7 @@
 				822743120DCD963E72152CDB /* CutoutOps.swift */,
 				AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */,
 				0AE13258B4F65203F283ABBC /* GeometryOps.swift */,
+				B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */,
 				F8A44F49745B7174EC0A2918 /* LayerRenderer.swift */,
 				FFB1CE07E21CEDB73699D2DB /* LUT.swift */,
 				9CE6FE36300AD7B97C5B1994 /* MakeupRenderer.swift */,
@@ -505,6 +516,7 @@
 				16E38351FDAF036F93AFF551 /* SkinTests.swift */,
 				3037684EC9790617FB2CFC8A /* SmokeTests.swift */,
 				8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */,
+				68BFE211254C95958D5476D6 /* SpotAndBeautyTests.swift */,
 				A32D907B200F01A399C6B4A8 /* ToolCatalogTests.swift */,
 				37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */,
 				F815AFAF590676D5E14C0518 /* WatermarkTests.swift */,
@@ -676,6 +688,7 @@
 				22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */,
 				3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */,
 				11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */,
+				A3A928882F4F01F997BE2971 /* AutoBeauty.swift in Sources */,
 				CEFB67261AB35CDDD936C623 /* AutoMosaic.swift in Sources */,
 				31DB8323406C1443954751F6 /* BatchRunner.swift in Sources */,
 				DF7761A3CBBCF7D23EE560CF /* BodyReshape.swift in Sources */,
@@ -693,6 +706,7 @@
 				04EE05B54308799E287B857B /* FilterStore.swift in Sources */,
 				0C56460A4271CB78FCC27DC1 /* GIFMaker.swift in Sources */,
 				9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */,
+				E69EDFA4552457DB87473135 /* HealOps.swift in Sources */,
 				156F970EA97DB975DE17F769 /* HomeView.swift in Sources */,
 				959C6AE0A59BD54BD22B2D90 /* IDSpecs.swift in Sources */,
 				640D33462F10D0B171470ACF /* Inpainter.swift in Sources */,
@@ -724,6 +738,7 @@
 				4864F1A4285E9457486A0E02 /* SkinMask.swift in Sources */,
 				82F007AC683370CFADB5E3C0 /* SkinOps.swift in Sources */,
 				19910705AD1775CD49C02379 /* Smoothing.swift in Sources */,
+				F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */,
 				A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */,
 				DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */,
 				DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */,
@@ -771,6 +786,7 @@
 				567FA7C840479B944E7CE660 /* SkinTests.swift in Sources */,
 				92F3F08537B5F30A5A44977C /* SmokeTests.swift in Sources */,
 				211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */,
+				DE76D9A30B68F54C16A16823 /* SpotAndBeautyTests.swift in Sources */,
 				77511270278CA352D3264608 /* ToolCatalogTests.swift in Sources */,
 				BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */,
 				FFA3FBFD29635B07F0D1081C /* WatermarkTests.swift in Sources */,
