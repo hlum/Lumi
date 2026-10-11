@@ -34,6 +34,8 @@ final class EditorModel {
         set { draft.exposure = newValue }
     }
     var showOriginal = false
+    /// Set while the remover tool is open so the preview can draw its brush gestures.
+    var remover: RemoverModel?
     private(set) var saveError: EditorError?
     private(set) var didSave = false
 

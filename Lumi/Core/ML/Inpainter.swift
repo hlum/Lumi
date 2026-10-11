@@ -35,6 +35,15 @@ enum InpaintPlan {
     }
 }
 
+/// Loads LaMa on first use so app launch isn't slowed by a ~200 MB model.
+final class LazyInpainter: Inpainting {
+    private var real: LaMaInpainter?
+    func inpaint(_ image: CIImage, mask: CIImage) throws -> CIImage {
+        if real == nil { real = try LaMaInpainter() }
+        return try real!.inpaint(image, mask: mask)
+    }
+}
+
 enum InpaintError: Error, Equatable { case modelMissing, emptyMask, bufferFailed, predictionFailed }
 
 /// LaMa (Apache-2.0) on Core ML. Runs on a window around the mask and blends the result back at full resolution.

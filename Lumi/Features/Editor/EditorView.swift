@@ -2,10 +2,10 @@ import PhotosUI
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser" }
     }
 }
 
@@ -19,12 +19,14 @@ struct EditorView: View {
         VStack(spacing: 0) {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
+                    .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
                     .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
                 Group {
                     switch tool {
                     case .adjust: AdjustPanel(model: model)
                     case .crop: CropPanel(model: model)
                     case .text: TextPanel(model: model)
+                    case .remove: RemoverPanel(editor: model)
                     }
                 }
                 .frame(maxHeight: 220)
@@ -136,6 +138,29 @@ struct TextPanel: View {
                     model.edit { d in var s = d.layers; ids.forEach { s.remove($0) }; d.layers = s }
                 }
             }
+        }
+    }
+}
+
+struct RemoverOverlay: View {
+    let remover: RemoverModel
+    let imageSize: CGSize
+    @State private var isDragging = false
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            if let overlay = remover.mask.tintedImage() {
+                Image(decorative: overlay, scale: 1).resizable().frame(width: map.displayed.width, height: map.displayed.height)
+                    .position(x: map.displayed.midX, y: map.displayed.midY).allowsHitTesting(false)
+            }
+            Color.clear.contentShape(Rectangle())
+                .gesture(DragGesture(minimumDistance: 0)
+                    .onChanged { v in
+                        let p = map.toImageClamped(v.location)
+                        if isDragging { remover.move(to: p) } else { isDragging = true; remover.begin(at: p) }
+                    }
+                    .onEnded { v in remover.end(at: map.toImageClamped(v.location)); isDragging = false })
         }
     }
 }

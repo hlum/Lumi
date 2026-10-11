@@ -39,6 +39,12 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.layers.isEmpty ? nil : .layers(newValue)) { if case .layers = $0 { true } else { false } } }
     }
 
+    /// Remover masks, applied in order (each pass removes more).
+    var removals: [MaskCanvas] {
+        get { operations.lazy.compactMap { if case .remove(let v) = $0 { v } else { nil } }.last ?? [] }
+        set { set(newValue.isEmpty ? nil : .remove(newValue)) { if case .remove = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

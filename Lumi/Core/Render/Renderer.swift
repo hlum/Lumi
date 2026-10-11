@@ -1,4 +1,5 @@
 import CoreImage
+import CryptoKit
 import CoreImage.CIFilterBuiltins
 
 /// Pure function of its inputs: same image + parameters give the same output.
@@ -11,17 +12,52 @@ enum Renderer {
         return f.outputImage ?? frame
     }
 
+    /// Shared services the render graph may need (the inpainter). Set once at launch; tests inject fakes.
+    final class Services {
+        var inpainter: Inpainting?
+        private var cache: [String: CIImage] = [:]
+        private(set) var inpaintCalls = 0
+        private(set) var keysSeen: [String] = []
+        init(inpainter: Inpainting? = nil) { self.inpainter = inpainter }
+        func cached(_ key: String, _ make: () throws -> CIImage?) rethrows -> CIImage? {
+            keysSeen.append(key)
+            if let c = cache[key] { return c }
+            guard let v = try make() else { return nil }
+            if cache.count > 8 { cache.removeAll() }
+            cache[key] = v; inpaintCalls += 1
+            return v
+        }
+    }
+    nonisolated(unsafe) static var services = Services()
+
     static func render(_ frame: CIImage, document: EditDocument) -> CIImage {
-        document.operations.reduce(frame) { img, op in
+        var img = frame
+        for (i, op) in document.operations.enumerated() {
             switch op {
-            case .exposure(let v): render(img, exposure: v)
-            case .crop(let c): GeometryOps.apply(c, to: img)
-            case .adjust(let a): AdjustOps.apply(a, to: img)
-            case .curve(let c): AdjustOps.apply(c, to: img)
-            case .warp(let w): MeshWarpRenderer.apply(w.field, to: img)
-            case .layers(let l): LayerRenderer.render(l, over: img)
+            case .exposure(let v): img = render(img, exposure: v)
+            case .crop(let c): img = GeometryOps.apply(c, to: img)
+            case .adjust(let a): img = AdjustOps.apply(a, to: img)
+            case .curve(let c): img = AdjustOps.apply(c, to: img)
+            case .warp(let w): img = MeshWarpRenderer.apply(w.field, to: img)
+            case .layers(let l): img = LayerRenderer.render(l, over: img)
+            case .remove(let masks): img = removed(masks, from: img, prefix: Array(document.operations[0...i]))
             }
         }
+        return img
+    }
+
+    /// Runs the inpainter once per (operations so far, image size); later renders reuse the result.
+    static func removed(_ masks: [MaskCanvas], from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard let inpainter = services.inpainter else { return image }
+        let enc = JSONEncoder(); enc.outputFormatting = [.sortedKeys]
+        let digest = SHA256.hash(data: (try? enc.encode(prefix)) ?? Data())
+        let key = "\(image.extent.size)|" + digest.map { String(format: "%02x", $0) }.joined()
+        return (try? services.cached(key) {
+            try masks.reduce(image) { acc, m in
+                let big = MaskScaling.scaled(m, to: image.extent)
+                return try inpainter.inpaint(acc, mask: big)
+            }
+        }) ?? image
     }
 
     /// Downscale so the longest side is at most `maxDimension`; never upscales.

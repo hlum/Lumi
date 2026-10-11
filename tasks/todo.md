@@ -66,7 +66,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 3
 
 **Phase 4: Remover, cutout, expand**
-- [ ] T29 Remover v1, brush and box
+- [~] T29 Remover v1, brush and box
 - [ ] T30 Remover auto chips
 - [ ] T31 Clone tab and specialty removers
 - [ ] T32 Cutout and background
