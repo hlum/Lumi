@@ -34,6 +34,8 @@ final class EditorModel {
         set { draft.exposure = newValue }
     }
     var showOriginal = false
+    var doodleBrush = DoodleStroke.Brush.solid
+    var doodleColor = RGBA(r: 1, g: 0.3, b: 0.35, a: 1)
     /// Set while the remover tool is open so the preview can draw its brush gestures.
     var remover: RemoverModel?
     private(set) var saveError: EditorError?

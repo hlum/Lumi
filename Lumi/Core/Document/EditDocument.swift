@@ -61,6 +61,15 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.map { .filter(id: $0.id, intensity: min(max($0.intensity, 0), 1)) }) { if case .filter = $0 { true } else { false } } }
     }
 
+    var frame: FrameConfig {
+        get { operations.lazy.compactMap { if case .frame(let v) = $0 { v } else { nil } }.last ?? FrameConfig() }
+        set { set(newValue.isIdentity ? nil : .frame(newValue)) { if case .frame = $0 { true } else { false } } }
+    }
+    var doodle: [DoodleStroke] {
+        get { operations.lazy.compactMap { if case .doodle(let v) = $0 { v } else { nil } }.last ?? [] }
+        set { set(newValue.isEmpty ? nil : .doodle(newValue)) { if case .doodle = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

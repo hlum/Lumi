@@ -2,10 +2,10 @@ import PhotosUI
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble" }
     }
 }
 
@@ -19,6 +19,7 @@ struct EditorView: View {
         VStack(spacing: 0) {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
+                    .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
                     .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
                 Group {
@@ -30,6 +31,8 @@ struct EditorView: View {
                     case .cutout: CutoutPanel(model: model)
                     case .filter: FilterPanel(model: model)
                     case .sticker: StickerPanel(model: model)
+                    case .frame: FramePanel(model: model)
+                    case .doodle: DoodlePanel(model: model)
                     }
                 }
                 .frame(maxHeight: 220)
@@ -258,5 +261,57 @@ struct StickerPanel: View {
     private func add(_ id: String) {
         let layer = Layer(content: .sticker(id: id, outline: outline))
         model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }
+    }
+}
+
+struct FramePanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack {
+            Picker("Style", selection: Binding(get: { model.draft.frame.style }, set: { v in model.edit { var f = $0.frame; f.style = v; if f.padding == 0 { f.padding = 0.04 }; $0.frame = f } })) {
+                ForEach(FrameConfig.Style.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) }
+            }.pickerStyle(.segmented).padding(.horizontal)
+            HStack {
+                Text("Padding").font(.caption)
+                Slider(value: Binding(get: { model.draft.frame.padding }, set: { model.draft.frame.padding = $0 }), in: 0...0.25) { if !$0 { model.commit() } }
+            }.padding(.horizontal)
+            HStack {
+                ForEach([("White", RGBA.white), ("Black", RGBA.black), ("Cream", RGBA(r: 1, g: 0.95, b: 0.8, a: 1))], id: \.0) { name, c in
+                    Button(name) { model.edit { var f = $0.frame; f.color = c; $0.frame = f } }.buttonStyle(.bordered)
+                }
+            }
+        }
+    }
+}
+
+struct DoodlePanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack {
+            Picker("Brush", selection: Bindable(model).doodleBrush) { ForEach(DoodleStroke.Brush.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) } }.pickerStyle(.menu)
+            HStack {
+                ForEach([("Red", RGBA(r: 1, g: 0.3, b: 0.35, a: 1)), ("Yellow", RGBA(r: 1, g: 0.85, b: 0.2, a: 1)), ("Blue", RGBA(r: 0.3, g: 0.6, b: 1, a: 1)), ("White", RGBA.white)], id: \.0) { n, c in
+                    Button(n) { model.doodleColor = c }.buttonStyle(.bordered)
+                }
+            }
+            Button("Undo stroke", systemImage: "arrow.uturn.backward") { model.edit { $0.doodle = Array($0.doodle.dropLast()) } }.labelStyle(.iconOnly).disabled(model.draft.doodle.isEmpty)
+        }
+    }
+}
+
+struct DoodleOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var points: [CGPoint] = []
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in let p = map.toImageClamped(v.location); points.append(CGPoint(x: p.x / imageSize.width, y: p.y / imageSize.height)) }
+                .onEnded { _ in
+                    let stroke = DoodleStroke(brush: model.doodleBrush, points: Doodle.snappedToLine(points), color: model.doodleColor)
+                    model.edit { $0.doodle = $0.doodle + [stroke] }; points = []
+                })
+        }
     }
 }
