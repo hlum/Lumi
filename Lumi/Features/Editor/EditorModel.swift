@@ -27,8 +27,12 @@ final class EditorModel {
     private let saver: PhotoSaving
     private let context = CIContext()
 
-    /// Live slider value; committed to the document when the drag ends.
-    var draftExposure: Double = 0
+    /// The document being edited live; `commit()` records it as an undo step.
+    var draft = EditDocument()
+    var draftExposure: Double {
+        get { draft.exposure }
+        set { draft.exposure = newValue }
+    }
     var showOriginal = false
     private(set) var saveError: EditorError?
     private(set) var didSave = false
@@ -43,9 +47,7 @@ final class EditorModel {
     var preview: CIImage? {
         guard let proxy else { return nil }
         if showOriginal { return proxy }
-        var doc = document
-        doc.exposure = draftExposure
-        return Renderer.render(proxy, document: doc)
+        return Renderer.render(proxy, document: draft)
     }
 
     func load(data: Data) throws {
@@ -57,22 +59,22 @@ final class EditorModel {
         original = image
         proxy = Renderer.proxy(image, maxDimension: Self.proxySize)
         stack = UndoStack(EditDocument())
-        draftExposure = 0; showOriginal = false; didSave = false; saveError = nil
+        draft = EditDocument(); showOriginal = false; didSave = false; saveError = nil
     }
 
-    func commitExposure() {
-        var doc = document
-        doc.exposure = draftExposure
-        stack.commit(doc)
-    }
+    func commit() { stack.commit(draft) }
+    func commitExposure() { commit() }
 
-    func undo() { stack.undo(); draftExposure = document.exposure }
-    func redo() { stack.redo(); draftExposure = document.exposure }
+    /// One-shot edit that is recorded immediately (buttons, toggles).
+    func edit(_ change: (inout EditDocument) -> Void) { change(&draft); commit() }
+
+    func undo() { stack.undo(); draft = stack.current }
+    func redo() { stack.redo(); draft = stack.current }
 
     /// Full-resolution render of the current document.
     func exportData() throws -> Data {
         guard let original else { throw EditorError.noImage }
-        let out = Renderer.render(original, document: document)
+        let out = Renderer.render(original, document: draft)
         guard let space = CGColorSpace(name: CGColorSpace.sRGB),
               let data = context.jpegRepresentation(of: out, colorSpace: space) else { throw EditorError.exportFailed }
         return data

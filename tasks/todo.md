@@ -88,7 +88,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 5
 
 **Phase 6: Makeup and hair**
-- [ ] T45 Makeup engine: lips, blush, contour
+- [~] T45 Makeup engine: lips, blush, contour
 - [ ] T46 Eye makeup and brows
 - [ ] T47 Makeup content, looks, recreate
 - [ ] T48 Nail try-on

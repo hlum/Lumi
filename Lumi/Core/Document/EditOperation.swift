@@ -7,10 +7,11 @@ enum EditOperation: Codable, Equatable {
     case adjust(AdjustParams)
     case curve(ToneCurve)
     case warp(WarpEdit)
+    case layers(LayerStack)
 }
 
 extension EditOperation {
-    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp }
+    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers }
     var kind: Kind {
         switch self {
         case .exposure: .exposure
@@ -18,6 +19,7 @@ extension EditOperation {
         case .adjust: .adjust
         case .curve: .curve
         case .warp: .warp
+        case .layers: .layers
         }
     }
     /// Recipe category: what part of the look this belongs to.
@@ -26,6 +28,7 @@ extension EditOperation {
         case .crop: .geometry
         case .exposure, .adjust, .curve: .color
         case .warp: .beauty
+        case .layers: .filter
         }
     }
 }

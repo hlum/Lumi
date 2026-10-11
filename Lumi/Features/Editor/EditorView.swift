@@ -1,20 +1,37 @@
 import PhotosUI
 import SwiftUI
 
+enum EditorTool: String, CaseIterable, Identifiable {
+    case adjust = "Adjust", crop = "Crop", text = "Text"
+    var id: String { rawValue }
+    var symbol: String {
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat" }
+    }
+}
+
 struct EditorView: View {
     @State private var model = EditorModel()
     @State private var item: PhotosPickerItem?
     @State private var loadFailed = false
+    @State private var tool = EditorTool.adjust
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
                     .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
-                Slider(value: $model.draftExposure, in: -2...2) { editing in
-                    if !editing { model.commitExposure() }
+                Group {
+                    switch tool {
+                    case .adjust: AdjustPanel(model: model)
+                    case .crop: CropPanel(model: model)
+                    case .text: TextPanel(model: model)
+                    }
                 }
-                .padding(.horizontal)
+                .frame(maxHeight: 220)
+                Picker("Tool", selection: $tool) {
+                    ForEach(EditorTool.allCases) { Label($0.rawValue, systemImage: $0.symbol).tag($0) }
+                }
+                .pickerStyle(.segmented).padding()
             } else {
                 ContentUnavailableView("Pick a photo", systemImage: "photo")
             }
@@ -37,5 +54,88 @@ struct EditorView: View {
         }
         .alert("Couldn't open that photo", isPresented: $loadFailed) {}
         .alert("Couldn't save", isPresented: .constant(model.saveError != nil)) {}
+    }
+}
+
+struct AdjustPanel: View {
+    @Bindable var model: EditorModel
+    @State private var key = AdjustParams.Key.brightness
+
+    var body: some View {
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(AdjustParams.presets.keys.sorted(), id: \.self) { name in
+                        Button(name.capitalized) { model.edit { $0.adjust = AdjustParams.presets[name]! } }.buttonStyle(.bordered)
+                    }
+                }.padding(.horizontal)
+            }
+            Picker("Setting", selection: $key) { ForEach(AdjustParams.Key.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) } }
+                .pickerStyle(.menu)
+            HStack {
+                Slider(value: Binding(get: { model.draft.adjust[key] }, set: { model.draft.adjust[key] = $0 }),
+                       in: key.range) { editing in if !editing { model.commit() } }
+                Button("Reset", systemImage: "arrow.counterclockwise") { model.edit { $0.adjust.reset(key) } }
+                    .labelStyle(.iconOnly).disabled(model.draft.adjust[key] == 0)
+            }.padding(.horizontal)
+        }
+    }
+}
+
+struct CropPanel: View {
+    @Bindable var model: EditorModel
+
+    var body: some View {
+        VStack {
+            HStack {
+                Button("Rotate", systemImage: "rotate.right") { model.edit { $0.crop.quarterTurns = ($0.crop.quarterTurns + 1) % 4 } }
+                Button("Flip H", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") { model.edit { $0.crop.flipH.toggle() } }
+                Button("Flip V", systemImage: "arrow.up.and.down.righttriangle.up.righttriangle.down") { model.edit { $0.crop.flipV.toggle() } }
+                Button("Reset", systemImage: "arrow.counterclockwise") { model.edit { $0.crop = CropSpec() } }
+            }.labelStyle(.iconOnly).buttonStyle(.bordered)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(CropSpec.ratios, id: \.name) { r in
+                        Button(r.name) {
+                            guard let o = model.original else { return }
+                            model.edit { $0.crop.rect = CropSpec.rect(aspect: r.w, r.h, in: o.extent.size) }
+                        }.buttonStyle(.bordered)
+                    }
+                }.padding(.horizontal)
+            }
+            HStack {
+                Text("Angle")
+                Slider(value: Binding(get: { model.draft.crop.angle }, set: { model.draft.crop.angle = $0 }), in: -45...45) { editing in
+                    if !editing { model.commit() }
+                }
+            }.padding(.horizontal)
+        }
+    }
+}
+
+struct TextPanel: View {
+    @Bindable var model: EditorModel
+    @State private var text = ""
+
+    var body: some View {
+        VStack {
+            HStack {
+                TextField("Add text", text: $text).textFieldStyle(.roundedBorder)
+                Button("Add") {
+                    let layer = Layer(content: .text(text, TextStyle()))
+                    model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }   // the stack rejects empty text
+                    text = ""
+                }.disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
+            }.padding(.horizontal)
+            List {
+                ForEach(model.draft.layers.layers) { l in
+                    if case .text(let s, _) = l.content { Text(s) }
+                }
+                .onDelete { idx in
+                    let ids = idx.map { model.draft.layers.layers[$0].id }
+                    model.edit { d in var s = d.layers; ids.forEach { s.remove($0) }; d.layers = s }
+                }
+            }
+        }
     }
 }

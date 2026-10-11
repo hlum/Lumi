@@ -99,4 +99,45 @@ struct EditorModelTests {
         await m.save()
         #expect(m.saveError == .noImage)
     }
+
+    @Test func genericEditIsRecordedAndUndoable() {
+        let m = Self.model()
+        m.edit { $0.crop.flipH = true }
+        #expect(m.document.crop.flipH && m.canUndo)
+        m.edit { $0.adjust[.brightness] = 0.4 }
+        m.undo(); #expect(m.draft.adjust.brightness == 0 && m.draft.crop.flipH)
+        m.undo(); #expect(!m.draft.crop.flipH)
+        m.redo(); m.redo()
+        #expect(m.draft.adjust.brightness == 0.4)
+    }
+
+    @Test func uncommittedDraftShowsInPreviewButIsNotAnUndoStep() {
+        let m = Self.model()
+        let base = RendererTests.pixel(m.preview!)[0]
+        m.draft.adjust[.brightness] = 0.8
+        #expect(RendererTests.pixel(m.preview!)[0] > base && !m.canUndo)
+        m.commit(); #expect(m.canUndo)
+    }
+
+    @Test func textLayerRendersIntoPreviewAndExport() throws {
+        let m = Self.model(size: 200)
+        let before = try #require(m.preview)
+        m.edit { d in var s = d.layers; try? s.add(Layer(content: .text("MMMM", { var t = TextStyle(); t.size = 0.5; return t }()))); d.layers = s }
+        #expect(m.document.layers.layers.count == 1)
+        func lit(_ i: CIImage) -> Bool {
+            var buf = [UInt8](repeating: 0, count: 4 * 200 * 200)
+            RendererTests.ctx.render(i, toBitmap: &buf, rowBytes: 800, bounds: CGRect(x: 0, y: 0, width: 200, height: 200), format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
+            return buf.enumerated().contains { $0.offset % 4 == 0 && $0.element > 240 }
+        }
+        let after = try #require(m.preview)
+        #expect(!lit(before) && lit(after))
+        let exported = try #require(CIImage(data: try m.exportData()))
+        #expect(exported.extent.width == 200)
+    }
+
+    @Test func emptyTextIsNotAdded() {
+        let m = Self.model()
+        m.edit { d in var s = d.layers; try? s.add(Layer(content: .text("  ", TextStyle()))); d.layers = s }
+        #expect(m.document.layers.layers.isEmpty)
+    }
 }
