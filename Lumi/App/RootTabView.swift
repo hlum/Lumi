@@ -20,6 +20,7 @@ struct RootTabView: View {
                     NavigationStack {
                         if tab == .home { EditorView() }
                         else if tab == .projects { ProjectsView().navigationTitle("Projects") }
+                        else if tab == .settings { SettingsView() }
                         else { ContentUnavailableView(tab.rawValue, systemImage: tab.symbol).navigationTitle(tab.rawValue) }
                     }
                 }

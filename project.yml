@@ -18,6 +18,8 @@ targets:
       path: Lumi/App/Info.plist
       properties:
         CFBundleDisplayName: Lumi
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, ja]
         UILaunchScreen: {}
         NSPhotoLibraryAddUsageDescription: Save your edited photos to your library.
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
