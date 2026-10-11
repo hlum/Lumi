@@ -159,7 +159,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T89 Home, Tools, search, tutorials
 - [~] T90 Settings and attributions
 - [ ] T91 Widgets, Control, Shortcuts
-- [ ] T92 Long jobs and recent tasks
+- [~] T92 Long jobs and recent tasks
 - [~] T93 Localization
 - [ ] T94 Performance, memory, accessibility
 - [ ] T95 Release prep

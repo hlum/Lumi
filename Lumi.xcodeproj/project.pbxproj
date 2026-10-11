@@ -59,6 +59,7 @@
 		46364E99557352F8FD9CC391 /* MosaicOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B443E2575575BE475C5FB9B /* MosaicOps.swift */; };
 		47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */; };
 		4864F1A4285E9457486A0E02 /* SkinMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B811579D45E6D169E012A01C /* SkinMask.swift */; };
+		489D8503118EBB15555EA380 /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C7C110D8246CE6F822D022 /* JobQueue.swift */; };
 		48E2388570DC973B1DCC5D83 /* BatchRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */; };
 		51701E334E4308F12BD291B3 /* TimelineModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D1FB808ED3CA3A9FA0D341 /* TimelineModelTests.swift */; };
 		53837C799D4B72F923BE0C81 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCCAEF2D31129B76A0E813C /* CameraView.swift */; };
@@ -98,6 +99,7 @@
 		9708CF64B6113135C9A44DCA /* id-specs.json in Resources */ = {isa = PBXBuildFile; fileRef = 88772FDC0AE6F2EB3C080BAA /* id-specs.json */; };
 		97BCEDBB2289EFD5120897F8 /* fixture.json in Resources */ = {isa = PBXBuildFile; fileRef = 5E78D5B610E53FA8AD5383B2 /* fixture.json */; };
 		9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE13258B4F65203F283ABBC /* GeometryOps.swift */; };
+		9948E6D438301B2FEC3B02A8 /* JobQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758E2EDB9B3AA8DA13668ABB /* JobQueueTests.swift */; };
 		99A436F6C64A32889BCDB426 /* BodyReshapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721EBCF30A38FD687AAADCEF /* BodyReshapeTests.swift */; };
 		99D653B8C904143C21F97409 /* MakeupRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6FE36300AD7B97C5B1994 /* MakeupRenderer.swift */; };
 		9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */; };
@@ -180,6 +182,7 @@
 		13A63C89407FE7AD33C7ED2A /* Smoothing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Smoothing.swift; sourceTree = "<group>"; };
 		14C2A8865BAA7EB3472CECAA /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
 		14C8B0CC494B2360A9091052 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		15C7C110D8246CE6F822D022 /* JobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrushMaterials.swift; sourceTree = "<group>"; };
 		16E38351FDAF036F93AFF551 /* SkinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinTests.swift; sourceTree = "<group>"; };
 		1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorModel.swift; sourceTree = "<group>"; };
@@ -239,6 +242,7 @@
 		730D4AA73C47234B92073E64 /* CutoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutTests.swift; sourceTree = "<group>"; };
 		73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpRendererTests.swift; sourceTree = "<group>"; };
 		7449BB3478E8BCC8F1A69434 /* FrameOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameOps.swift; sourceTree = "<group>"; };
+		758E2EDB9B3AA8DA13668ABB /* JobQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueueTests.swift; sourceTree = "<group>"; };
 		788DF2261AEB09E177FF9289 /* OldPhotoRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldPhotoRestore.swift; sourceTree = "<group>"; };
 		793287607F799E4C21A4A092 /* EditDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocument.swift; sourceTree = "<group>"; };
 		79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToneCurve.swift; sourceTree = "<group>"; };
@@ -578,6 +582,7 @@
 				9D0497315D4AF8836E8C429B /* Credits.swift */,
 				98A66E2EC5341688271B4B65 /* Analysis */,
 				856A254DC95DF7BEBB80BEC8 /* Document */,
+				ED6099C7BBAE4ECFABE9CC52 /* Jobs */,
 				69AAA07B5EA39B25859C1451 /* Mask */,
 				B6D35785906BA63C30B692CA /* ML */,
 				C25DC74852E7FDD3EA0522BF /* Render */,
@@ -674,6 +679,7 @@
 				BA6B10E44FEEB7A758F73E57 /* HairTests.swift */,
 				F5107722F421BA333413EB76 /* IDSpecTests.swift */,
 				F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */,
+				758E2EDB9B3AA8DA13668ABB /* JobQueueTests.swift */,
 				0B63F36950C679A1C4FC7975 /* LayerTests.swift */,
 				285DE6546B441D0BEC50F540 /* LayoutTests.swift */,
 				C27AF610CC6461065AED466A /* LocalizationTests.swift */,
@@ -727,6 +733,14 @@
 				0CC95A6F45C46B646F93E2D4 /* ProjectsView.swift */,
 			);
 			path = Projects;
+			sourceTree = "<group>";
+		};
+		ED6099C7BBAE4ECFABE9CC52 /* Jobs */ = {
+			isa = PBXGroup;
+			children = (
+				15C7C110D8246CE6F822D022 /* JobQueue.swift */,
+			);
+			path = Jobs;
 			sourceTree = "<group>";
 		};
 		F16C16BE0D0D1729BC1B8D82 /* Features */ = {
@@ -938,6 +952,7 @@
 				156F970EA97DB975DE17F769 /* HomeView.swift in Sources */,
 				959C6AE0A59BD54BD22B2D90 /* IDSpecs.swift in Sources */,
 				640D33462F10D0B171470ACF /* Inpainter.swift in Sources */,
+				489D8503118EBB15555EA380 /* JobQueue.swift in Sources */,
 				1079F56E5E18A451A19C4DC0 /* LUT.swift in Sources */,
 				10BD4110137A5974945978A8 /* LaMa.mlpackage in Sources */,
 				3519E3F6D325CA5970B3DA53 /* Layer.swift in Sources */,
@@ -1018,6 +1033,7 @@
 				B253D23B0BE457A2CB5C5B7E /* HairTests.swift in Sources */,
 				7CCE26ACDB38E30D8CD65959 /* IDSpecTests.swift in Sources */,
 				B7B4B3B63B9FC68FF8922FA5 /* InpainterTests.swift in Sources */,
+				9948E6D438301B2FEC3B02A8 /* JobQueueTests.swift in Sources */,
 				AE7380328C936A4527FD94AB /* LUTTests.swift in Sources */,
 				B99B08640B1E2407CB560C15 /* LayerTests.swift in Sources */,
 				FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */,
