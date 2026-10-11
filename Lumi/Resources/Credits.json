@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "files": [
+      "Models/LaMa.mlpackage"
+    ],
+    "title": "LaMa (Core ML conversion)",
+    "author": "Roman Suvorov et al. (advimman/lama); Core ML conversion by john-rocky (mlboydaisuke/LaMa-CoreML)",
+    "sourceURL": "https://huggingface.co/mlboydaisuke/LaMa-CoreML",
+    "license": "Apache-2.0",
+    "licenseURL": "https://www.apache.org/licenses/LICENSE-2.0",
+    "attribution": "LaMa: Resolution-robust Large Mask Inpainting with Fourier Convolutions, Apache License 2.0. Core ML conversion by john-rocky.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  }
+]

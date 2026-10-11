@@ -4,3 +4,4 @@ DerivedData/
 build/
 *.xcresult
 graphify-out/
+Lumi/Resources/Models/*.mlpackage

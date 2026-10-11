@@ -28,7 +28,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 **Phase 0: Scaffold, CI and risk spikes**
 - [x] T01 Project scaffold
 - [x] T02 Xcode Cloud CI and TDD harness
-- [ ] T03 Spike: LaMa on device
+- [~] T03 Spike: LaMa on device
 - [~] T04 Spike: real-time preview
 - [x] T05 Spike: mesh-warp engine
 - [ ] T06 Spike: hair segmentation

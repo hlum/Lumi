@@ -14,6 +14,7 @@
 		0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC95A6F45C46B646F93E2D4 /* ProjectsView.swift */; };
 		0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */; };
 		1079F56E5E18A451A19C4DC0 /* LUT.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB1CE07E21CEDB73699D2DB /* LUT.swift */; };
+		10BD4110137A5974945978A8 /* LaMa.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = CEF418AC311167A36E69E1C9 /* LaMa.mlpackage */; };
 		11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */; };
 		14DAF77265B638DB6BC2BCEA /* MetalPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */; };
 		1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */; };
@@ -41,6 +42,7 @@
 		5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850D7C49D60EA488C83EDB92 /* RendererTests.swift */; };
 		6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A84271AE2975CD30F866726 /* ResizeTests.swift */; };
 		62321582DF77C5697193257F /* ExportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85827E04B5DD5DA38A53552 /* ExportSettings.swift */; };
+		640D33462F10D0B171470ACF /* Inpainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B11508DB0D8D14D15FDA02 /* Inpainter.swift */; };
 		68F294FA6535A8E0ACA342E3 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8B0CC494B2360A9091052 /* Project.swift */; };
 		724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */; };
 		73162FAF45A4B6259C2BCF30 /* OverlapFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */; };
@@ -63,6 +65,7 @@
 		AB4ADA92DA72CD7279D86656 /* OverlapFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DD2F4D0FA68157AA975166 /* OverlapFinder.swift */; };
 		AE7380328C936A4527FD94AB /* LUTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */; };
 		B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */; };
+		B7B4B3B63B9FC68FF8922FA5 /* InpainterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */; };
 		B99B08640B1E2407CB560C15 /* LayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B63F36950C679A1C4FC7975 /* LayerTests.swift */; };
 		BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D2DF1A16B93F34F960633 /* EditOperation.swift */; };
 		BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */; };
@@ -125,6 +128,7 @@
 		4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransfer.swift; sourceTree = "<group>"; };
 		5E78D5B610E53FA8AD5383B2 /* fixture.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fixture.json; sourceTree = "<group>"; };
 		5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpTests.swift; sourceTree = "<group>"; };
+		62B11508DB0D8D14D15FDA02 /* Inpainter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inpainter.swift; sourceTree = "<group>"; };
 		6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapFinderTests.swift; sourceTree = "<group>"; };
 		6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
 		73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpRendererTests.swift; sourceTree = "<group>"; };
@@ -155,6 +159,7 @@
 		C601C878EAB11731365C44CD /* RecipeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeTests.swift; sourceTree = "<group>"; };
 		C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStoreTests.swift; sourceTree = "<group>"; };
 		C774554353642B4CCB68C0E1 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		CEF418AC311167A36E69E1C9 /* LaMa.mlpackage */ = {isa = PBXFileReference; path = LaMa.mlpackage; sourceTree = "<group>"; };
 		D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunnerTests.swift; sourceTree = "<group>"; };
 		DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
 		E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPreviewView.swift; sourceTree = "<group>"; };
@@ -163,6 +168,7 @@
 		E5F6FD85211E45314EB0ED25 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisTests.swift; sourceTree = "<group>"; };
 		F3753A050A36D6AA1F5FF2D7 /* LayoutModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutModel.swift; sourceTree = "<group>"; };
+		F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InpainterTests.swift; sourceTree = "<group>"; };
 		F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocumentTests.swift; sourceTree = "<group>"; };
 		F794373EABE83DA0F90C6B5A /* LumiTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LumiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F815AFAF590676D5E14C0518 /* WatermarkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkTests.swift; sourceTree = "<group>"; };
@@ -287,6 +293,22 @@
 			path = Analysis;
 			sourceTree = "<group>";
 		};
+		9C71728C0B106134992AAA0C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CEF418AC311167A36E69E1C9 /* LaMa.mlpackage */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B6D35785906BA63C30B692CA /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				62B11508DB0D8D14D15FDA02 /* Inpainter.swift */,
+			);
+			path = ML;
+			sourceTree = "<group>";
+		};
 		B7DB7A6FDC19D5D465DCDB98 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -294,6 +316,7 @@
 				98A66E2EC5341688271B4B65 /* Analysis */,
 				856A254DC95DF7BEBB80BEC8 /* Document */,
 				69AAA07B5EA39B25859C1451 /* Mask */,
+				B6D35785906BA63C30B692CA /* ML */,
 				C25DC74852E7FDD3EA0522BF /* Render */,
 			);
 			path = Core;
@@ -303,6 +326,7 @@
 			isa = PBXGroup;
 			children = (
 				491867C4A15830F8C5BBEF55 /* Credits.json */,
+				9C71728C0B106134992AAA0C /* Models */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -350,6 +374,7 @@
 				946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */,
 				C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */,
 				8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */,
+				F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */,
 				0B63F36950C679A1C4FC7975 /* LayerTests.swift */,
 				285DE6546B441D0BEC50F540 /* LayoutTests.swift */,
 				4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */,
@@ -530,7 +555,9 @@
 				3593E8C2A5D2CD5282187C7F /* FaceReshape.swift in Sources */,
 				04EE05B54308799E287B857B /* FilterStore.swift in Sources */,
 				9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */,
+				640D33462F10D0B171470ACF /* Inpainter.swift in Sources */,
 				1079F56E5E18A451A19C4DC0 /* LUT.swift in Sources */,
+				10BD4110137A5974945978A8 /* LaMa.mlpackage in Sources */,
 				3519E3F6D325CA5970B3DA53 /* Layer.swift in Sources */,
 				A410B883767CB10E1F9A3ACE /* LayerRenderer.swift in Sources */,
 				84246047A286D716C1077A36 /* LayoutModel.swift in Sources */,
@@ -575,6 +602,7 @@
 				CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */,
 				44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */,
 				1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */,
+				B7B4B3B63B9FC68FF8922FA5 /* InpainterTests.swift in Sources */,
 				AE7380328C936A4527FD94AB /* LUTTests.swift in Sources */,
 				B99B08640B1E2407CB560C15 /* LayerTests.swift in Sources */,
 				FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */,
