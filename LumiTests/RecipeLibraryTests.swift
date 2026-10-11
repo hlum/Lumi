@@ -94,3 +94,55 @@ struct BatchModelTests {
         #expect(abs(Int(out[0]) - Int(base[0])) < 6)
     }
 }
+
+@MainActor
+struct BatchCutoutTests {
+    static func photo(_ v: CGFloat = 0.5) -> Data { BatchModelTests.photo(v) }
+    static func isPNG(_ d: Data) -> Bool { Array(d.prefix(4)) == [0x89, 0x50, 0x4E, 0x47] }
+    static func isJPEG(_ d: Data) -> Bool { Array(d.prefix(2)) == [0xFF, 0xD8] }
+
+    @Test func transparentBackgroundsSaveAsPNGWithAlpha() async throws {
+        let s = BatchModelTests.Saver(), m = BatchModel(saver: s)
+        await m.runCutout([("a", Self.photo()), ("b", Self.photo(0.3))], background: .transparent, masker: FakeMasker())
+        #expect(s.saved.count == 2 && s.saved.allSatisfy(Self.isPNG) && m.items.allSatisfy { $0.status == .done })
+        let img = try #require(CIImage(data: s.saved[0]))
+        #expect(GeometryTests.rgb(img, x: 5, y: 20)[3] == 255 && GeometryTests.rgb(img, x: 35, y: 20)[3] == 0)        // FakeMasker keeps the left half
+    }
+
+    @Test func coloredBackgroundsSaveAsJPEGWithTheColor() async throws {
+        let s = BatchModelTests.Saver(), m = BatchModel(saver: s)
+        await m.runCutout([("a", Self.photo())], background: .color(RGBA(r: 0, g: 1, b: 0, a: 1)), masker: FakeMasker())
+        #expect(Self.isJPEG(s.saved[0]))
+        let px = GeometryTests.rgb(try #require(CIImage(data: s.saved[0])), x: 35, y: 20)
+        #expect(px[1] > 200 && px[0] < 80)
+    }
+
+    @Test func atMostThirtyPhotosAreProcessed() async {
+        let s = BatchModelTests.Saver(), m = BatchModel(saver: s)
+        await m.runCutout((0..<40).map { ("p\($0)", Self.photo()) }, background: .transparent, masker: FakeMasker())
+        #expect(m.items.count == 30 && s.saved.count == 30 && m.progress == 1)
+    }
+
+    @Test func photosWithoutASubjectOrNoDetectorFailIndividually() async {
+        let s = BatchModelTests.Saver(), m = BatchModel(saver: s)
+        await m.runCutout([("a", Self.photo()), ("bad", Data([1, 2, 3]))], background: .transparent, masker: FakeMasker())
+        #expect(s.saved.count == 1 && m.failures.map(\.name) == ["bad"])
+        let none = BatchModel(saver: BatchModelTests.Saver())
+        await none.runCutout([("x", Self.photo())], background: .transparent, masker: NoSubjectMasker())
+        #expect(none.failures.count == 1)
+        let noMasker = BatchModel(saver: BatchModelTests.Saver())
+        await noMasker.runCutout([("x", Self.photo())], background: .transparent, masker: nil)
+        #expect(noMasker.failures.count == 1)
+    }
+
+    @Test func cancellingStopsTheRestOfTheBatch() async {
+        final class SlowSaver: PhotoSaving { var saved = 0; var onFirst: (() -> Void)?
+            func save(_ data: Data) async throws { saved += 1; if saved == 1 { onFirst?() } } }
+        let s = SlowSaver(), m = BatchModel(saver: s)
+        s.onFirst = { m.cancel() }                                            // cancel after the first photo is saved
+        await m.runCutout((0..<5).map { ("p\($0)", Self.photo()) }, background: .transparent, masker: FakeMasker())
+        #expect(s.saved == 1)
+        #expect(m.items[0].status == .done && m.items[1...].allSatisfy { if case .failed = $0.status { true } else { false } })
+        #expect(!m.isRunning)
+    }
+}

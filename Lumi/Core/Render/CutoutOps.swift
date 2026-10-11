@@ -20,7 +20,7 @@ struct VisionSubjectMasker: SubjectMasking {
 }
 
 struct CutoutConfig: Codable, Equatable {
-    enum Background: Codable, Equatable {
+    enum Background: Codable, Equatable, Hashable {
         case transparent
         case color(RGBA)
         case gradient(RGBA, RGBA)        // top, bottom

@@ -70,7 +70,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] T30 Remover auto chips
 - [ ] T31 Clone tab and specialty removers
 - [~] T32 Cutout and background
-- [ ] T33 Batch cutout
+- [x] T33 Batch cutout
 - [~] T34 AI Expand
 - [ ] ⏸ Checkpoint 4
 

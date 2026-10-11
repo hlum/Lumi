@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-struct RGBA: Codable, Equatable {
+struct RGBA: Codable, Equatable, Hashable {
     var r = 1.0, g = 1.0, b = 1.0, a = 1.0
     static let white = RGBA(), black = RGBA(r: 0, g: 0, b: 0, a: 1)
 }
