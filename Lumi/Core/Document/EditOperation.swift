@@ -19,10 +19,11 @@ enum EditOperation: Codable, Equatable {
     case upscale(factor: Int)
     case colorize(strength: Double)
     case grade(ColorGrade)
+    case face(FaceRetouch)
 }
 
 extension EditOperation {
-    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle, mosaic, watermark, upscale, colorize, grade }
+    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle, mosaic, watermark, upscale, colorize, grade, face }
     var kind: Kind {
         switch self {
         case .exposure: .exposure
@@ -42,6 +43,7 @@ extension EditOperation {
         case .upscale: .upscale
         case .colorize: .colorize
         case .grade: .grade
+        case .face: .face
         }
     }
     /// Recipe category: what part of the look this belongs to.
@@ -62,6 +64,7 @@ extension EditOperation {
         case .upscale: .geometry
         case .colorize: .color
         case .grade: .color
+        case .face: .beauty
         }
     }
 }

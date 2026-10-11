@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -39,6 +39,7 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .face: FacePanel(model: model)
                     case .color: ColorPanel(model: model)
                     case .enhance: EnhancePanel(model: model)
                     case .export: ExportPanel(model: model)
@@ -457,6 +458,53 @@ struct ColorPanel: View {
         HStack {
             Text(LocalizedStringKey(title)).font(.caption).frame(width: 90, alignment: .leading)
             Slider(value: Binding(get: { value.wrappedValue }, set: { value.wrappedValue = $0; apply?() }), in: range) { if !$0 { model.commit() } }
+        }.padding(.horizontal)
+    }
+}
+
+struct FacePanel: View {
+    enum Group: String, CaseIterable { case looks = "Looks", skin = "Skin", shape = "Shape", makeup = "Makeup", detail = "Detail" }
+    @Bindable var model: EditorModel
+    @State private var group = Group.looks
+    @State private var strength = 1.0
+    @State private var lookID = AutoBeauty.looks[0].id
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Picker("Group", selection: $group) { ForEach(Group.allCases, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            ScrollView {
+                VStack(spacing: 2) {
+                    switch group {
+                    case .looks:
+                        HStack {
+                            ForEach(AutoBeauty.looks) { l in Button(LocalizedStringKey(l.name)) { lookID = l.id; apply() }.buttonStyle(.bordered).tint(lookID == l.id ? .accentColor : .secondary) }
+                            Button("Off") { model.edit { $0.face = FaceRetouch() } }.buttonStyle(.bordered)
+                        }
+                        row("Strength", $strength, 0...1) { apply() }
+                    case .skin:
+                        row("Smooth", f(\.skin.smooth), 0...1); row("Texture", f(\.skin.texture), 0...1); row("Whiten", f(\.skin.whiten), 0...1); row("Rosy", f(\.skin.rosy), 0...1); row("Tan", f(\.skin.tan), 0...1)
+                    case .shape:
+                        row("Jaw", f(\.reshape.jawSlim)); row("Face width", f(\.reshape.faceWidth)); row("Chin", f(\.reshape.chinLength)); row("Eyes", f(\.reshape.eyeSize)); row("Nose", f(\.reshape.noseSlim)); row("Mouth", f(\.reshape.mouthSize))
+                    case .makeup:
+                        row("Lipstick", f(\.makeup.lipOpacity), 0...1); row("Blush", f(\.makeup.blushOpacity), 0...1); row("Lip shine", f(\.makeup.ombre), 0...1)
+                    case .detail:
+                        row("Flash", f(\.detail.flash), 0...1); row("Under-eye", f(\.detail.underEye), 0...1); row("Fine lines", f(\.detail.wrinkles), 0...1); row("Teeth", f(\.detail.teethWhiten), 0...1); row("Bright eyes", f(\.detail.eyeBright), 0...1)
+                    }
+                }
+            }
+        }
+    }
+
+    private func apply() { if let l = AutoBeauty.looks.first(where: { $0.id == lookID }) { model.edit { $0.face = FaceRetouch.look(l, strength: strength) } } }
+
+    private func f(_ path: WritableKeyPath<FaceRetouch, Double>) -> Binding<Double> {
+        Binding(get: { model.draft.face[keyPath: path] }, set: { model.draft.face[keyPath: path] = $0 })
+    }
+
+    private func row(_ title: String, _ value: Binding<Double>, _ range: ClosedRange<Double> = -1...1, onEnd: (() -> Void)? = nil) -> some View {
+        HStack {
+            Text(LocalizedStringKey(title)).font(.caption).frame(width: 84, alignment: .leading)
+            Slider(value: value, in: range) { if !$0 { if let onEnd { onEnd() } else { model.commit() } } }
         }.padding(.horizontal)
     }
 }

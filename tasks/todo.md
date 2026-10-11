@@ -51,7 +51,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T17 Filter engine
 - [x] T18 Content: filter pack v1
 - [~] T19 Smart color tools
-- [ ] T20 AI Flash and face fill light
+- [x] T20 AI Flash and face fill light
 - [ ] ⏸ Checkpoint 2
 
 **Phase 3: Overlays**
@@ -75,14 +75,14 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 4
 
 **Phase 5: Face retouch**
-- [~] T35 Skin smoothing and texture
+- [x] T35 Skin smoothing and texture
 - [~] T36 Skin tone
 - [~] T37 Blemishes
-- [ ] T38 Under-eye and wrinkles
+- [~] T38 Under-eye and wrinkles
 - [~] T39 Face-shape warps
 - [ ] T40 Ratio, 3D and protection
 - [~] T41 Eye, nose, mouth and brow warps
-- [ ] T42 Eye detail and teeth
+- [~] T42 Eye detail and teeth
 - [ ] T43 Manual face slim and volume
 - [~] T44 Auto beauty
 - [ ] ⏸ Checkpoint 5

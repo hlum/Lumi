@@ -19,6 +19,11 @@ enum Renderer {
         var faceFinder: FaceFinding?
         var upscaler: Upscaling?
         var colorizer: Colorizing?
+        var faceLandmarker: FaceLandmarking?
+        /// Last detected faces, kept so slider drags don't re-run detection every frame.
+        fileprivate var faceCache: (key: String, faces: [FaceInfo])?
+        private(set) var faceCacheKeyCount = 0
+        fileprivate func remember(faces: [FaceInfo], key: String) { faceCache = (key, faces); faceCacheKeyCount += 1 }
         private var cache: [String: CIImage] = [:]
         private(set) var inpaintCalls = 0
         private(set) var keysSeen: [String] = []
@@ -48,6 +53,7 @@ enum Renderer {
             case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
+            case .face(let f): img = retouched(f, from: img, prefix: Array(document.operations[0..<i]))
             case .grade(let g): img = g.lut().apply(to: img)
             case .colorize(let t): img = colorized(t, from: img, prefix: Array(document.operations[0..<i]))
             case .upscale(let f): img = upscaled(f, from: img, prefix: Array(document.operations[0..<i]))
@@ -101,6 +107,15 @@ enum Renderer {
         guard strength < 1 else { return full }
         let mix = CIFilter(name: "CIDissolveTransition", parameters: [kCIInputImageKey: image, kCIInputTargetImageKey: full, kCIInputTimeKey: strength])!
         return mix.outputImage?.cropped(to: image.extent) ?? full
+    }
+
+    static func retouched(_ f: FaceRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard !f.isIdentity, let finder = services.faceLandmarker else { return image }
+        let key = "face|" + cacheKey(image, prefix)
+        let faces: [FaceInfo]
+        if let c = services.faceCache, c.key == key { faces = c.faces }
+        else { faces = (try? finder.faces(in: image)) ?? []; services.remember(faces: faces, key: key) }
+        return FaceRetouchRender.apply(f, to: image, faces: faces)
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {
