@@ -60,4 +60,38 @@ struct ExportSettingsEditorTests {
         m.edit { $0.crop.quarterTurns = 1 }
         #expect(m.exportPixelSize?.w == 300 && m.exportPixelSize?.h == 400)
     }
+
+    @Test func tenByFifteenCentimetresAtThreeHundredDpiExportsAs1181By1772() throws {
+        let m = Self.model(4000, 3000)
+        m.applyPrintSize(width: 10, height: 15, unit: .cm, dpi: 300)
+        #expect(m.exportSettings.exactSize == ExportSettings.PixelSize(w: 1181, h: 1772))
+        #expect(m.exportPixelSize?.w == 1181 && m.exportPixelSize?.h == 1772)
+        m.exportSettings.format = .jpeg
+        #expect(Self.size(try m.exportData()) == CGSize(width: 1181, height: 1772))
+    }
+
+    @Test func printSizeCropsToThePaperAspectFirst() {
+        let m = Self.model(4000, 3000)
+        m.applyPrintSize(width: 10, height: 15, unit: .cm, dpi: 300)
+        let r = m.draft.crop.rect
+        #expect(abs(Double(r.width * 4000) / Double(r.height * 3000) - 10.0 / 15) < 1e-6)
+    }
+
+    @Test func printSizeCanBeClearedAndPNGKeepsAlpha() throws {
+        let m = Self.model(400, 300)
+        m.applyPrintSize(width: 5, height: 5, unit: .cm, dpi: 200)
+        m.clearPrintSize()
+        #expect(m.exportSettings.exactSize == nil && m.exportPixelSize?.w == 400)
+        // PNG of a partly transparent picture keeps the alpha channel
+        let half = CIImage(color: CIColor(red: 1, green: 0, blue: 0)).cropped(to: CGRect(x: 0, y: 0, width: 20, height: 40))
+            .composited(over: CIImage(color: .clear).cropped(to: CGRect(x: 0, y: 0, width: 40, height: 40)))
+        let t = EditorModel(saver: EditorModelTests.FakeSaver()); t.load(image: half); t.exportSettings.format = .png
+        let out = try #require(CIImage(data: try t.exportData()))
+        #expect(GeometryTests.rgb(out, x: 30, y: 20)[3] == 0 && GeometryTests.rgb(out, x: 5, y: 20)[3] == 255)
+    }
+
+    @Test func unitsConvertToPixels() {
+        #expect(ExportSettings.printSize(width: 25.4, height: 50.8, unit: .mm, dpi: 100) == ExportSettings.PixelSize(w: 100, h: 200))
+        #expect(ExportSettings.printSize(width: 1, height: 2, unit: .inch, dpi: 300) == ExportSettings.PixelSize(w: 300, h: 600))
+    }
 }

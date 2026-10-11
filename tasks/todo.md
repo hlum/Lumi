@@ -45,7 +45,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 
 **Phase 2: Basic edit and color**
 - [x] T13 Crop, rotate, straighten
-- [~] T14 Resize, canvas, export settings
+- [x] T14 Resize, canvas, export settings
 - [x] T15 Adjust panel
 - [~] T16 HSL, curves, split tone, color picker
 - [~] T17 Filter engine

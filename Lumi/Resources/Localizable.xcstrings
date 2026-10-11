@@ -2705,6 +2705,22 @@
           }
         }
       }
+    },
+    "Print": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Print"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プリント"
+          }
+        }
+      }
     }
   }
 }

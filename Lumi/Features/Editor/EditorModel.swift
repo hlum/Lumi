@@ -102,6 +102,16 @@ final class EditorModel {
     func redo() { stack.redo(); draft = stack.current; autosave() }
 
     var exportSettings = ExportSettings()
+
+    /// Print preset: crops to the paper's aspect and exports at exact pixels for the DPI.
+    func applyPrintSize(width: Double, height: Double, unit: LengthUnit, dpi: Double) {
+        guard let o = original, width > 0, height > 0 else { return }
+        let px = ExportSettings.printSize(width: width, height: height, unit: unit, dpi: dpi)
+        edit { $0.crop.rect = CropSpec.rect(aspect: width, height, in: o.extent.size) }
+        exportSettings.exactSize = px
+    }
+    /// Back to the photo's own size and framing.
+    func clearPrintSize() { exportSettings.exactSize = nil; edit { $0.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1) } }
     /// Size the saved file will have, for the settings screen.
     var exportPixelSize: (w: Int, h: Int)? {
         guard let o = original else { return nil }
@@ -116,7 +126,10 @@ final class EditorModel {
         guard let original else { throw EditorError.noImage }
         var out = Renderer.render(original, document: draft)
         let target = exportSettings.fitted((Int(out.extent.width), Int(out.extent.height)))
-        if target.w < Int(out.extent.width) {                       // downscale to the chosen maximum, never upscale
+        if exportSettings.exactSize != nil {            // print size: scale to exactly these pixels (the crop already has this aspect)
+            out = out.transformed(by: CGAffineTransform(scaleX: CGFloat(target.w) / out.extent.width, y: CGFloat(target.h) / out.extent.height))
+                .transformed(by: CGAffineTransform(translationX: -out.extent.minX * CGFloat(target.w) / out.extent.width, y: -out.extent.minY * CGFloat(target.h) / out.extent.height))
+        } else if target.w < Int(out.extent.width) {                       // downscale to the chosen maximum, never upscale
             let k = CGFloat(target.w) / out.extent.width
             out = out.transformed(by: CGAffineTransform(scaleX: k, y: k)).cropped(to: CGRect(x: out.extent.minX * k, y: out.extent.minY * k, width: CGFloat(target.w), height: CGFloat(target.h)))
         }

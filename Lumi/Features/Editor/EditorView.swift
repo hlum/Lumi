@@ -379,6 +379,12 @@ struct ExportPanel: View {
             Picker("Max size", selection: Binding(get: { model.exportSettings.maxLongSide ?? 0 }, set: { model.exportSettings.maxLongSide = $0 == 0 ? nil : $0 })) {
                 Text("Original").tag(0); Text("4096").tag(4096); Text("2048").tag(2048); Text("1080").tag(1080)
             }.pickerStyle(.segmented).padding(.horizontal)
+            HStack {
+                Text("Print").font(.caption)
+                Button("10×15 cm") { model.applyPrintSize(width: 10, height: 15, unit: .cm, dpi: 300) }.buttonStyle(.bordered)
+                Button("A4") { model.applyPrintSize(width: 210, height: 297, unit: .mm, dpi: 300) }.buttonStyle(.bordered)
+                Button("Off") { model.clearPrintSize() }.buttonStyle(.bordered)
+            }
             if let s = model.exportPixelSize, let b = model.estimatedBytes {
                 Text("\(s.w) × \(s.h) px · about \(ByteCountFormatter.string(fromByteCount: Int64(b), countStyle: .file))").font(.caption).foregroundStyle(.secondary)
             }
