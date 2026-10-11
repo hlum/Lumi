@@ -51,7 +51,9 @@ final class EditorModel {
     var preview: CIImage? {
         guard let proxy else { return nil }
         if showOriginal { return proxy }
-        return Renderer.render(proxy, document: draft)
+        // upscaling is an export-time step: running a 4x model on the preview proxy would be slow and show no more than the screen can
+        var live = draft; live.upscale = nil
+        return Renderer.render(proxy, document: live)
     }
 
     func load(data: Data) throws {
@@ -65,6 +67,9 @@ final class EditorModel {
         stack = UndoStack(EditDocument())
         draft = EditDocument(); showOriginal = false; didSave = false; saveError = nil
     }
+
+    /// The enhance tool is offered only when the model is present and the photo is small enough to upscale.
+    var canUpscale: Bool { Renderer.services.upscaler != nil && max(original?.extent.width ?? .infinity, original?.extent.height ?? .infinity) <= CGFloat(RealESRGANUpscaler.maxInputSide) }
 
     func commit() { stack.commit(draft) }
     func commitExposure() { commit() }

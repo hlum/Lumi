@@ -10,6 +10,7 @@
 		01500DBC9F403E7D92B02912 /* LumiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */; };
 		039F18F5B28D0A44917FD62C /* AutoMosaicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF97E50C1DAAC31F45CC303 /* AutoMosaicTests.swift */; };
 		04EE05B54308799E287B857B /* FilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */; };
+		06E5B097A0F5414D728A6236 /* RealESRGAN_x4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 1DDAF2607ACDF083D01568FA /* RealESRGAN_x4.mlpackage */; };
 		088FCC0C3D051A929590020B /* OutlineOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2059AFF4788F6C150A916E4 /* OutlineOps.swift */; };
 		0A021A54E63AED940A54802C /* RecipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C601C878EAB11731365C44CD /* RecipeTests.swift */; };
 		0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC95A6F45C46B646F93E2D4 /* ProjectsView.swift */; };
@@ -35,6 +36,7 @@
 		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
 		26F152CB55562C0BDF70DC59 /* BrushMaterials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */; };
+		2DCC9D0ACAE306EFA4366917 /* Upscaler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */; };
 		305862DC81592F78F94CA527 /* StickerLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68F615D6BB3D71E94B3D34A /* StickerLibrary.swift */; };
 		30D91C257C34D1091A684B33 /* MeshWarpRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */; };
 		31DB8323406C1443954751F6 /* BatchRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5640ED3C828F66CC06F9C3 /* BatchRunner.swift */; };
@@ -134,6 +136,7 @@
 		ECA917048D902CA3547F60D5 /* VideoComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21ABBB579D51544D0B17726 /* VideoComposerTests.swift */; };
 		ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */; };
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
+		F30F07E38EDD31513B6F456A /* UpscalerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */; };
 		F4EB922F3593D5A9D7BC4031 /* FrameOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7449BB3478E8BCC8F1A69434 /* FrameOps.swift */; };
 		F67AD6F02B9512BA43801A9B /* Content in Resources */ = {isa = PBXBuildFile; fileRef = 3E077721CC782EB59A850370 /* Content */; };
 		F7840F7A78F842A9518A303C /* MosaicConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */; };
@@ -167,6 +170,7 @@
 		15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrushMaterials.swift; sourceTree = "<group>"; };
 		16E38351FDAF036F93AFF551 /* SkinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinTests.swift; sourceTree = "<group>"; };
 		1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorModel.swift; sourceTree = "<group>"; };
+		1DDAF2607ACDF083D01568FA /* RealESRGAN_x4.mlpackage */ = {isa = PBXFileReference; path = RealESRGAN_x4.mlpackage; sourceTree = "<group>"; };
 		20E74D4A0DDE2E2A39EBB069 /* RemoverPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoverPanel.swift; sourceTree = "<group>"; };
 		2248574B322F87BAF16D744D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		25C459A2F56ACFF1F4D3C614 /* CreditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsView.swift; sourceTree = "<group>"; };
@@ -196,6 +200,7 @@
 		4C877CE8B244EF3D2C0593F7 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarp.swift; sourceTree = "<group>"; };
 		4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransfer.swift; sourceTree = "<group>"; };
+		5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpscalerTests.swift; sourceTree = "<group>"; };
 		5D68FC2907097196C8F56737 /* CameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTests.swift; sourceTree = "<group>"; };
 		5E78D5B610E53FA8AD5383B2 /* fixture.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fixture.json; sourceTree = "<group>"; };
 		5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpTests.swift; sourceTree = "<group>"; };
@@ -280,6 +285,7 @@
 		F3753A050A36D6AA1F5FF2D7 /* LayoutModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutModel.swift; sourceTree = "<group>"; };
 		F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InpainterTests.swift; sourceTree = "<group>"; };
 		F5107722F421BA333413EB76 /* IDSpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDSpecTests.swift; sourceTree = "<group>"; };
+		F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upscaler.swift; sourceTree = "<group>"; };
 		F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocumentTests.swift; sourceTree = "<group>"; };
 		F7680359B152AF9B99D15073 /* CameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraController.swift; sourceTree = "<group>"; };
 		F794373EABE83DA0F90C6B5A /* LumiTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LumiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -514,6 +520,7 @@
 			isa = PBXGroup;
 			children = (
 				CEF418AC311167A36E69E1C9 /* LaMa.mlpackage */,
+				1DDAF2607ACDF083D01568FA /* RealESRGAN_x4.mlpackage */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -530,6 +537,7 @@
 			isa = PBXGroup;
 			children = (
 				62B11508DB0D8D14D15FDA02 /* Inpainter.swift */,
+				F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */,
 			);
 			path = ML;
 			sourceTree = "<group>";
@@ -659,6 +667,7 @@
 				65D1FB808ED3CA3A9FA0D341 /* TimelineModelTests.swift */,
 				A32D907B200F01A399C6B4A8 /* ToolCatalogTests.swift */,
 				37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */,
+				5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */,
 				C21ABBB579D51544D0B17726 /* VideoComposerTests.swift */,
 				FDAFCF1A4D1F91B6F903256B /* VideoEditorModelTests.swift */,
 				F815AFAF590676D5E14C0518 /* WatermarkTests.swift */,
@@ -891,6 +900,7 @@
 				426E9F04EE4F1AA2A3B3A820 /* ProjectStore.swift in Sources */,
 				0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */,
 				355FFED94480FDD5572FD0A7 /* ProtectedWarp.swift in Sources */,
+				06E5B097A0F5414D728A6236 /* RealESRGAN_x4.mlpackage in Sources */,
 				D7AD8B53E5E51940F310F0D2 /* Recipe.swift in Sources */,
 				5EF7A37ECD66AD6D2245428E /* RemoverModel.swift in Sources */,
 				DC1DC989B13C717126FDE014 /* RemoverPanel.swift in Sources */,
@@ -907,6 +917,7 @@
 				DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */,
 				149650652799725343BD8EC4 /* Transitions.swift in Sources */,
 				DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */,
+				2DCC9D0ACAE306EFA4366917 /* Upscaler.swift in Sources */,
 				79FF034FB18F4F413E86370E /* VideoComposer.swift in Sources */,
 				83F608A618C7B330B403D311 /* VideoEditorModel.swift in Sources */,
 				DE5981280041B68298DDA33A /* VideoEditorView.swift in Sources */,
@@ -967,6 +978,7 @@
 				51701E334E4308F12BD291B3 /* TimelineModelTests.swift in Sources */,
 				77511270278CA352D3264608 /* ToolCatalogTests.swift in Sources */,
 				BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */,
+				F30F07E38EDD31513B6F456A /* UpscalerTests.swift in Sources */,
 				ECA917048D902CA3547F60D5 /* VideoComposerTests.swift in Sources */,
 				0FA0984CB99BFCFEA5BB9457 /* VideoEditorModelTests.swift in Sources */,
 				FFA3FBFD29635B07F0D1081C /* WatermarkTests.swift in Sources */,

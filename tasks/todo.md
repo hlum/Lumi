@@ -141,7 +141,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] ⏸ Checkpoint 11
 
 **Phase 12: On-device AI**
-- [ ] T80 Enhancer and upscaler
+- [~] T80 Enhancer and upscaler
 - [ ] T81 Old-photo restoration
 - [ ] T82 Image Playground creations
 - [x] ~~T83 AI Assistant~~ (dropped)

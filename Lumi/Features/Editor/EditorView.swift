@@ -2,10 +2,10 @@ import PhotosUI
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", enhance = "Enhance"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .enhance: "arrow.up.left.and.arrow.down.right" }
     }
 }
 
@@ -33,6 +33,7 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .enhance: EnhancePanel(model: model)
                     }
                 }
                 .frame(maxHeight: 220)
@@ -312,6 +313,24 @@ struct DoodleOverlay: View {
                     let stroke = DoodleStroke(brush: model.doodleBrush, points: Doodle.snappedToLine(points), color: model.doodleColor)
                     model.edit { $0.doodle = $0.doodle + [stroke] }; points = []
                 })
+        }
+    }
+}
+
+struct EnhancePanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack(spacing: 12) {
+            if model.canUpscale {
+                Text("Sharper, bigger photo. Applied when you save.").font(.caption).foregroundStyle(.secondary)
+                HStack {
+                    Button("Off") { model.edit { $0.upscale = nil } }.buttonStyle(.bordered)
+                    Button("2×") { model.edit { $0.upscale = 2 } }.buttonStyle(.bordered).tint(model.draft.upscale == 2 ? .accentColor : .secondary)
+                    Button("4×") { model.edit { $0.upscale = 4 } }.buttonStyle(.bordered).tint(model.draft.upscale == 4 ? .accentColor : .secondary)
+                }
+            } else {
+                Text("Enhance works on photos up to 2048 px on the long side.").font(.caption).foregroundStyle(.secondary).padding()
+            }
         }
     }
 }

@@ -79,6 +79,12 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.map { .watermark($0) }) { if case .watermark = $0 { true } else { false } } }
     }
 
+    /// 2 or 4 (times the pixel size), or nil.
+    var upscale: Int? {
+        get { operations.lazy.compactMap { if case .upscale(let f) = $0 { f } else { nil } }.last }
+        set { set(newValue.flatMap { [2, 4].contains($0) ? EditOperation.upscale(factor: $0) : nil }) { if case .upscale = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

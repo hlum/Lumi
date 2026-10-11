@@ -328,5 +328,20 @@
     "modifiedNote": null,
     "dateAdded": "2026-10-12",
     "selfMade": true
+  },
+  {
+    "files": [
+      "Models/RealESRGAN_x4.mlpackage"
+    ],
+    "title": "Real-ESRGAN x4 (Core ML conversion)",
+    "author": "Xintao Wang et al. (xinntao/Real-ESRGAN); Core ML conversion by john-rocky (mlboydaisuke/Real-ESRGAN-x4-CoreML)",
+    "sourceURL": "https://huggingface.co/mlboydaisuke/Real-ESRGAN-x4-CoreML",
+    "license": "BSD",
+    "licenseURL": "https://github.com/xinntao/Real-ESRGAN/blob/master/LICENSE",
+    "attribution": "Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data, BSD 3-Clause License. Core ML conversion by john-rocky.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
   }
 ]

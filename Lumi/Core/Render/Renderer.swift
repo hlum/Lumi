@@ -17,6 +17,7 @@ enum Renderer {
         var inpainter: Inpainting?
         var subjectMasker: SubjectMasking?
         var faceFinder: FaceFinding?
+        var upscaler: Upscaling?
         private var cache: [String: CIImage] = [:]
         private(set) var inpaintCalls = 0
         private(set) var keysSeen: [String] = []
@@ -46,6 +47,7 @@ enum Renderer {
             case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
+            case .upscale(let f): img = upscaled(f, from: img, prefix: Array(document.operations[0..<i]))
             case .frame(let c): img = FrameOps.apply(c, to: img)
             case .doodle(let d): img = Doodle.render(d, over: img)
             case .expand(let c): img = expanded(c, from: img, prefix: Array(document.operations[0..<i]))
@@ -79,6 +81,14 @@ enum Renderer {
             faces = boxes
         }
         return MosaicRender.apply(c, to: image, faces: faces)
+    }
+
+    static func upscaled(_ factor: Int, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard let up = services.upscaler, [2, 4].contains(factor) else { return image }
+        let key = "up|" + cacheKey(image, prefix)
+        guard let big = (try? services.cached(key) { try up.upscale4x(image) }) ?? nil else { return image }
+        guard factor == 2 else { return big }
+        return big.transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))            // 4x result brought to 2x
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

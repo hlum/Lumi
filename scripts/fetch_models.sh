@@ -10,3 +10,10 @@ if [ ! -d LaMa.mlpackage ]; then
   curl -fsSL "$base/Data/com.apple.CoreML/model.mlmodel" -o LaMa.mlpackage/Data/com.apple.CoreML/model.mlmodel
   curl -fsSL "$base/Data/com.apple.CoreML/weights/weight.bin" -o LaMa.mlpackage/Data/com.apple.CoreML/weights/weight.bin
 fi
+
+if [ ! -d RealESRGAN_x4.mlpackage ]; then
+  base=https://huggingface.co/mlboydaisuke/Real-ESRGAN-x4-CoreML/resolve/main/RealESRGAN_x4.mlpackage
+  mkdir -p RealESRGAN_x4.mlpackage/Data/com.apple.CoreML
+  curl -fsSL "$base/Manifest.json" -o RealESRGAN_x4.mlpackage/Manifest.json
+  curl -fsSL "$base/Data/com.apple.CoreML/model.mlmodel" -o RealESRGAN_x4.mlpackage/Data/com.apple.CoreML/model.mlmodel
+fi
