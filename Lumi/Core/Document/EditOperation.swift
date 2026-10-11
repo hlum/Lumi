@@ -7,3 +7,24 @@ enum EditOperation: Codable, Equatable {
     case adjust(AdjustParams)
     case curve(ToneCurve)
 }
+
+extension EditOperation {
+    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve }
+    var kind: Kind {
+        switch self {
+        case .exposure: .exposure
+        case .crop: .crop
+        case .adjust: .adjust
+        case .curve: .curve
+        }
+    }
+    /// Recipe category: what part of the look this belongs to.
+    var category: RecipeCategory {
+        switch self {
+        case .crop: .geometry
+        case .exposure, .adjust, .curve: .color
+        }
+    }
+}
+
+enum RecipeCategory: String, Codable, CaseIterable { case color, geometry, beauty, body, filter, collage }

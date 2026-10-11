@@ -28,4 +28,14 @@ struct EditDocument: Codable, Equatable {
         get { operations.lazy.compactMap { if case .curve(let v) = $0 { v } else { nil } }.last ?? ToneCurve() }
         set { set(newValue.isIdentity ? nil : .curve(newValue)) { if case .curve = $0 { true } else { false } } }
     }
+
+    /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
+    func applying(_ ops: [EditOperation]) -> EditDocument {
+        var d = self
+        for op in ops {
+            d.operations.removeAll { $0.kind == op.kind }
+            d.operations.append(op)
+        }
+        return d
+    }
 }

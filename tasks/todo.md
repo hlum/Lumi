@@ -20,7 +20,7 @@ Tests run on Xcode Cloud without the repository present. Any fixture a test need
 Scope: S = 1–2 files · M = 3–5 files. Anything larger has been split.
 
 ## Status
-Tick a task when it's done. The details for each task are below.
+Tick a task when it's done. `[~]` = core logic built and tested, screen or device check still pending. The details for each task are below.
 
 **Phase D: Design (before any build)**
 - [ ] ⏸ Checkpoint D: designs approved
@@ -29,8 +29,8 @@ Tick a task when it's done. The details for each task are below.
 - [x] T01 Project scaffold
 - [x] T02 Xcode Cloud CI and TDD harness
 - [ ] T03 Spike: LaMa on device
-- [ ] T04 Spike: real-time preview
-- [ ] T05 Spike: mesh-warp engine
+- [~] T04 Spike: real-time preview
+- [~] T05 Spike: mesh-warp engine
 - [ ] T06 Spike: hair segmentation
 - [ ] ⏸ Checkpoint 0
 
@@ -44,24 +44,24 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint 1
 
 **Phase 2: Basic edit and color**
-- [ ] T13 Crop, rotate, straighten
-- [ ] T14 Resize, canvas, export settings
-- [ ] T15 Adjust panel
-- [ ] T16 HSL, curves, split tone, color picker
-- [ ] T17 Filter engine
+- [~] T13 Crop, rotate, straighten
+- [~] T14 Resize, canvas, export settings
+- [~] T15 Adjust panel
+- [~] T16 HSL, curves, split tone, color picker
+- [~] T17 Filter engine
 - [ ] T18 Content: filter pack v1
-- [ ] T19 Smart color tools
+- [~] T19 Smart color tools
 - [ ] T20 AI Flash and face fill light
 - [ ] ⏸ Checkpoint 2
 
 **Phase 3: Overlays**
-- [ ] T21 Text basics
+- [~] T21 Text basics
 - [ ] T22 Text styles
 - [ ] T23 Stickers
 - [ ] T24 Custom stickers
 - [ ] T25 Frames, doodle and marker
-- [ ] T26 Mosaic and face cover
-- [ ] T27 Watermarks
+- [~] T26 Mosaic and face cover
+- [~] T27 Watermarks
 - [ ] T28 Content: stickers, fonts, frames, brush materials
 - [ ] ⏸ Checkpoint 3
 
@@ -104,11 +104,11 @@ Tick a task when it's done. The details for each task are below.
 - [ ] ⏸ Checkpoint 7
 
 **Phase 8: Recipes, batch, collage, materials**
-- [ ] T55 Recipes
-- [ ] T56 Batch edit
-- [ ] T57 Collage templates
+- [~] T55 Recipes
+- [~] T56 Batch edit
+- [~] T57 Collage templates
 - [ ] T58 Freeform, split, seamless collage
-- [ ] T59 Long stitch and screenshot stitch
+- [~] T59 Long stitch and screenshot stitch
 - [ ] T60 Materials, templates, wallpapers
 - [ ] ⏸ Checkpoint 8
 
