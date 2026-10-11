@@ -1,0 +1,6 @@
+{
+  "configurations": [{"id": "A1B2C3D4-0000-4000-8000-000000000001", "name": "Unit", "options": {}}],
+  "defaultOptions": {"codeCoverage": true, "randomExecutionOrdering": true},
+  "testTargets": [{"target": {"containerPath": "container:Lumi.xcodeproj", "identifier": "LumiTests", "name": "LumiTests"}}],
+  "version": 1
+}

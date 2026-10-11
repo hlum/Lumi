@@ -1,0 +1,44 @@
+name: Lumi
+options:
+  bundleIdPrefix: com.hlum
+  deploymentTarget: {iOS: "26.0"}
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: GNG4VLAQ7U
+    TARGETED_DEVICE_FAMILY: "1"
+targets:
+  Lumi:
+    type: application
+    platform: iOS
+    sources: [Lumi]
+    info:
+      path: Lumi/App/Info.plist
+      properties:
+        CFBundleDisplayName: Lumi
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hlum.lumi
+        GENERATE_INFOPLIST_FILE: NO
+  LumiTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [LumiTests]
+    dependencies:
+      - target: Lumi
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hlum.lumi.tests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Lumi:
+    build:
+      targets: {Lumi: all, LumiTests: [test]}
+    test:
+      testPlans:
+        - path: Lumi.xctestplan
+          defaultPlan: true
