@@ -84,11 +84,11 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T41 Eye, nose, mouth and brow warps
 - [~] T42 Eye detail and teeth
 - [x] T43 Manual face slim and volume
-- [~] T44 Auto beauty
+- [x] T44 Auto beauty
 - [ ] ⏸ Checkpoint 5
 
 **Phase 6: Makeup and hair**
-- [~] T45 Makeup engine: lips, blush, contour
+- [x] T45 Makeup engine: lips, blush, contour
 - [ ] T46 Eye makeup and brows
 - [ ] T47 Makeup content, looks, recreate
 - [ ] T48 Nail try-on

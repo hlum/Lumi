@@ -545,7 +545,7 @@ struct FacePanel: View {
                     case .shape:
                         row("Jaw", f(\.reshape.jawSlim)); row("Face width", f(\.reshape.faceWidth)); row("Chin", f(\.reshape.chinLength)); row("Eyes", f(\.reshape.eyeSize)); row("Nose", f(\.reshape.noseSlim)); row("Mouth", f(\.reshape.mouthSize)); row("Cheek volume", f(\.reshape.cheekVolume)); row("Lift", f(\.reshape.lift))
                     case .makeup:
-                        row("Lipstick", f(\.makeup.lipOpacity), 0...1); row("Blush", f(\.makeup.blushOpacity), 0...1); row("Lip shine", f(\.makeup.ombre), 0...1)
+                        row("Lipstick", f(\.makeup.lipOpacity), 0...1); row("Blush", f(\.makeup.blushOpacity), 0...1); row("Lip shine", f(\.makeup.ombre), 0...1); row("Contour", f(\.makeup.contour), 0...1); row("Highlight", f(\.makeup.highlight), 0...1); row("Foundation", f(\.makeup.foundation), 0...1)
                     case .detail:
                         row("Flash", f(\.detail.flash), 0...1); row("Under-eye", f(\.detail.underEye), 0...1); row("Fine lines", f(\.detail.wrinkles), 0...1); row("Teeth", f(\.detail.teethWhiten), 0...1); row("Bright eyes", f(\.detail.eyeBright), 0...1)
                     }
