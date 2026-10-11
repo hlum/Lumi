@@ -68,8 +68,11 @@ enum GeometryOps {
         let t = CGAffineTransform(translationX: c.x, y: c.y).rotated(by: rad).translatedBy(x: -c.x, y: -c.y)
         let (w, h) = insetSize(width: e.width, height: e.height, radians: abs(rad))
         let rotated = img.transformed(by: t)
-        let box = CGRect(x: c.x - w / 2, y: c.y - h / 2, width: w, height: h)
-        return rotated.cropped(to: box)
+        // Whole pixels, pulled 1px inside so antialiased rotated edges never show.
+        let x0 = ceil(c.x - w / 2) + 1, y0 = ceil(c.y - h / 2) + 1
+        let x1 = floor(c.x + w / 2) - 1, y1 = floor(c.y + h / 2) - 1
+        guard x1 > x0, y1 > y0 else { return img }
+        return rotated.cropped(to: CGRect(x: x0, y: y0, width: x1 - x0, height: y1 - y0))
     }
 
     /// Largest same-aspect rect that fits inside a w×h frame rotated by `radians`.
