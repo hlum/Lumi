@@ -61,7 +61,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] T24 Custom stickers
 - [~] T25 Frames, doodle and marker
 - [~] T26 Mosaic and face cover
-- [~] T27 Watermarks
+- [x] T27 Watermarks
 - [~] T28 Content: stickers, fonts, frames, brush materials
 - [ ] ⏸ Checkpoint 3
 

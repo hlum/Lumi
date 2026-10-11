@@ -1,3 +1,4 @@
+import Observation
 import CoreGraphics
 import Foundation
 
@@ -50,4 +51,26 @@ struct WatermarkLibrary: Codable, Equatable {
         if let i = items.firstIndex(where: { $0.id == w.id }) { items[i] = w } else { items.append(w) }
     }
     mutating func delete(_ id: UUID) { items.removeAll { $0.id == id } }
+}
+
+/// Saved watermarks, kept in one JSON file so they can be reused on any photo.
+@Observable @MainActor
+final class WatermarkBox {
+    private(set) var library: WatermarkLibrary
+    private let url: URL?
+    nonisolated static var defaultURL: URL { URL.applicationSupportDirectory.appendingPathComponent("watermarks.json") }
+
+    init(url: URL? = WatermarkBox.defaultURL) {
+        self.url = url
+        if let url, let d = try? Data(contentsOf: url), let l = try? JSONDecoder().decode(WatermarkLibrary.self, from: d) { library = l } else { library = WatermarkLibrary() }
+    }
+
+    func save(_ w: Watermark) { library.save(w); persist() }
+    func delete(_ id: UUID) { library.delete(id); persist() }
+
+    private func persist() {
+        guard let url else { return }
+        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try? JSONEncoder().encode(library).write(to: url, options: .atomic)
+    }
 }

@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", mark = "Mark", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .mark: "checkmark.seal"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -40,6 +40,7 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .mark: MarkPanel(model: model)
                     case .liquify: LiquifyPanel(model: model)
                     case .face: FacePanel(model: model)
                     case .color: ColorPanel(model: model)
@@ -559,6 +560,46 @@ struct LiquifyOverlay: View {
                     model.draft.warp = w
                 }
                 .onEnded { _ in path = []; before = nil; model.commit() })
+        }
+    }
+}
+
+struct MarkPanel: View {
+    @Bindable var model: EditorModel
+    @State private var box = WatermarkBox()
+    @State private var text = ""
+    @State private var tiled = false
+    @State private var opacity = 0.6
+    @State private var size = 0.06
+
+    private var current: Watermark { Watermark(name: text, kind: .text(text), opacity: opacity, size: size, isTiled: tiled) }
+
+    var body: some View {
+        VStack(spacing: 6) {
+            HStack {
+                TextField("Your mark", text: $text).textFieldStyle(.roundedBorder)
+                Button("Apply") { model.edit { $0.watermark = text.isEmpty ? nil : current } }.buttonStyle(.borderedProminent)
+                Button("Save", systemImage: "star") { if !text.isEmpty { box.save(current) } }.labelStyle(.iconOnly).buttonStyle(.bordered)
+                Button("Off") { model.edit { $0.watermark = nil } }.buttonStyle(.bordered)
+            }.padding(.horizontal)
+            HStack {
+                ForEach(TimeStampStyle.allCases, id: \.self) { st in
+                    Button(st.rawValue.capitalized) { text = WatermarkMath.timeStamp(.now, style: st) }.buttonStyle(.bordered)
+                }
+                Toggle("Tiled", isOn: $tiled).fixedSize()
+            }.padding(.horizontal)
+            HStack { Text("Opacity").font(.caption); Slider(value: $opacity, in: 0.1...1) }.padding(.horizontal)
+            HStack { Text("Size").font(.caption); Slider(value: $size, in: 0.03...0.2) }.padding(.horizontal)
+            if !box.library.items.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(box.library.items) { w in
+                            Button(w.name) { if case .text(let t) = w.kind { text = t }; tiled = w.isTiled; opacity = w.opacity; size = w.size; model.edit { $0.watermark = w } }
+                                .buttonStyle(.bordered).contextMenu { Button("Delete", role: .destructive) { box.delete(w.id) } }
+                        }
+                    }.padding(.horizontal)
+                }
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+import CoreImage
 import Foundation
 import Testing
 @testable import Lumi
@@ -50,5 +51,38 @@ struct WatermarkTests {
         var lib = WatermarkLibrary()
         lib.save(Watermark(name: "a", kind: .image("logo"), isTiled: true))
         #expect(try JSONDecoder().decode(WatermarkLibrary.self, from: JSONEncoder().encode(lib)) == lib)
+    }
+}
+
+@MainActor
+struct WatermarkBoxTests {
+    static func url() -> URL { FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathComponent("w.json") }
+
+    @Test func savedWatermarksSurviveARelaunch() {
+        let u = Self.url(), a = WatermarkBox(url: u)
+        a.save(Watermark(name: "© me", kind: .text("© me"), opacity: 0.4, isTiled: true))
+        let b = WatermarkBox(url: u)
+        #expect(b.library.items.count == 1 && b.library.items[0].isTiled && b.library.items[0].opacity == 0.4)
+    }
+
+    @Test func savingTheSameMarkAgainReplacesAndDeleteRemoves() {
+        let u = Self.url(), a = WatermarkBox(url: u)
+        var w = Watermark(name: "x", kind: .text("x")); a.save(w)
+        w.opacity = 0.9; a.save(w)
+        #expect(WatermarkBox(url: u).library.items.count == 1 && WatermarkBox(url: u).library.items[0].opacity == 0.9)
+        a.delete(w.id); #expect(WatermarkBox(url: u).library.items.isEmpty)
+    }
+
+    @Test func missingOrCorruptFileStartsEmpty() throws {
+        #expect(WatermarkBox(url: Self.url()).library.items.isEmpty && WatermarkBox(url: nil).library.items.isEmpty)
+        let u = Self.url(); try FileManager.default.createDirectory(at: u.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data("nope".utf8).write(to: u)
+        #expect(WatermarkBox(url: u).library.items.isEmpty)
+    }
+
+    @Test func timeStampTextRendersAsAWatermark() {
+        let text = WatermarkMath.timeStamp(Date(timeIntervalSince1970: 1_700_000_000), style: .digital)
+        let out = WatermarkRenderer.apply(Watermark(name: "t", kind: .text(text), opacity: 1, size: 0.08), to: CIImage(color: .black).cropped(to: CGRect(x: 0, y: 0, width: 400, height: 300)))
+        #expect(ServicesSerial.MosaicWatermarkRenderTests.litPixels(out) > 50)
     }
 }
