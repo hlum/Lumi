@@ -18,6 +18,7 @@ enum Renderer {
         var subjectMasker: SubjectMasking?
         var faceFinder: FaceFinding?
         var textFinder: TextFinding?
+        var peopleFinder: PeopleFinding?
         var upscaler: Upscaling?
         var colorizer: Colorizing?
         var faceLandmarker: FaceLandmarking?

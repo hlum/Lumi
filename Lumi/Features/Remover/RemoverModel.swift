@@ -90,6 +90,20 @@ final class RemoverModel {
         if mask == strokesHistory.last { strokesHistory.removeLast() }       // a no-op gesture is not an undo step
     }
 
+    /// Selects the given regions (e.g. passers-by or text) as if painted by hand.
+    func select(_ mask: CIImage, extent: CGRect) {
+        strokesHistory.append(mask0)
+        let n = self.mask.width, h = self.mask.height
+        var px = [UInt8](repeating: 0, count: n * h)
+        CIContext().render(mask.transformed(by: CGAffineTransform(scaleX: CGFloat(n) / extent.width, y: CGFloat(h) / extent.height).translatedBy(x: -extent.minX, y: -extent.minY)),
+                           toBitmap: &px, rowBytes: n, bounds: CGRect(x: 0, y: 0, width: n, height: h), format: .L8, colorSpace: nil)
+        // bitmap row 0 is the top, which is exactly how MaskCanvas stores rows
+        var canvas = MaskCanvas(width: n, height: h)
+        for y in 0..<h { for x in 0..<n where px[y * n + x] > 100 { canvas.fill(rect: CGRect(x: x, y: y, width: 1, height: 1)) } }
+        var merged = self.mask; merged.union(canvas); self.mask = merged
+    }
+    private var mask0: MaskCanvas { mask }
+
     func undoStroke() { if let m = strokesHistory.popLast() { mask = m } }
     func clear() { mask = MaskCanvas(width: mask.width, height: mask.height); strokesHistory = [] }
 

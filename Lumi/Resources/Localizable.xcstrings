@@ -4257,6 +4257,22 @@
           }
         }
       }
+    },
+    "People": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "People"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "人物"
+          }
+        }
+      }
     }
   }
 }

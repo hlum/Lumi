@@ -11,6 +11,7 @@
 		039F18F5B28D0A44917FD62C /* AutoMosaicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF97E50C1DAAC31F45CC303 /* AutoMosaicTests.swift */; };
 		04EE05B54308799E287B857B /* FilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */; };
 		06E5B097A0F5414D728A6236 /* RealESRGAN_x4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 1DDAF2607ACDF083D01568FA /* RealESRGAN_x4.mlpackage */; };
+		070BA055122A76E11EC799F1 /* AutoRemove.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6D5739B6A5181B9270B2D4 /* AutoRemove.swift */; };
 		088FCC0C3D051A929590020B /* OutlineOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2059AFF4788F6C150A916E4 /* OutlineOps.swift */; };
 		0A021A54E63AED940A54802C /* RecipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C601C878EAB11731365C44CD /* RecipeTests.swift */; };
 		0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC95A6F45C46B646F93E2D4 /* ProjectsView.swift */; };
@@ -170,6 +171,7 @@
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
 		F30F07E38EDD31513B6F456A /* UpscalerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */; };
 		F4EB922F3593D5A9D7BC4031 /* FrameOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7449BB3478E8BCC8F1A69434 /* FrameOps.swift */; };
+		F5B9B4E42B12238904D5FA17 /* AutoRemoveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457AF41C440227957E07867 /* AutoRemoveTests.swift */; };
 		F67AD6F02B9512BA43801A9B /* Content in Resources */ = {isa = PBXBuildFile; fileRef = 3E077721CC782EB59A850370 /* Content */; };
 		F7840F7A78F842A9518A303C /* MosaicConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */; };
 		FA16BE874A77EF03C16C62E2 /* CustomStickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2354F623C6B2A8255A9876AD /* CustomStickers.swift */; };
@@ -336,6 +338,7 @@
 		C8D9C338123EE52D44EBB93E /* StickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerTests.swift; sourceTree = "<group>"; };
 		CB8736DB519C850F63367E1B /* Colorizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colorizer.swift; sourceTree = "<group>"; };
 		CC89147D6C307519EEC7D2EB /* FaceDetailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceDetailTests.swift; sourceTree = "<group>"; };
+		CD6D5739B6A5181B9270B2D4 /* AutoRemove.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoRemove.swift; sourceTree = "<group>"; };
 		CEF418AC311167A36E69E1C9 /* LaMa.mlpackage */ = {isa = PBXFileReference; path = LaMa.mlpackage; sourceTree = "<group>"; };
 		D6B0E9270308864D7250819E /* RecipeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeStorage.swift; sourceTree = "<group>"; };
 		D939A9C81B9C494B866DAF51 /* WarpBrush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarpBrush.swift; sourceTree = "<group>"; };
@@ -344,6 +347,7 @@
 		E2059AFF4788F6C150A916E4 /* OutlineOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineOps.swift; sourceTree = "<group>"; };
 		E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPreviewView.swift; sourceTree = "<group>"; };
 		E4411F910665922CEBCCE048 /* PersonTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTarget.swift; sourceTree = "<group>"; };
+		E457AF41C440227957E07867 /* AutoRemoveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoRemoveTests.swift; sourceTree = "<group>"; };
 		E5BFF55F06515FDDB7BD22F6 /* SkinOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinOps.swift; sourceTree = "<group>"; };
 		E5F6FD85211E45314EB0ED25 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		E9146527DAB38D7CB9078BD7 /* Compositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compositor.swift; sourceTree = "<group>"; };
@@ -437,6 +441,7 @@
 		2EA454CB6F8EA8F12D43C82D /* Remover */ = {
 			isa = PBXGroup;
 			children = (
+				CD6D5739B6A5181B9270B2D4 /* AutoRemove.swift */,
 				3B98FF1815ACDA1C82AF82D8 /* RemoverModel.swift */,
 				20E74D4A0DDE2E2A39EBB069 /* RemoverPanel.swift */,
 			);
@@ -703,6 +708,7 @@
 				00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */,
 				F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */,
 				4BF97E50C1DAAC31F45CC303 /* AutoMosaicTests.swift */,
+				E457AF41C440227957E07867 /* AutoRemoveTests.swift */,
 				799E0A7F6B09E939650A9220 /* AutoStraightenTests.swift */,
 				D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */,
 				721EBCF30A38FD687AAADCEF /* BodyReshapeTests.swift */,
@@ -985,6 +991,7 @@
 				11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */,
 				A3A928882F4F01F997BE2971 /* AutoBeauty.swift in Sources */,
 				CEFB67261AB35CDDD936C623 /* AutoMosaic.swift in Sources */,
+				070BA055122A76E11EC799F1 /* AutoRemove.swift in Sources */,
 				C563DFC87E175D83C1337861 /* AutoStraighten.swift in Sources */,
 				E554558AF06DAC5841820173 /* BatchModel.swift in Sources */,
 				31DB8323406C1443954751F6 /* BatchRunner.swift in Sources */,
@@ -1085,6 +1092,7 @@
 				47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */,
 				B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */,
 				039F18F5B28D0A44917FD62C /* AutoMosaicTests.swift in Sources */,
+				F5B9B4E42B12238904D5FA17 /* AutoRemoveTests.swift in Sources */,
 				708D813F7561EE4AF6785F7A /* AutoStraightenTests.swift in Sources */,
 				48E2388570DC973B1DCC5D83 /* BatchRunnerTests.swift in Sources */,
 				99A436F6C64A32889BCDB426 /* BodyReshapeTests.swift in Sources */,
