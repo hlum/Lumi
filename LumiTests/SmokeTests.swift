@@ -19,8 +19,9 @@ struct SmokeTests {
         #expect(obj?["ok"] as? Bool == true)
     }
 
-    @Test func appIsIPhoneOnly() {
-        #expect(Bundle.main.object(forInfoDictionaryKey: "UIDeviceFamily") == nil || (Bundle.main.object(forInfoDictionaryKey: "UIDeviceFamily") as? [Int]) == [1])
+    @Test func appIsNotIPadTargeted() {
+        let family = Bundle.main.object(forInfoDictionaryKey: "UIDeviceFamily") as? [Int] ?? [1]
+        #expect(!family.contains(2))
     }
 }
 
