@@ -1,3 +1,4 @@
+import Observation
 import Foundation
 
 struct FilterInfo: Codable, Equatable, Identifiable {
@@ -35,5 +36,29 @@ struct FilterPrefs: Codable, Equatable {
         let q = query.trimmingCharacters(in: .whitespaces).lowercased()
         let list = visible(all)
         return q.isEmpty ? list : list.filter { $0.name.lowercased().contains(q) || $0.category.lowercased().contains(q) }
+    }
+}
+
+/// Favorites, recents and hidden filters kept in one JSON file.
+@Observable @MainActor
+final class FilterPrefsBox {
+    private(set) var prefs: FilterPrefs
+    private let url: URL?
+    nonisolated static var defaultURL: URL { URL.applicationSupportDirectory.appendingPathComponent("filter-prefs.json") }
+
+    init(url: URL? = FilterPrefsBox.defaultURL) {
+        self.url = url
+        if let url, let d = try? Data(contentsOf: url), let p = try? JSONDecoder().decode(FilterPrefs.self, from: d) { prefs = p } else { prefs = FilterPrefs() }
+    }
+
+    func toggleFavorite(_ id: String) { prefs.toggleFavorite(id); persist() }
+    func used(_ id: String) { prefs.used(id); persist() }
+    func setHidden(_ id: String, _ h: Bool) { prefs.setHidden(id, h); persist() }
+    func isFavorite(_ id: String) -> Bool { prefs.favorites.contains(id) }
+
+    private func persist() {
+        guard let url else { return }
+        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try? JSONEncoder().encode(prefs).write(to: url, options: .atomic)
     }
 }

@@ -41,6 +41,7 @@ enum Renderer {
 
     static func render(_ frame: CIImage, document: EditDocument) -> CIImage {
         var img = frame
+        var beforeFilter: CIImage?
         for (i, op) in document.operations.enumerated() {
             switch op {
             case .exposure(let v): img = render(img, exposure: v)
@@ -50,7 +51,13 @@ enum Renderer {
             case .warp(let w): img = MeshWarpRenderer.apply(w.field, to: img)
             case .layers(let l): img = layered(l, over: img, prefix: Array(document.operations[0..<i]))
             case .remove(let masks): img = removed(masks, from: img, prefix: Array(document.operations[0...i]))
-            case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
+            case .filter(let id, let t): beforeFilter = img; img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
+            case .filterEraser(let m):
+                // brushed areas get the unfiltered picture back
+                if let original = beforeFilter, original.extent == img.extent {
+                    let f = CIFilter(name: "CIBlendWithMask", parameters: [kCIInputImageKey: original, kCIInputBackgroundImageKey: img, kCIInputMaskImageKey: MaskScaling.scaled(m, to: img.extent)])!
+                    img = f.outputImage?.cropped(to: img.extent) ?? img
+                }
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
             case .face(let f): img = retouched(f, from: img, prefix: Array(document.operations[0..<i]))

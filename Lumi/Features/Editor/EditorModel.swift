@@ -38,6 +38,9 @@ final class EditorModel {
     var showOriginal = false
     var doodleBrush = DoodleStroke.Brush.solid
     var warpBrush = WarpBrush()
+    var filterEraserActive = false
+    /// The eraser mask as of the last committed edit; a drag adds to it.
+    var committedEraser: MaskCanvas? { stack.current.filterEraser }
     var doodleColor = RGBA(r: 1, g: 0.3, b: 0.35, a: 1)
     /// Set while the remover tool is open so the preview can draw its brush gestures.
     var remover: RemoverModel?

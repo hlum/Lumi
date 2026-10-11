@@ -25,6 +25,7 @@ struct EditorView: View {
         VStack(spacing: 0) {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
+                    .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
@@ -251,24 +252,50 @@ struct CutoutPanel: View {
 struct FilterPanel: View {
     @Bindable var model: EditorModel
     @State private var category = FilterLibrary.shared.categories.first ?? ""
+    @State private var prefs = FilterPrefsBox()
+    @State private var erasing = false
     private let library = FilterLibrary.shared
+    private let favorites = "★"
+
+    private var shown: [FilterEntry] {
+        if category == favorites { return prefs.prefs.favorites.compactMap { library.entry($0) } }
+        if category == "Recent" { return prefs.prefs.recents.compactMap { library.entry($0) } }
+        return library.entries(in: category).filter { !prefs.prefs.hidden.contains($0.id) }
+    }
 
     var body: some View {
         VStack {
-            Picker("Category", selection: $category) { ForEach(library.categories, id: \.self) { Text($0.capitalized).tag($0) } }.pickerStyle(.menu)
+            HStack {
+                Picker("Category", selection: $category) {
+                    Text("★ Favorites").tag(favorites); Text("Recent").tag("Recent")
+                    ForEach(library.categories, id: \.self) { Text($0.capitalized).tag($0) }
+                }.pickerStyle(.menu)
+                if let id = model.draft.filter?.id {
+                    Button(prefs.isFavorite(id) ? "Unfavorite" : "Favorite", systemImage: prefs.isFavorite(id) ? "star.fill" : "star") { prefs.toggleFavorite(id) }.labelStyle(.iconOnly)
+                }
+                Toggle("Eraser", isOn: $erasing).fixedSize().disabled(model.draft.filter == nil)
+            }.padding(.horizontal)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    Button("Off") { model.edit { $0.filter = nil } }.buttonStyle(.bordered)
-                    ForEach(library.entries(in: category)) { e in
-                        Button(LocalizedStringKey(e.name)) { model.edit { $0.filter = (e.id, model.draft.filter?.intensity ?? 1) } }
+                    Button("Off") { model.edit { $0.filter = nil; $0.filterEraser = nil } }.buttonStyle(.bordered)
+                    ForEach(shown) { e in
+                        Button(LocalizedStringKey(e.name)) { prefs.used(e.id); model.edit { $0.filter = (e.id, model.draft.filter?.intensity ?? 1) } }
                             .buttonStyle(.bordered).tint(model.draft.filter?.id == e.id ? .accentColor : .secondary)
                     }
                 }.padding(.horizontal)
+            }
+            if erasing {
+                HStack {
+                    Text("Paint where the filter should go away").font(.caption).foregroundStyle(.secondary)
+                    Button("Clear eraser") { model.edit { $0.filterEraser = nil } }.buttonStyle(.bordered)
+                }
             }
             Slider(value: Binding(get: { model.draft.filter?.intensity ?? 1 }, set: { v in if let f = model.draft.filter { model.draft.filter = (f.id, v) } }), in: 0...1) { editing in
                 if !editing { model.commit() }
             }.padding(.horizontal).disabled(model.draft.filter == nil)
         }
+        .onChange(of: erasing) { _, on in model.filterEraserActive = on }
+        .onDisappear { model.filterEraserActive = false }
     }
 }
 
@@ -601,5 +628,29 @@ struct MarkPanel: View {
                 }
             }
         }
+    }
+}
+
+struct FilterEraserOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var remover: RemoverModel?
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    let p = map.toImageClamped(v.location)
+                    if remover == nil { remover = RemoverModel(imageSize: imageSize); remover?.brushSize = 0.06; remover?.begin(at: p) } else { remover?.move(to: p) }
+                    if let r = remover { model.draft.filterEraser = union(model.committedEraser, r.mask) }
+                }
+                .onEnded { _ in remover = nil; model.commit() })
+        }
+    }
+
+    private func union(_ base: MaskCanvas?, _ add: MaskCanvas) -> MaskCanvas {
+        guard var b = base, b.width == add.width, b.height == add.height else { return add }
+        b.union(add); return b
     }
 }

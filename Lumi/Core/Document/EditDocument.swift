@@ -101,6 +101,12 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.isIdentity ? nil : .face(newValue)) { if case .face = $0 { true } else { false } } }
     }
 
+    /// Where the filter has been brushed away (nil = filter applies everywhere).
+    var filterEraser: MaskCanvas? {
+        get { operations.lazy.compactMap { if case .filterEraser(let v) = $0 { v } else { nil } }.last }
+        set { set(newValue.flatMap { $0.isEmpty ? nil : EditOperation.filterEraser($0) }) { if case .filterEraser = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self
