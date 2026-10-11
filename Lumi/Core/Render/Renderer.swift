@@ -48,6 +48,7 @@ enum Renderer {
             case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
+            case .grade(let g): img = g.lut().apply(to: img)
             case .colorize(let t): img = colorized(t, from: img, prefix: Array(document.operations[0..<i]))
             case .upscale(let f): img = upscaled(f, from: img, prefix: Array(document.operations[0..<i]))
             case .frame(let c): img = FrameOps.apply(c, to: img)

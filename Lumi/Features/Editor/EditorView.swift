@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -39,6 +39,7 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .color: ColorPanel(model: model)
                     case .enhance: EnhancePanel(model: model)
                     case .export: ExportPanel(model: model)
                     }
@@ -389,5 +390,73 @@ struct ExportPanel: View {
                 Text("\(s.w) × \(s.h) px · about \(ByteCountFormatter.string(fromByteCount: Int64(b), countStyle: .file))").font(.caption).foregroundStyle(.secondary)
             }
         }
+    }
+}
+
+struct ColorPanel: View {
+    enum Section: String, CaseIterable { case hsl = "HSL", curves = "Curves", tone = "Tone", palette = "Palette" }
+    enum Channel: String, CaseIterable { case rgb = "RGB", red = "R", green = "G", blue = "B" }
+    @Bindable var model: EditorModel
+    @State private var section = Section.hsl
+    @State private var band = 0
+    @State private var channel = Channel.rgb
+    @State private var shadows = 0.0
+    @State private var mids = 0.0
+    @State private var highs = 0.0
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Picker("Section", selection: $section) { ForEach(Section.allCases, id: \.self) { Text($0.rawValue).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            switch section {
+            case .hsl:
+                Picker("Band", selection: $band) { ForEach(0..<8, id: \.self) { Text(ColorGrade.bandNames[$0]).tag($0) } }.pickerStyle(.menu)
+                slider("Hue", Binding(get: { model.draft.grade.bands[band].hue }, set: { model.draft.grade.bands[band].hue = $0 }))
+                slider("Saturation", Binding(get: { model.draft.grade.bands[band].sat }, set: { model.draft.grade.bands[band].sat = $0 }))
+                slider("Luminance", Binding(get: { model.draft.grade.bands[band].lum }, set: { model.draft.grade.bands[band].lum = $0 }))
+            case .curves:
+                Picker("Channel", selection: $channel) { ForEach(Channel.allCases, id: \.self) { Text($0.rawValue).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(ColorGrade.curvePresets.keys.sorted(), id: \.self) { name in
+                            Button(name.capitalized) { let c = ColorGrade.curvePresets[name]!; model.edit { $0.grade.rgbCurve = c.rgb; $0.grade.redCurve = c.r; $0.grade.greenCurve = c.g; $0.grade.blueCurve = c.b } }.buttonStyle(.bordered)
+                        }
+                        Button("Reset") { model.edit { $0.grade.rgbCurve = ToneCurve(); $0.grade.redCurve = ToneCurve(); $0.grade.greenCurve = ToneCurve(); $0.grade.blueCurve = ToneCurve() }; shadows = 0; mids = 0; highs = 0 }.buttonStyle(.bordered)
+                    }.padding(.horizontal)
+                }
+                slider("Shadows", $shadows, apply: curve); slider("Midtones", $mids, apply: curve); slider("Highlights", $highs, apply: curve)
+            case .tone:
+                slider("Shadow tint", Binding(get: { model.draft.grade.shadows.sat }, set: { model.draft.grade.shadows.sat = $0 }), range: 0...1)
+                slider("Shadow hue", Binding(get: { model.draft.grade.shadows.hue / 360 }, set: { model.draft.grade.shadows.hue = $0 * 360 }), range: 0...1)
+                slider("Highlight tint", Binding(get: { model.draft.grade.highlights.sat }, set: { model.draft.grade.highlights.sat = $0 }), range: 0...1)
+                slider("Highlight hue", Binding(get: { model.draft.grade.highlights.hue / 360 }, set: { model.draft.grade.highlights.hue = $0 * 360 }), range: 0...1)
+                Stepper("Posterize: \(model.draft.grade.posterize == 0 ? "off" : "\(model.draft.grade.posterize)")", value: Binding(get: { model.draft.grade.posterize }, set: { v in model.edit { $0.grade.posterize = v == 1 ? 0 : v } }), in: 0...16).padding(.horizontal)
+            case .palette:
+                if let o = model.original {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack { ForEach(Array(ColorSampler.palette(Renderer.proxy(o, maxDimension: 256), count: 8).enumerated()), id: \.offset) { _, c in
+                            Circle().fill(Color(red: c.r, green: c.g, blue: c.b)).frame(width: 36, height: 36).overlay(Circle().stroke(.secondary, lineWidth: 1))
+                        } }.padding(.horizontal)
+                    }
+                    Text("Colors in this photo").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func curve() {
+        let c = ColorGrade.curve(shadows: shadows, mids: mids, highlights: highs)
+        switch channel {
+        case .rgb: model.draft.grade.rgbCurve = c
+        case .red: model.draft.grade.redCurve = c
+        case .green: model.draft.grade.greenCurve = c
+        case .blue: model.draft.grade.blueCurve = c
+        }
+    }
+
+    private func slider(_ title: String, _ value: Binding<Double>, range: ClosedRange<Double> = -1...1, apply: (() -> Void)? = nil) -> some View {
+        HStack {
+            Text(LocalizedStringKey(title)).font(.caption).frame(width: 90, alignment: .leading)
+            Slider(value: Binding(get: { value.wrappedValue }, set: { value.wrappedValue = $0; apply?() }), in: range) { if !$0 { model.commit() } }
+        }.padding(.horizontal)
     }
 }

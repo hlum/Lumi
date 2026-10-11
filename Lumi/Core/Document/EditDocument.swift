@@ -91,6 +91,11 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.map { .colorize(strength: min(max($0, 0), 1)) }) { if case .colorize = $0 { true } else { false } } }
     }
 
+    var grade: ColorGrade {
+        get { operations.lazy.compactMap { if case .grade(let v) = $0 { v } else { nil } }.last ?? ColorGrade() }
+        set { set(newValue.isIdentity ? nil : .grade(newValue)) { if case .grade = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self
