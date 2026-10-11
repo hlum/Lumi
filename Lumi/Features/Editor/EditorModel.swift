@@ -109,6 +109,14 @@ final class EditorModel {
     }
     var selectedLayerValue: Layer? { selectedLayer.flatMap { id in draft.layers.layers.first { $0.id == id } } }
 
+    /// Cuts the main subject out of the photo and keeps it under "My stickers". Returns nil when no subject is found.
+    @discardableResult
+    func makeStickerFromSubject() -> CustomSticker? {
+        guard let o = original, let masker = Renderer.services.subjectMasker, let mask = (try? masker.subjectMask(for: o)) ?? nil else { return nil }
+        var c = CutoutConfig(); c.feather = 0.1
+        return CustomStickerStore.shared.add(cutout: CutoutOps.apply(c, to: o, subjectMask: mask))
+    }
+
     func commit() { stack.commit(draft); autosave() }
 
     private func autosave() {

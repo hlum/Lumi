@@ -4129,6 +4129,54 @@
           }
         }
       }
+    },
+    "Make from subject": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make from subject"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "被写体からステッカー作成"
+          }
+        }
+      }
+    },
+    "My stickers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My stickers"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マイステッカー"
+          }
+        }
+      }
+    },
+    "Save as sticker": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save as sticker"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ステッカーとして保存"
+          }
+        }
+      }
     }
   }
 }

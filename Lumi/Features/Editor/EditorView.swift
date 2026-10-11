@@ -237,6 +237,7 @@ struct CutoutPanel: View {
                     }
                 }.padding(.horizontal)
             }
+            Button("Save as sticker", systemImage: "face.smiling") { model.makeStickerFromSubject() }.buttonStyle(.bordered)
             slider("Soft edge", \.feather, 0...1)
             slider("Edge shift", \.shift, -1...1)
         }
@@ -306,10 +307,19 @@ struct StickerPanel: View {
     @Bindable var model: EditorModel
     @State private var query = ""
     @State private var outline = 0.0
+    @State private var noSubject = false
 
     var body: some View {
         VStack {
             TextField("Search", text: $query).textFieldStyle(.roundedBorder).padding(.horizontal)
+            HStack {
+                Button("Make from subject", systemImage: "person.crop.circle.badge.plus") { if model.makeStickerFromSubject() == nil { noSubject = true } }.buttonStyle(.bordered)
+                ForEach(CustomStickerStore.shared.items) { c in
+                    Button { add(c.id) } label: {
+                        if let ci = CustomStickerStore.shared.image(c.id), let cg = CIContext().createCGImage(Renderer.proxy(ci, maxDimension: 96), from: Renderer.proxy(ci, maxDimension: 96).extent) { Image(decorative: cg, scale: 1).resizable().scaledToFit().frame(width: 44, height: 44) } else { Text(c.name) }
+                    }.contextMenu { Button("Delete", role: .destructive) { CustomStickerStore.shared.remove(c.id) } }
+                }
+            }.padding(.horizontal)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     ForEach(StickerLibrary.search(query)) { s in

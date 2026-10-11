@@ -159,6 +159,7 @@ enum StickerLibrary {
 
     /// The sticker as a transparent square image. `color` overrides the default tint.
     static func image(_ id: String, side: Int = 512, color: RGBA? = nil) -> CIImage? {
+        if CustomStickerStore.isCustom(id) { return CustomStickerStore.shared.image(id) }       // user-made stickers are ready-made pictures
         guard let info = all.first(where: { $0.id == id }), let p = path(id) else { return nil }
         let c = color ?? info.color
         let s = CGFloat(side)
