@@ -17,7 +17,10 @@ struct RootTabView: View {
         TabView {
             ForEach(RootTab.allCases) { tab in
                 Tab(tab.rawValue, systemImage: tab.symbol) {
-                    NavigationStack { ContentUnavailableView(tab.rawValue, systemImage: tab.symbol).navigationTitle(tab.rawValue) }
+                    NavigationStack {
+                        if tab == .home { EditorView() }
+                        else { ContentUnavailableView(tab.rawValue, systemImage: tab.symbol).navigationTitle(tab.rawValue) }
+                    }
                 }
             }
         }

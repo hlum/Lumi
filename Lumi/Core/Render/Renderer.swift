@@ -11,6 +11,14 @@ enum Renderer {
         return f.outputImage ?? frame
     }
 
+    static func render(_ frame: CIImage, document: EditDocument) -> CIImage {
+        document.operations.reduce(frame) { img, op in
+            switch op {
+            case .exposure(let v): render(img, exposure: v)
+            }
+        }
+    }
+
     /// Downscale so the longest side is at most `maxDimension`; never upscales.
     static func proxy(_ image: CIImage, maxDimension: CGFloat) -> CIImage {
         let longest = max(image.extent.width, image.extent.height)
