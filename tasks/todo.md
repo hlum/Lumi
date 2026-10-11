@@ -162,7 +162,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T92 Long jobs and recent tasks
 - [~] T93 Localization
 - [ ] T94 Performance, memory, accessibility
-- [ ] T95 Release prep
+- [~] T95 Release prep
 - [ ] ⏸ Final checkpoint
 
 

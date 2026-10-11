@@ -358,5 +358,20 @@
     "modifiedNote": null,
     "dateAdded": "2026-10-12",
     "selfMade": false
+  },
+  {
+    "files": [
+      "Assets.xcassets/AppIcon.appiconset/icon-1024.png"
+    ],
+    "title": "App icon",
+    "author": "Lumi",
+    "sourceURL": "",
+    "license": "Self-made",
+    "licenseURL": "",
+    "attribution": "App icon drawn by Lumi (scripts/make_icon.swift).",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": true
   }
 ]
