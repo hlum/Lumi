@@ -522,7 +522,7 @@ struct ColorPanel: View {
 }
 
 struct FacePanel: View {
-    enum Group: String, CaseIterable { case looks = "Looks", skin = "Skin", shape = "Shape", makeup = "Makeup", detail = "Detail" }
+    enum Group: String, CaseIterable { case looks = "Looks", skin = "Skin", shape = "Shape", makeup = "Makeup", eyes = "Eyes", detail = "Detail" }
     @Bindable var model: EditorModel
     @State private var group = Group.looks
     @State private var strength = 1.0
@@ -546,12 +546,23 @@ struct FacePanel: View {
                         row("Jaw", f(\.reshape.jawSlim)); row("Face width", f(\.reshape.faceWidth)); row("Chin", f(\.reshape.chinLength)); row("Eyes", f(\.reshape.eyeSize)); row("Nose", f(\.reshape.noseSlim)); row("Mouth", f(\.reshape.mouthSize)); row("Cheek volume", f(\.reshape.cheekVolume)); row("Lift", f(\.reshape.lift))
                     case .makeup:
                         row("Lipstick", f(\.makeup.lipOpacity), 0...1); row("Blush", f(\.makeup.blushOpacity), 0...1); row("Lip shine", f(\.makeup.ombre), 0...1); row("Contour", f(\.makeup.contour), 0...1); row("Highlight", f(\.makeup.highlight), 0...1); row("Foundation", f(\.makeup.foundation), 0...1)
+                    case .eyes:
+                        row("Shadow", e(\.eyes.left.shadow, \.eyes.right.shadow), 0...1); row("Eyeliner", e(\.eyes.left.liner, \.eyes.right.liner), 0...1); row("Lashes", e(\.eyes.left.lashes, \.eyes.right.lashes), 0...1)
+                        row("Brow color", f(\.eyes.browOpacity), 0...1); row("Brow height", f(\.eyes.browHeight))
+                        Picker("Brow shape", selection: Binding(get: { model.draft.face.eyes.browShape }, set: { v in model.edit { var fr = $0.face; fr.eyes.browShape = v; $0.face = fr } })) {
+                            ForEach(EyeMakeup.BrowShape.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) }
+                        }.pickerStyle(.segmented).padding(.horizontal)
                     case .detail:
                         row("Flash", f(\.detail.flash), 0...1); row("Under-eye", f(\.detail.underEye), 0...1); row("Fine lines", f(\.detail.wrinkles), 0...1); row("Teeth", f(\.detail.teethWhiten), 0...1); row("Bright eyes", f(\.detail.eyeBright), 0...1)
                     }
                 }
             }
         }
+    }
+
+    /// One slider that drives both eyes.
+    private func e(_ l: WritableKeyPath<FaceRetouch, Double>, _ r: WritableKeyPath<FaceRetouch, Double>) -> Binding<Double> {
+        Binding(get: { model.draft.face[keyPath: l] }, set: { model.draft.face[keyPath: l] = $0; model.draft.face[keyPath: r] = $0 })
     }
 
     private func apply() { if let l = AutoBeauty.looks.first(where: { $0.id == lookID }) { model.edit { $0.face = FaceRetouch.look(l, strength: strength) } } }

@@ -35,6 +35,7 @@
 		156F970EA97DB975DE17F769 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2248574B322F87BAF16D744D /* HomeView.swift */; };
 		1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */; };
 		19910705AD1775CD49C02379 /* Smoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A63C89407FE7AD33C7ED2A /* Smoothing.swift */; };
+		1A5E5167580AFB58D4626BC7 /* EyeMakeup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336D9D25B8DC482C4BCE4290 /* EyeMakeup.swift */; };
 		211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */; };
 		218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */; };
 		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
@@ -160,6 +161,7 @@
 		DE76D9A30B68F54C16A16823 /* SpotAndBeautyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BFE211254C95958D5476D6 /* SpotAndBeautyTests.swift */; };
 		DF7761A3CBBCF7D23EE560CF /* BodyReshape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4056C5884735CA99A57205A6 /* BodyReshape.swift */; };
 		DF88952B315102B0BB5A7269 /* RecipeLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9695B325C436F8ED8E7CC5BB /* RecipeLibraryTests.swift */; };
+		E2A6C55622E23F1CA66D9ABA /* EyeMakeupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DCBC36458F74F9782216BE /* EyeMakeupTests.swift */; };
 		E48FF29EEA9E32DB249CCBEF /* WarpBrush.swift in Sources */ = {isa = PBXBuildFile; fileRef = D939A9C81B9C494B866DAF51 /* WarpBrush.swift */; };
 		E554558AF06DAC5841820173 /* BatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF9DBEC384E6F9CE564684 /* BatchModel.swift */; };
 		E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F6D20B0D9131790C14898 /* CurveTests.swift */; };
@@ -223,6 +225,7 @@
 		2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTargetTests.swift; sourceTree = "<group>"; };
 		2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStore.swift; sourceTree = "<group>"; };
 		3037684EC9790617FB2CFC8A /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
+		336D9D25B8DC482C4BCE4290 /* EyeMakeup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeMakeup.swift; sourceTree = "<group>"; };
 		338C1ECF08D0026F2F0775CB /* ExpandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandTests.swift; sourceTree = "<group>"; };
 		34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicWatermarkRenderTests.swift; sourceTree = "<group>"; };
 		36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumiApp.swift; sourceTree = "<group>"; };
@@ -316,6 +319,7 @@
 		AD4A66AD237D031E560D4083 /* AnalysisCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisCache.swift; sourceTree = "<group>"; };
 		AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandOps.swift; sourceTree = "<group>"; };
 		B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealOps.swift; sourceTree = "<group>"; };
+		B3DCBC36458F74F9782216BE /* EyeMakeupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeMakeupTests.swift; sourceTree = "<group>"; };
 		B46D2DF1A16B93F34F960633 /* EditOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOperation.swift; sourceTree = "<group>"; };
 		B75EC58A061903DB807EB806 /* FaceReshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReshape.swift; sourceTree = "<group>"; };
 		B811579D45E6D169E012A01C /* SkinMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinMask.swift; sourceTree = "<group>"; };
@@ -683,6 +687,7 @@
 				4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */,
 				822743120DCD963E72152CDB /* CutoutOps.swift */,
 				AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */,
+				336D9D25B8DC482C4BCE4290 /* EyeMakeup.swift */,
 				7617756AADC6EA3B700C073B /* FaceDetailOps.swift */,
 				0AE13258B4F65203F283ABBC /* GeometryOps.swift */,
 				B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */,
@@ -726,6 +731,7 @@
 				0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */,
 				338C1ECF08D0026F2F0775CB /* ExpandTests.swift */,
 				9D78D42373B602DC28F02BF2 /* ExportSettingsTests.swift */,
+				B3DCBC36458F74F9782216BE /* EyeMakeupTests.swift */,
 				CC89147D6C307519EEC7D2EB /* FaceDetailTests.swift */,
 				946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */,
 				A1D5F2CA599ED948B8E964D4 /* FaceRetouchTests.swift */,
@@ -1017,6 +1023,7 @@
 				7790F3D91D0795A7FAAA5488 /* EditorView.swift in Sources */,
 				D83608EE7515CE4F81544548 /* ExpandOps.swift in Sources */,
 				62321582DF77C5697193257F /* ExportSettings.swift in Sources */,
+				1A5E5167580AFB58D4626BC7 /* EyeMakeup.swift in Sources */,
 				4BBA6FC9B958CB9512AD8233 /* FaceDetailOps.swift in Sources */,
 				3593E8C2A5D2CD5282187C7F /* FaceReshape.swift in Sources */,
 				D9C34E3778F02EB1DF899E44 /* FaceRetouch.swift in Sources */,
@@ -1110,6 +1117,7 @@
 				3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */,
 				C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */,
 				83674C9CD76993A36AA0DC52 /* ExportSettingsTests.swift in Sources */,
+				E2A6C55622E23F1CA66D9ABA /* EyeMakeupTests.swift in Sources */,
 				70009154BEC7B780DF6B9301 /* FaceDetailTests.swift in Sources */,
 				CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */,
 				34735321538A040EA61330F0 /* FaceRetouchTests.swift in Sources */,
