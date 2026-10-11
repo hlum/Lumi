@@ -48,8 +48,17 @@ enum LayerRenderer {
         return img.composited(over: base).cropped(to: e)
     }
 
-    static func render(_ stack: LayerStack, over base: CIImage, stickerImage: (String) -> CIImage? = { StickerLibrary.image($0) }) -> CIImage {
+    /// `subjectMask`: white = main subject; layers flagged `behindSubject` are drawn and then the subject is restored over them.
+    static func render(_ stack: LayerStack, over base: CIImage, subjectMask: CIImage? = nil, stickerImage: (String) -> CIImage? = { StickerLibrary.image($0) }) -> CIImage {
         stack.layers.reduce(base) { acc, layer in
+            let drawn = drawLayer(layer, over: acc, base: base, stickerImage: stickerImage)
+            guard layer.behindSubject, let mask = subjectMask else { return drawn }
+            let restore = CIFilter(name: "CIBlendWithMask", parameters: [kCIInputImageKey: acc, kCIInputBackgroundImageKey: drawn, kCIInputMaskImageKey: mask])!
+            return restore.outputImage?.cropped(to: base.extent) ?? drawn
+        }
+    }
+
+    private static func drawLayer(_ layer: Layer, over acc: CIImage, base: CIImage, stickerImage: (String) -> CIImage?) -> CIImage {
             switch layer.content {
             case .text(let s, let style):
                 guard let ti = textImage(s, style: style, imageHeight: base.extent.height) else { return acc }
@@ -62,6 +71,5 @@ enum LayerRenderer {
                 si = si.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
                 return composite(si, transform: layer.transform, opacity: layer.opacity, over: acc)
             }
-        }
     }
 }

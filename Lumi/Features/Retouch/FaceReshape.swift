@@ -7,6 +7,17 @@ struct FaceReshapeParams: Codable, Equatable {
     var cheekVolume = 0.0, lift = 0.0
 
     var isIdentity: Bool { self == FaceReshapeParams() }
+
+    init() {}
+    enum CodingKeys: String, CodingKey { case jawSlim, chinLength, eyeSize, noseSlim, mouthSize, faceWidth, cheekVolume, lift }
+    init(jawSlim: Double = 0, chinLength: Double = 0, eyeSize: Double = 0, noseSlim: Double = 0, mouthSize: Double = 0, faceWidth: Double = 0, cheekVolume: Double = 0, lift: Double = 0) {
+        self.jawSlim = jawSlim; self.chinLength = chinLength; self.eyeSize = eyeSize; self.noseSlim = noseSlim; self.mouthSize = mouthSize; self.faceWidth = faceWidth; self.cheekVolume = cheekVolume; self.lift = lift
+    }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        func d(_ k: CodingKeys) throws -> Double { try c.decodeIfPresent(Double.self, forKey: k) ?? 0 }
+        self.init(jawSlim: try d(.jawSlim), chinLength: try d(.chinLength), eyeSize: try d(.eyeSize), noseSlim: try d(.noseSlim), mouthSize: try d(.mouthSize), faceWidth: try d(.faceWidth), cheekVolume: try d(.cheekVolume), lift: try d(.lift))
+    }
     mutating func clamp() {
         func c(_ v: inout Double) { v = min(max(v, -1), 1) }
         c(&jawSlim); c(&chinLength); c(&eyeSize); c(&noseSlim); c(&mouthSize); c(&faceWidth); c(&cheekVolume); c(&lift)

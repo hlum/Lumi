@@ -34,8 +34,25 @@ struct Layer: Codable, Equatable, Identifiable {
     var content: Content
     var transform = LayerTransform()
     var opacity = 1.0
+    /// Draw the layer behind the main subject (the subject is put back on top).
+    var behindSubject = false
 
     var isSticker: Bool { if case .sticker = content { true } else { false } }
+
+    init(id: UUID = UUID(), content: Content, transform: LayerTransform = LayerTransform(), opacity: Double = 1, behindSubject: Bool = false) {
+        self.id = id; self.content = content; self.transform = transform; self.opacity = opacity; self.behindSubject = behindSubject
+    }
+
+    // Drafts saved before a field existed must still open: every field after the first release is optional on decode.
+    enum CodingKeys: String, CodingKey { case id, content, transform, opacity, behindSubject }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        content = try c.decode(Content.self, forKey: .content)
+        transform = try c.decodeIfPresent(LayerTransform.self, forKey: .transform) ?? LayerTransform()
+        opacity = try c.decodeIfPresent(Double.self, forKey: .opacity) ?? 1
+        behindSubject = try c.decodeIfPresent(Bool.self, forKey: .behindSubject) ?? false
+    }
 }
 
 /// Ordered overlay layers (back to front) with the product limits.

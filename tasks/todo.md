@@ -56,7 +56,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 
 **Phase 3: Overlays**
 - [~] T21 Text basics
-- [ ] T22 Text styles
+- [x] T22 Text styles
 - [~] T23 Stickers
 - [ ] T24 Custom stickers
 - [~] T25 Frames, doodle and marker

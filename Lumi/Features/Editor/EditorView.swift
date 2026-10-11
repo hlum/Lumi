@@ -149,6 +149,8 @@ struct TextPanel: View {
     @Bindable var model: EditorModel
     @State private var text = ""
     @State private var font = FontLibrary.all.first!.postScript
+    @State private var preset: TextPreset?
+    @State private var behind = false
 
     var body: some View {
         VStack {
@@ -156,15 +158,29 @@ struct TextPanel: View {
             HStack {
                 TextField("Add text", text: $text).textFieldStyle(.roundedBorder)
                 Button("Add") {
-                    var style = TextStyle(); style.fontName = font
-                    let layer = Layer(content: .text(text, style))
+                    var style = preset?.style ?? TextStyle(); style.fontName = font
+                    var layer = Layer(content: .text(text, style)); layer.behindSubject = behind
                     model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }   // the stack rejects empty text
                     text = ""
                 }.disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
             }.padding(.horizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(TextStylePresets.all) { p in
+                        Button(LocalizedStringKey(p.name)) { font = p.style.fontName; preset = p }.buttonStyle(.bordered).tint(preset == p ? .accentColor : .secondary)
+                    }
+                }.padding(.horizontal)
+            }
+            Toggle("Behind subject", isOn: $behind).padding(.horizontal)
             List {
                 ForEach(model.draft.layers.layers) { l in
-                    if case .text(let s, _) = l.content { Text(s) }
+                    if case .text(let s, _) = l.content {
+                        HStack {
+                            Text(s)
+                            Spacer()
+                            Menu("Style") { ForEach(TextStylePresets.all) { p in Button(LocalizedStringKey(p.name)) { let id = l.id; model.edit { d in var st = d.layers; st.update(id) { $0 = TextStylePresets.apply(p, to: $0) }; d.layers = st } } } }
+                        }
+                    }
                 }
                 .onDelete { idx in
                     let ids = idx.map { model.draft.layers.layers[$0].id }

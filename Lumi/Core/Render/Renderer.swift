@@ -48,7 +48,7 @@ enum Renderer {
             case .adjust(let a): img = AdjustOps.apply(a, to: img)
             case .curve(let c): img = AdjustOps.apply(c, to: img)
             case .warp(let w): img = MeshWarpRenderer.apply(w.field, to: img)
-            case .layers(let l): img = LayerRenderer.render(l, over: img)
+            case .layers(let l): img = layered(l, over: img, prefix: Array(document.operations[0..<i]))
             case .remove(let masks): img = removed(masks, from: img, prefix: Array(document.operations[0...i]))
             case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
@@ -116,6 +116,15 @@ enum Renderer {
         if let c = services.faceCache, c.key == key { faces = c.faces }
         else { faces = (try? finder.faces(in: image)) ?? []; services.remember(faces: faces, key: key) }
         return FaceRetouchRender.apply(f, to: image, faces: faces)
+    }
+
+    /// Layers flagged "behind subject" need the subject mask; it is found once per (image, earlier ops) and reused.
+    static func layered(_ stack: LayerStack, over image: CIImage, prefix: [EditOperation]) -> CIImage {
+        var mask: CIImage?
+        if stack.layers.contains(where: \.behindSubject), let masker = services.subjectMasker {
+            mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil
+        }
+        return LayerRenderer.render(stack, over: image, subjectMask: mask)
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {
