@@ -5,8 +5,12 @@ import Testing
 
 @MainActor
 struct ProjectStoreTests {
+    /// A context doesn't keep its container alive; hold them for the whole run.
+    static var containers: [ModelContainer] = []
+
     static func store() throws -> ProjectStore {
         let c = try ModelContainer(for: Project.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        containers.append(c)
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         return ProjectStore(context: ModelContext(c), directory: dir)
     }

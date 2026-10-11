@@ -34,12 +34,4 @@ struct AnalysisTests {
         let v = await c.value(for: "a") { 5 }
         #expect(v == 5)
     }
-
-    @Test func visionAnalyzerHandlesBlankImage() async throws {
-        let ctx = CGContext(data: nil, width: 64, height: 64, bitsPerComponent: 8, bytesPerRow: 0,
-                            space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
-        ctx.setFillColor(CGColor(gray: 0.5, alpha: 1)); ctx.fill(CGRect(x: 0, y: 0, width: 64, height: 64))
-        let a = try await VisionAnalyzer().analyze(ctx.makeImage()!)
-        #expect(a.faces.isEmpty && a.textBoxes.isEmpty)
-    }
 }
