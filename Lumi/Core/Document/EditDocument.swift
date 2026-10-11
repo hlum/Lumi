@@ -55,6 +55,12 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.isIdentity ? nil : .expand(newValue)) { if case .expand = $0 { true } else { false } } }
     }
 
+    /// The applied filter (id and 0...1 intensity), or nil.
+    var filter: (id: String, intensity: Double)? {
+        get { operations.lazy.compactMap { if case .filter(let id, let i) = $0 { (id, i) } else { nil } }.last }
+        set { set(newValue.map { .filter(id: $0.id, intensity: min(max($0.intensity, 0), 1)) }) { if case .filter = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

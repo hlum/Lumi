@@ -49,7 +49,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T15 Adjust panel
 - [~] T16 HSL, curves, split tone, color picker
 - [~] T17 Filter engine
-- [ ] T18 Content: filter pack v1
+- [x] T18 Content: filter pack v1
 - [~] T19 Smart color tools
 - [ ] T20 AI Flash and face fill light
 - [ ] ⏸ Checkpoint 2

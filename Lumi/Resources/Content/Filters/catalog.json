@@ -1,0 +1,436 @@
+[
+ {
+  "id": "clean",
+  "file": "clean.cube",
+  "name": "Clean",
+  "nameJa": "クリーン",
+  "category": "basics"
+ },
+ {
+  "id": "bright",
+  "file": "bright.cube",
+  "name": "Bright",
+  "nameJa": "ブライト",
+  "category": "basics"
+ },
+ {
+  "id": "deep",
+  "file": "deep.cube",
+  "name": "Deep",
+  "nameJa": "ディープ",
+  "category": "basics"
+ },
+ {
+  "id": "soft",
+  "file": "soft.cube",
+  "name": "Soft",
+  "nameJa": "ソフト",
+  "category": "basics"
+ },
+ {
+  "id": "vivid",
+  "file": "vivid.cube",
+  "name": "Vivid",
+  "nameJa": "ビビッド",
+  "category": "basics"
+ },
+ {
+  "id": "mono",
+  "file": "mono.cube",
+  "name": "Mono",
+  "nameJa": "モノ",
+  "category": "basics"
+ },
+ {
+  "id": "warm",
+  "file": "warm.cube",
+  "name": "Warm",
+  "nameJa": "ウォーム",
+  "category": "basics"
+ },
+ {
+  "id": "cool",
+  "file": "cool.cube",
+  "name": "Cool",
+  "nameJa": "クール",
+  "category": "basics"
+ },
+ {
+  "id": "flash",
+  "file": "flash.cube",
+  "name": "Flash",
+  "nameJa": "フラッシュ",
+  "category": "flash"
+ },
+ {
+  "id": "flash-night",
+  "file": "flash-night.cube",
+  "name": "Night flash",
+  "nameJa": "ナイトフラッシュ",
+  "category": "flash"
+ },
+ {
+  "id": "ccd-2005",
+  "file": "ccd-2005.cube",
+  "name": "CCD 2005",
+  "nameJa": "CCD 2005",
+  "category": "flash"
+ },
+ {
+  "id": "digicam",
+  "file": "digicam.cube",
+  "name": "Digicam",
+  "nameJa": "デジカメ",
+  "category": "flash"
+ },
+ {
+  "id": "compact",
+  "file": "compact.cube",
+  "name": "Compact",
+  "nameJa": "コンパクト",
+  "category": "flash"
+ },
+ {
+  "id": "y2k",
+  "file": "y2k.cube",
+  "name": "Y2K",
+  "nameJa": "Y2K",
+  "category": "flash"
+ },
+ {
+  "id": "point-and-shoot",
+  "file": "point-and-shoot.cube",
+  "name": "Point & shoot",
+  "nameJa": "ポイントシュート",
+  "category": "flash"
+ },
+ {
+  "id": "film-gold",
+  "file": "film-gold.cube",
+  "name": "Gold 200",
+  "nameJa": "ゴールド200",
+  "category": "film"
+ },
+ {
+  "id": "film-fuji",
+  "file": "film-fuji.cube",
+  "name": "Green film",
+  "nameJa": "グリーンフィルム",
+  "category": "film"
+ },
+ {
+  "id": "film-portra",
+  "file": "film-portra.cube",
+  "name": "Portra",
+  "nameJa": "ポートラ",
+  "category": "film"
+ },
+ {
+  "id": "film-ektar",
+  "file": "film-ektar.cube",
+  "name": "Ektar",
+  "nameJa": "エクター",
+  "category": "film"
+ },
+ {
+  "id": "film-bw",
+  "file": "film-bw.cube",
+  "name": "B&W film",
+  "nameJa": "白黒フィルム",
+  "category": "film"
+ },
+ {
+  "id": "film-faded",
+  "file": "film-faded.cube",
+  "name": "Faded film",
+  "nameJa": "色あせフィルム",
+  "category": "film"
+ },
+ {
+  "id": "film-cross",
+  "file": "film-cross.cube",
+  "name": "Cross process",
+  "nameJa": "クロスプロセス",
+  "category": "film"
+ },
+ {
+  "id": "film-tungsten",
+  "file": "film-tungsten.cube",
+  "name": "Tungsten",
+  "nameJa": "タングステン",
+  "category": "film"
+ },
+ {
+  "id": "film-expired",
+  "file": "film-expired.cube",
+  "name": "Expired",
+  "nameJa": "期限切れ",
+  "category": "film"
+ },
+ {
+  "id": "cam-instant",
+  "file": "cam-instant.cube",
+  "name": "Instant",
+  "nameJa": "インスタント",
+  "category": "camera"
+ },
+ {
+  "id": "cam-polaroid",
+  "file": "cam-polaroid.cube",
+  "name": "Polaroid",
+  "nameJa": "ポラロイド",
+  "category": "camera"
+ },
+ {
+  "id": "cam-lomo",
+  "file": "cam-lomo.cube",
+  "name": "Lomo",
+  "nameJa": "ロモ",
+  "category": "camera"
+ },
+ {
+  "id": "cam-toy",
+  "file": "cam-toy.cube",
+  "name": "Toy camera",
+  "nameJa": "トイカメラ",
+  "category": "camera"
+ },
+ {
+  "id": "cam-disposable",
+  "file": "cam-disposable.cube",
+  "name": "Disposable",
+  "nameJa": "使い捨て",
+  "category": "camera"
+ },
+ {
+  "id": "cam-rangefinder",
+  "file": "cam-rangefinder.cube",
+  "name": "Rangefinder",
+  "nameJa": "レンジファインダー",
+  "category": "camera"
+ },
+ {
+  "id": "cam-medium",
+  "file": "cam-medium.cube",
+  "name": "Medium format",
+  "nameJa": "中判",
+  "category": "camera"
+ },
+ {
+  "id": "cam-vhs",
+  "file": "cam-vhs.cube",
+  "name": "VHS",
+  "nameJa": "VHS",
+  "category": "camera"
+ },
+ {
+  "id": "jp-clear",
+  "file": "jp-clear.cube",
+  "name": "Clear air",
+  "nameJa": "透明感",
+  "category": "japanese"
+ },
+ {
+  "id": "jp-airy",
+  "file": "jp-airy.cube",
+  "name": "Airy",
+  "nameJa": "エアリー",
+  "category": "japanese"
+ },
+ {
+  "id": "jp-sakura",
+  "file": "jp-sakura.cube",
+  "name": "Sakura",
+  "nameJa": "さくら",
+  "category": "japanese"
+ },
+ {
+  "id": "jp-umi",
+  "file": "jp-umi.cube",
+  "name": "Sea breeze",
+  "nameJa": "海風",
+  "category": "japanese"
+ },
+ {
+  "id": "jp-kissaten",
+  "file": "jp-kissaten.cube",
+  "name": "Kissaten",
+  "nameJa": "喫茶店",
+  "category": "japanese"
+ },
+ {
+  "id": "jp-showa",
+  "file": "jp-showa.cube",
+  "name": "Showa",
+  "nameJa": "昭和",
+  "category": "japanese"
+ },
+ {
+  "id": "jp-natural",
+  "file": "jp-natural.cube",
+  "name": "Natural light",
+  "nameJa": "自然光",
+  "category": "japanese"
+ },
+ {
+  "id": "jp-milk",
+  "file": "jp-milk.cube",
+  "name": "Milk tea",
+  "nameJa": "ミルクティー",
+  "category": "japanese"
+ },
+ {
+  "id": "cine-teal-orange",
+  "file": "cine-teal-orange.cube",
+  "name": "Teal & orange",
+  "nameJa": "ティール＆オレンジ",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-noir",
+  "file": "cine-noir.cube",
+  "name": "Noir",
+  "nameJa": "ノワール",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-blockbuster",
+  "file": "cine-blockbuster.cube",
+  "name": "Blockbuster",
+  "nameJa": "ブロックバスター",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-western",
+  "file": "cine-western.cube",
+  "name": "Western",
+  "nameJa": "西部劇",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-moody",
+  "file": "cine-moody.cube",
+  "name": "Moody",
+  "nameJa": "ムーディー",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-dream",
+  "file": "cine-dream.cube",
+  "name": "Dream",
+  "nameJa": "ドリーム",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-scifi",
+  "file": "cine-scifi.cube",
+  "name": "Sci-fi",
+  "nameJa": "SF",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-war",
+  "file": "cine-war.cube",
+  "name": "Desaturated",
+  "nameJa": "ミュート",
+  "category": "cinema"
+ },
+ {
+  "id": "cine-night-city",
+  "file": "cine-night-city.cube",
+  "name": "Night city",
+  "nameJa": "夜の街",
+  "category": "cinema"
+ },
+ {
+  "id": "cn-cream",
+  "file": "cn-cream.cube",
+  "name": "Cream skin",
+  "nameJa": "クリーム肌",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-milk-white",
+  "file": "cn-milk-white.cube",
+  "name": "Milk white",
+  "nameJa": "ミルクホワイト",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-ink",
+  "file": "cn-ink.cube",
+  "name": "Ink",
+  "nameJa": "水墨",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-peach",
+  "file": "cn-peach.cube",
+  "name": "Peach",
+  "nameJa": "ピーチ",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-matcha",
+  "file": "cn-matcha.cube",
+  "name": "Matcha",
+  "nameJa": "抹茶",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-jade",
+  "file": "cn-jade.cube",
+  "name": "Jade",
+  "nameJa": "翡翠",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-red-gold",
+  "file": "cn-red-gold.cube",
+  "name": "Red gold",
+  "nameJa": "紅金",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-misty",
+  "file": "cn-misty.cube",
+  "name": "Misty",
+  "nameJa": "霧",
+  "category": "chinese"
+ },
+ {
+  "id": "cn-retro-hk",
+  "file": "cn-retro-hk.cube",
+  "name": "Retro HK",
+  "nameJa": "香港レトロ",
+  "category": "chinese"
+ },
+ {
+  "id": "pt-glow",
+  "file": "pt-glow.cube",
+  "name": "Glow",
+  "nameJa": "グロウ",
+  "category": "portrait"
+ },
+ {
+  "id": "pt-rosy",
+  "file": "pt-rosy.cube",
+  "name": "Rosy",
+  "nameJa": "ローズ",
+  "category": "portrait"
+ },
+ {
+  "id": "pt-porcelain",
+  "file": "pt-porcelain.cube",
+  "name": "Porcelain",
+  "nameJa": "磁器肌",
+  "category": "portrait"
+ },
+ {
+  "id": "pt-sun-kissed",
+  "file": "pt-sun-kissed.cube",
+  "name": "Sun-kissed",
+  "nameJa": "日焼け",
+  "category": "portrait"
+ }
+]

@@ -42,6 +42,7 @@ enum Renderer {
             case .warp(let w): img = MeshWarpRenderer.apply(w.field, to: img)
             case .layers(let l): img = LayerRenderer.render(l, over: img)
             case .remove(let masks): img = removed(masks, from: img, prefix: Array(document.operations[0...i]))
+            case .filter(let id, let t): img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
             case .expand(let c): img = expanded(c, from: img, prefix: Array(document.operations[0..<i]))
             case .cutout(let c): img = cutOut(c, from: img, prefix: Array(document.operations[0..<i]))
             }

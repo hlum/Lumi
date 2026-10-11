@@ -2,10 +2,10 @@ import PhotosUI
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters" }
     }
 }
 
@@ -28,6 +28,7 @@ struct EditorView: View {
                     case .text: TextPanel(model: model)
                     case .remove: RemoverPanel(editor: model)
                     case .cutout: CutoutPanel(model: model)
+                    case .filter: FilterPanel(model: model)
                     }
                 }
                 .frame(maxHeight: 220)
@@ -196,5 +197,29 @@ struct CutoutPanel: View {
                 if !editing { model.commit() }
             }
         }.padding(.horizontal).disabled(model.draft.cutout == nil)
+    }
+}
+
+struct FilterPanel: View {
+    @Bindable var model: EditorModel
+    @State private var category = FilterLibrary.shared.categories.first ?? ""
+    private let library = FilterLibrary.shared
+
+    var body: some View {
+        VStack {
+            Picker("Category", selection: $category) { ForEach(library.categories, id: \.self) { Text($0.capitalized).tag($0) } }.pickerStyle(.menu)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    Button("Off") { model.edit { $0.filter = nil } }.buttonStyle(.bordered)
+                    ForEach(library.entries(in: category)) { e in
+                        Button(LocalizedStringKey(e.name)) { model.edit { $0.filter = (e.id, model.draft.filter?.intensity ?? 1) } }
+                            .buttonStyle(.bordered).tint(model.draft.filter?.id == e.id ? .accentColor : .secondary)
+                    }
+                }.padding(.horizontal)
+            }
+            Slider(value: Binding(get: { model.draft.filter?.intensity ?? 1 }, set: { v in if let f = model.draft.filter { model.draft.filter = (f.id, v) } }), in: 0...1) { editing in
+                if !editing { model.commit() }
+            }.padding(.horizontal).disabled(model.draft.filter == nil)
+        }
     }
 }

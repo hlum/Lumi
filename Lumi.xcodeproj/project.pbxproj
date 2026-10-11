@@ -65,6 +65,7 @@
 		8FADC2D4E8F71CF5D13B29E2 /* EditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */; };
 		90341E5BC7AD514792DD3A91 /* EditDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793287607F799E4C21A4A092 /* EditDocument.swift */; };
 		92F3F08537B5F30A5A44977C /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3037684EC9790617FB2CFC8A /* SmokeTests.swift */; };
+		94EF1728746C50D342A27656 /* FilterCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439B9C572B1C0592D68FAD34 /* FilterCatalogTests.swift */; };
 		959C6AE0A59BD54BD22B2D90 /* IDSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98A35D36608CEFCA9D306681 /* IDSpecs.swift */; };
 		96D6CC789BC312B6C1F357D1 /* ColorTransferTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */; };
 		9708CF64B6113135C9A44DCA /* id-specs.json in Resources */ = {isa = PBXBuildFile; fileRef = 88772FDC0AE6F2EB3C080BAA /* id-specs.json */; };
@@ -81,6 +82,7 @@
 		AB4ADA92DA72CD7279D86656 /* OverlapFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DD2F4D0FA68157AA975166 /* OverlapFinder.swift */; };
 		AE7380328C936A4527FD94AB /* LUTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */; };
 		B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */; };
+		B2A3854739C3AE4E9185C6C9 /* FilterLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB29CD8FF14D12934C84376D /* FilterLibrary.swift */; };
 		B7B4B3B63B9FC68FF8922FA5 /* InpainterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */; };
 		B99B08640B1E2407CB560C15 /* LayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B63F36950C679A1C4FC7975 /* LayerTests.swift */; };
 		BB803A863B07BB2B9B662756 /* EditOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D2DF1A16B93F34F960633 /* EditOperation.swift */; };
@@ -106,6 +108,7 @@
 		E8E092FF72FAE33A15E26EA1 /* MakeupPlacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B7F4161657C6A31D619794 /* MakeupPlacementTests.swift */; };
 		ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */; };
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
+		F67AD6F02B9512BA43801A9B /* Content in Resources */ = {isa = PBXBuildFile; fileRef = 3E077721CC782EB59A850370 /* Content */; };
 		FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA64D5414C71B52DE53B625 /* MaskStore.swift */; };
 		FFA3FBFD29635B07F0D1081C /* WatermarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F815AFAF590676D5E14C0518 /* WatermarkTests.swift */; };
 		FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285DE6546B441D0BEC50F540 /* LayoutTests.swift */; };
@@ -149,8 +152,10 @@
 		39B7F4161657C6A31D619794 /* MakeupPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeupPlacementTests.swift; sourceTree = "<group>"; };
 		3B443E2575575BE475C5FB9B /* MosaicOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicOps.swift; sourceTree = "<group>"; };
 		3B98FF1815ACDA1C82AF82D8 /* RemoverModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoverModel.swift; sourceTree = "<group>"; };
+		3E077721CC782EB59A850370 /* Content */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Content; path = Lumi/Resources/Content; sourceTree = SOURCE_ROOT; };
 		4056C5884735CA99A57205A6 /* BodyReshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyReshape.swift; sourceTree = "<group>"; };
 		419820D970D79F2603383070 /* WatermarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkStore.swift; sourceTree = "<group>"; };
+		439B9C572B1C0592D68FAD34 /* FilterCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCatalogTests.swift; sourceTree = "<group>"; };
 		45966C6CA5A5390BAC7F83FB /* UndoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStack.swift; sourceTree = "<group>"; };
 		4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analyzer.swift; sourceTree = "<group>"; };
 		491867C4A15830F8C5BBEF55 /* Credits.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Credits.json; sourceTree = "<group>"; };
@@ -205,6 +210,7 @@
 		B860DC41FCF350889B4EF1F1 /* Lumi.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Lumi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8F49C52541F35A4F285D365 /* MaskCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskCanvas.swift; sourceTree = "<group>"; };
 		BA5640ED3C828F66CC06F9C3 /* BatchRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunner.swift; sourceTree = "<group>"; };
+		BB29CD8FF14D12934C84376D /* FilterLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterLibrary.swift; sourceTree = "<group>"; };
 		BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransferTests.swift; sourceTree = "<group>"; };
 		C27AF610CC6461065AED466A /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		C601C878EAB11731365C44CD /* RecipeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeTests.swift; sourceTree = "<group>"; };
@@ -337,6 +343,7 @@
 		772C3FF620DBEBEDA964767D = {
 			isa = PBXGroup;
 			children = (
+				3E077721CC782EB59A850370 /* Content */,
 				5CDEAEF11FB854F4D8AB8A01 /* Lumi */,
 				C5AC802557A296E65BE20EFD /* LumiTests */,
 				FCFE0235E7E2680FD8F4A6B3 /* Products */,
@@ -448,6 +455,7 @@
 		BEBFB4DE08AAD066136A234B /* Filters */ = {
 			isa = PBXGroup;
 			children = (
+				BB29CD8FF14D12934C84376D /* FilterLibrary.swift */,
 				2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */,
 			);
 			path = Filters;
@@ -493,6 +501,7 @@
 				0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */,
 				338C1ECF08D0026F2F0775CB /* ExpandTests.swift */,
 				946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */,
+				439B9C572B1C0592D68FAD34 /* FilterCatalogTests.swift */,
 				C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */,
 				8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */,
 				F5107722F421BA333413EB76 /* IDSpecTests.swift */,
@@ -672,6 +681,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F67AD6F02B9512BA43801A9B /* Content in Resources */,
 				D22BBF02A05E37D9E06152A5 /* Credits.json in Resources */,
 				3AF77241ECEC001111A770CC /* Localizable.xcstrings in Resources */,
 				9708CF64B6113135C9A44DCA /* id-specs.json in Resources */,
@@ -703,6 +713,7 @@
 				D83608EE7515CE4F81544548 /* ExpandOps.swift in Sources */,
 				62321582DF77C5697193257F /* ExportSettings.swift in Sources */,
 				3593E8C2A5D2CD5282187C7F /* FaceReshape.swift in Sources */,
+				B2A3854739C3AE4E9185C6C9 /* FilterLibrary.swift in Sources */,
 				04EE05B54308799E287B857B /* FilterStore.swift in Sources */,
 				0C56460A4271CB78FCC27DC1 /* GIFMaker.swift in Sources */,
 				9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */,
@@ -763,6 +774,7 @@
 				3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */,
 				C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */,
 				CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */,
+				94EF1728746C50D342A27656 /* FilterCatalogTests.swift in Sources */,
 				44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */,
 				1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */,
 				7CCE26ACDB38E30D8CD65959 /* IDSpecTests.swift in Sources */,

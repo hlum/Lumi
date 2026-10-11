@@ -13,7 +13,11 @@ targets:
   Lumi:
     type: application
     platform: iOS
-    sources: [Lumi]
+    sources:
+      - path: Lumi
+        excludes: ["Resources/Content/**"]
+      - path: Lumi/Resources/Content
+        type: folder
     info:
       path: Lumi/App/Info.plist
       properties:
