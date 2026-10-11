@@ -30,7 +30,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [x] T02 Xcode Cloud CI and TDD harness
 - [ ] T03 Spike: LaMa on device
 - [~] T04 Spike: real-time preview
-- [~] T05 Spike: mesh-warp engine
+- [x] T05 Spike: mesh-warp engine
 - [ ] T06 Spike: hair segmentation
 - [ ] ⏸ Checkpoint 0
 

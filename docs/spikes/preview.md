@@ -4,4 +4,10 @@
 
 **Warp:** brush strokes are the source of truth (`WarpEdit`); the displacement field is replayed from them, so undo/redo is exact and the edit serializes as JSON. Field = source-offset grid, bilinear sampled, edge-clamped.
 
-**Still to measure on device:** frame time and memory with a 48 MP photo; GPU application of the field to a full-res image (seam/aliasing check). Not yet built: the Metal/Core Image kernel that applies the field.
+**Warp:** done, see the update below.
+
+## Update: warp measured on device (A17, iPhone 15 Pro)
+- Warp renders through a Core Image Metal kernel (`MeshWarpRenderer`), compiled from source at first use. The kernel needs `[[ stitchable ]]`; the library-linker route (`-fcikernel`) did not find the function.
+- Edge handling: the source is `clampedToExtent`, so a warp that pulls from outside never shows transparent seams (tested).
+- A 4000x3000 warp renders on A17 inside the test run. Frame-time numbers for 48 MP are still to be measured with Instruments.
+- Go: the displacement-field approach is kept for every reshape tool.

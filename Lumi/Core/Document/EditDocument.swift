@@ -29,6 +29,11 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.isIdentity ? nil : .curve(newValue)) { if case .curve = $0 { true } else { false } } }
     }
 
+    var warp: WarpEdit {
+        get { operations.lazy.compactMap { if case .warp(let v) = $0 { v } else { nil } }.last ?? WarpEdit() }
+        set { set(newValue.strokes.isEmpty ? nil : .warp(newValue)) { if case .warp = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

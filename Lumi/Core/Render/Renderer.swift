@@ -18,6 +18,7 @@ enum Renderer {
             case .crop(let c): GeometryOps.apply(c, to: img)
             case .adjust(let a): AdjustOps.apply(a, to: img)
             case .curve(let c): AdjustOps.apply(c, to: img)
+            case .warp(let w): MeshWarpRenderer.apply(w.field, to: img)
             }
         }
     }
