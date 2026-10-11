@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -26,6 +26,7 @@ struct EditorView: View {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
                     .overlay { if tool == .text || tool == .sticker { LayerGestureOverlay(model: model) } }
+                    .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
@@ -43,6 +44,7 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .hair: HairPanel(model: model)
                     case .mosaic: MosaicPanel(model: model)
                     case .mark: MarkPanel(model: model)
                     case .liquify: LiquifyPanel(model: model)
@@ -775,5 +777,66 @@ struct LayerGestureOverlay: View {
                     .onEnded { _ in baseRotation = 0; model.commit() })
         }
         .allowsHitTesting(model.selectedLayer != nil)
+    }
+}
+
+struct HairPanel: View {
+    @Bindable var model: EditorModel
+    @State private var category = "Natural"
+    private var categories: [String] { var s = Set<String>(); return HairRetouch.swatches.map(\.category).filter { s.insert($0).inserted } }
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Picker("Category", selection: $category) { ForEach(categories, id: \.self) { Text(LocalizedStringKey($0)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    Button("Off") { model.edit { $0.hair = HairRetouch() } }.buttonStyle(.bordered)
+                    ForEach(HairRetouch.swatches.filter { $0.category == category }, id: \.name) { s in
+                        Button { model.edit { var h = $0.hair; h.dye.color = s.color; h.dye.strength = max(h.dye.strength, 0.8); $0.hair = h } } label: {
+                            Circle().fill(Color(red: s.color.r, green: s.color.g, blue: s.color.b)).frame(width: 34, height: 34).overlay(Circle().stroke(.secondary, lineWidth: 1))
+                        }.accessibilityLabel(Text(LocalizedStringKey(s.name)))
+                    }
+                }.padding(.horizontal)
+            }
+            row("Dye", \.hair.dye.strength); row("Keep shine", \.hair.dye.keepShine); row("De-oil", \.hair.deOil); row("Smooth", \.hair.smooth); row("Roots", \.hair.rootRetouch)
+            HStack {
+                Toggle("Brush", isOn: $model.hairBrushActive).fixedSize()
+                Picker("Mode", selection: $model.hairBrushAdds) { Text("Add").tag(true); Text("Erase").tag(false) }.pickerStyle(.segmented)
+            }.padding(.horizontal)
+        }
+    }
+
+    private func row(_ title: String, _ path: WritableKeyPath<EditDocument, Double>) -> some View {
+        HStack {
+            Text(LocalizedStringKey(title)).font(.caption).frame(width: 80, alignment: .leading)
+            Slider(value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), in: 0...1) { if !$0 { model.commit() } }
+        }.padding(.horizontal)
+    }
+}
+
+struct HairBrushOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var brush: RemoverModel?
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    let p = map.toImageClamped(v.location)
+                    if brush == nil { brush = RemoverModel(imageSize: imageSize); brush?.brushSize = 0.04; brush?.begin(at: p) } else { brush?.move(to: p) }
+                    if let b = brush { apply(b.mask) }
+                }
+                .onEnded { _ in brush = nil; model.commit() })
+        }
+    }
+
+    private func apply(_ stroke: MaskCanvas) {
+        var h = model.draft.hair
+        let committed = model.stack0.hair
+        func merged(_ base: MaskCanvas?) -> MaskCanvas { guard var b = base, b.width == stroke.width, b.height == stroke.height else { return stroke }; b.union(stroke); return b }
+        if model.hairBrushAdds { h.add = merged(committed.add) } else { h.remove = merged(committed.remove) }
+        model.draft.hair = h
     }
 }

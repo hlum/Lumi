@@ -39,6 +39,8 @@ final class EditorModel {
     var doodleBrush = DoodleStroke.Brush.solid
     var warpBrush = WarpBrush()
     var filterEraserActive = false
+    var hairBrushActive = false
+    var hairBrushAdds = true
     /// The text or sticker layer the gestures act on.
     var selectedLayer: UUID?
     /// The eraser mask as of the last committed edit; a drag adds to it.

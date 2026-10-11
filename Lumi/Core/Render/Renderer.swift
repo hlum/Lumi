@@ -19,6 +19,7 @@ enum Renderer {
         var faceFinder: FaceFinding?
         var textFinder: TextFinding?
         var peopleFinder: PeopleFinding?
+        var hairMasker: HairMasking?
         var upscaler: Upscaling?
         var colorizer: Colorizing?
         var faceLandmarker: FaceLandmarking?
@@ -62,6 +63,7 @@ enum Renderer {
                 }
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
+            case .hair(let h): img = hairRetouched(h, from: img, prefix: Array(document.operations[0..<i]))
             case .face(let f): img = retouched(f, from: img, prefix: Array(document.operations[0..<i]))
             case .grade(let g): img = g.lut().apply(to: img)
             case .colorize(let t): img = colorized(t, from: img, prefix: Array(document.operations[0..<i]))
@@ -136,6 +138,14 @@ enum Renderer {
             mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil
         }
         return LayerRenderer.render(stack, over: image, subjectMask: mask)
+    }
+
+    static func hairRetouched(_ h: HairRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard !h.isIdentity, let masker = services.hairMasker else { return image }
+        // the estimated hair masks depend only on the pixels before this step, so slider drags reuse them
+        let key = "hair|" + cacheKey(image, prefix)
+        let first = try? services.cached(key) { try masker.hairMasks(in: image).first }
+        return HairRetouchRender.apply(h, to: image, hairMasks: first.flatMap { $0 }.map { [$0] } ?? [])
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

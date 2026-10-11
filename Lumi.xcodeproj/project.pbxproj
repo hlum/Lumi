@@ -58,6 +58,7 @@
 		3AF77241ECEC001111A770CC /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6F0159F8BE79D28E537D81F6 /* Localizable.xcstrings */; };
 		3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4A66AD237D031E560D4083 /* AnalysisCache.swift */; };
 		3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */; };
+		3DA7E33740C3BD28C0B9D7A9 /* HairRetouchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E12E24EA3F0C09F1FF8852 /* HairRetouchTests.swift */; };
 		3F879262D545D16CF7056A5E /* Credits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0497315D4AF8836E8C429B /* Credits.swift */; };
 		426E9F04EE4F1AA2A3B3A820 /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C2A8865BAA7EB3472CECAA /* ProjectStore.swift */; };
 		44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */; };
@@ -151,6 +152,7 @@
 		CEFB67261AB35CDDD936C623 /* AutoMosaic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EABD3FEF98A7D610ACA8EE3 /* AutoMosaic.swift */; };
 		CF9B9AB4A7A5E65AD7882F2D /* FontLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F2B57A62EB922BEE19C313 /* FontLibrary.swift */; };
 		D22BBF02A05E37D9E06152A5 /* Credits.json in Resources */ = {isa = PBXBuildFile; fileRef = 491867C4A15830F8C5BBEF55 /* Credits.json */; };
+		D79451D1C07977D38A56950A /* HairRetouch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDE7CA45356967DF21A46A0 /* HairRetouch.swift */; };
 		D7AD8B53E5E51940F310F0D2 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EB1B596C23861FE0CBE17A /* Recipe.swift */; };
 		D83608EE7515CE4F81544548 /* ExpandOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */; };
 		D9C34E3778F02EB1DF899E44 /* FaceRetouch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F40D958E8AEADCBA1DCC8 /* FaceRetouch.swift */; };
@@ -210,6 +212,7 @@
 		15C7C110D8246CE6F822D022 /* JobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrushMaterials.swift; sourceTree = "<group>"; };
 		16E38351FDAF036F93AFF551 /* SkinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinTests.swift; sourceTree = "<group>"; };
+		1CDE7CA45356967DF21A46A0 /* HairRetouch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HairRetouch.swift; sourceTree = "<group>"; };
 		1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorModel.swift; sourceTree = "<group>"; };
 		1DDAF2607ACDF083D01568FA /* RealESRGAN_x4.mlpackage */ = {isa = PBXFileReference; path = RealESRGAN_x4.mlpackage; sourceTree = "<group>"; };
 		1E3296174D0A02A8DFD1B83D /* CollageRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageRenderTests.swift; sourceTree = "<group>"; };
@@ -286,6 +289,7 @@
 		7BC689B9D9A04B1C5B58666D /* ClipOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipOps.swift; sourceTree = "<group>"; };
 		7CC47F6D1DB33A9F7C52B4A8 /* RemoverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoverTests.swift; sourceTree = "<group>"; };
 		822743120DCD963E72152CDB /* CutoutOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutOps.swift; sourceTree = "<group>"; };
+		84E12E24EA3F0C09F1FF8852 /* HairRetouchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HairRetouchTests.swift; sourceTree = "<group>"; };
 		850D7C49D60EA488C83EDB92 /* RendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererTests.swift; sourceTree = "<group>"; };
 		85BBA9DDFE9AD6D53BCDDA41 /* VideoEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		86DACCEA338C9DDD79BE140D /* VideoEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
@@ -679,6 +683,7 @@
 			isa = PBXGroup;
 			children = (
 				681568430459B80D1CACBFE9 /* HairMask.swift */,
+				1CDE7CA45356967DF21A46A0 /* HairRetouch.swift */,
 			);
 			path = Hair;
 			sourceTree = "<group>";
@@ -744,6 +749,7 @@
 				3BCF9212741C460FB248C842 /* FontLibraryTests.swift */,
 				62D5E7C02538186A47CF042D /* FrameDoodleTests.swift */,
 				8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */,
+				84E12E24EA3F0C09F1FF8852 /* HairRetouchTests.swift */,
 				BA6B10E44FEEB7A758F73E57 /* HairTests.swift */,
 				F5107722F421BA333413EB76 /* IDSpecTests.swift */,
 				F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */,
@@ -1048,6 +1054,7 @@
 				0C56460A4271CB78FCC27DC1 /* GIFMaker.swift in Sources */,
 				9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */,
 				112AC2C40F6B9C3E43A84C4C /* HairMask.swift in Sources */,
+				D79451D1C07977D38A56950A /* HairRetouch.swift in Sources */,
 				E69EDFA4552457DB87473135 /* HealOps.swift in Sources */,
 				156F970EA97DB975DE17F769 /* HomeView.swift in Sources */,
 				959C6AE0A59BD54BD22B2D90 /* IDSpecs.swift in Sources */,
@@ -1141,6 +1148,7 @@
 				AB9AF1014F63F8659D50FFCE /* FontLibraryTests.swift in Sources */,
 				6E77CD006C511B96C47AF8C4 /* FrameDoodleTests.swift in Sources */,
 				1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */,
+				3DA7E33740C3BD28C0B9D7A9 /* HairRetouchTests.swift in Sources */,
 				B253D23B0BE457A2CB5C5B7E /* HairTests.swift in Sources */,
 				7CCE26ACDB38E30D8CD65959 /* IDSpecTests.swift in Sources */,
 				B7B4B3B63B9FC68FF8922FA5 /* InpainterTests.swift in Sources */,
