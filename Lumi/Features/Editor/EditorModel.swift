@@ -77,8 +77,11 @@ final class EditorModel {
     func exportData() throws -> Data {
         guard let original else { throw EditorError.noImage }
         let out = Renderer.render(original, document: draft)
-        guard let space = CGColorSpace(name: CGColorSpace.sRGB),
-              let data = context.jpegRepresentation(of: out, colorSpace: space) else { throw EditorError.exportFailed }
+        guard let space = CGColorSpace(name: CGColorSpace.sRGB) else { throw EditorError.exportFailed }
+        // transparency needs PNG; JPEG would flatten it to black
+        let keepsAlpha = draft.cutout?.background == .transparent
+        guard let data = keepsAlpha ? context.pngRepresentation(of: out, format: .RGBA8, colorSpace: space)
+                                    : context.jpegRepresentation(of: out, colorSpace: space) else { throw EditorError.exportFailed }
         return data
     }
 

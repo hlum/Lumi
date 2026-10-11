@@ -45,6 +45,11 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.isEmpty ? nil : .remove(newValue)) { if case .remove = $0 { true } else { false } } }
     }
 
+    var cutout: CutoutConfig? {
+        get { operations.lazy.compactMap { if case .cutout(let v) = $0 { v } else { nil } }.last }
+        set { set(newValue.map { .cutout($0) }) { if case .cutout = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self

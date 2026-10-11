@@ -9,10 +9,11 @@ enum EditOperation: Codable, Equatable {
     case warp(WarpEdit)
     case layers(LayerStack)
     case remove([MaskCanvas])
+    case cutout(CutoutConfig)
 }
 
 extension EditOperation {
-    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove }
+    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout }
     var kind: Kind {
         switch self {
         case .exposure: .exposure
@@ -22,6 +23,7 @@ extension EditOperation {
         case .warp: .warp
         case .layers: .layers
         case .remove: .remove
+        case .cutout: .cutout
         }
     }
     /// Recipe category: what part of the look this belongs to.
@@ -32,6 +34,7 @@ extension EditOperation {
         case .warp: .beauty
         case .layers: .filter
         case .remove: .geometry
+        case .cutout: .filter
         }
     }
 }

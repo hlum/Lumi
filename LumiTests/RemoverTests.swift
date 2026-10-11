@@ -3,6 +3,9 @@ import Foundation
 import Testing
 @testable import Lumi
 
+/// Tests that swap `Renderer.services` share global state, so they all live under this one serialized suite.
+@Suite(.serialized) enum ServicesSerial {}
+
 struct FakeInpainter: Inpainting {
     /// Fills the masked pixels with green so tests can see where it ran.
     func inpaint(_ image: CIImage, mask: CIImage) throws -> CIImage {
@@ -12,7 +15,7 @@ struct FakeInpainter: Inpainting {
     }
 }
 
-@Suite(.serialized)
+extension ServicesSerial {
 struct RemoverTests {
     init() { Renderer.services = Renderer.Services(inpainter: FakeInpainter()) }
 
@@ -128,4 +131,5 @@ struct RemoverTests {
         var m = MaskCanvas(width: 4, height: 4); m.fill(rect: CGRect(x: 0, y: 0, width: 2, height: 2))
         #expect(m.tintedImage()?.width == 4)
     }
+}
 }

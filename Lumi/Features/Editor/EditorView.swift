@@ -2,10 +2,10 @@ import PhotosUI
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle" }
     }
 }
 
@@ -27,6 +27,7 @@ struct EditorView: View {
                     case .crop: CropPanel(model: model)
                     case .text: TextPanel(model: model)
                     case .remove: RemoverPanel(editor: model)
+                    case .cutout: CutoutPanel(model: model)
                     }
                 }
                 .frame(maxHeight: 220)
@@ -162,5 +163,38 @@ struct RemoverOverlay: View {
                     }
                     .onEnded { v in remover.end(at: map.toImageClamped(v.location)); isDragging = false })
         }
+    }
+}
+
+struct CutoutPanel: View {
+    @Bindable var model: EditorModel
+    private var config: CutoutConfig { model.draft.cutout ?? CutoutConfig() }
+    private let choices: [(String, CutoutConfig.Background)] = [
+        ("Clear", .transparent), ("White", .color(.white)), ("Black", .color(.black)),
+        ("Sky", .gradient(RGBA(r: 0.55, g: 0.75, b: 1, a: 1), .white)), ("Blur", .blur(0.5)),
+    ]
+
+    var body: some View {
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    Button("Off") { model.edit { $0.cutout = nil } }.buttonStyle(.bordered)
+                    ForEach(choices, id: \.0) { name, bg in
+                        Button(name) { model.edit { var c = $0.cutout ?? CutoutConfig(); c.background = bg; $0.cutout = c } }.buttonStyle(.bordered)
+                    }
+                }.padding(.horizontal)
+            }
+            slider("Soft edge", \.feather, 0...1)
+            slider("Edge shift", \.shift, -1...1)
+        }
+    }
+
+    private func slider(_ title: String, _ path: WritableKeyPath<CutoutConfig, Double>, _ range: ClosedRange<Double>) -> some View {
+        HStack {
+            Text(title).font(.caption).frame(width: 70, alignment: .leading)
+            Slider(value: Binding(get: { config[keyPath: path] }, set: { v in var c = config; c[keyPath: path] = v; model.draft.cutout = c }), in: range) { editing in
+                if !editing { model.commit() }
+            }
+        }.padding(.horizontal).disabled(model.draft.cutout == nil)
     }
 }
