@@ -141,6 +141,22 @@ final class EditorModel {
         return CustomStickerStore.shared.add(cutout: CutoutOps.apply(c, to: o, subjectMask: mask))
     }
 
+    /// Fixes colour in one tap: exposure, tonal range, cast and a little vibrance, from the picture's own statistics.
+    func autoFix() {
+        guard let proxy else { return }
+        var base = draft; base.adjust = AdjustParams()
+        let params = AutoFix.params(for: Renderer.render(Renderer.proxy(proxy, maxDimension: 256), document: base))
+        edit { $0.adjust = params }
+    }
+
+    /// A small square crop of the photo before the filter step, for the filter tiles.
+    func thumbnailSource() -> CIImage? {
+        guard let proxy else { return nil }
+        let small = Renderer.proxy(proxy, maxDimension: 160)
+        let e = small.extent, s = min(e.width, e.height)
+        return small.cropped(to: CGRect(x: e.midX - s / 2, y: e.midY - s / 2, width: s, height: s))
+    }
+
     // MARK: move preview and GIF
 
     func startMotion(_ a: AnimatePhoto) {

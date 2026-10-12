@@ -484,6 +484,7 @@ struct FilterPanel: View {
     @State private var category = FilterLibrary.shared.categories.first ?? ""
     @State private var prefs = FilterPrefsBox()
     @State private var erasing = false
+    @State private var thumbs: [String: UIImage] = [:]
     private let library = FilterLibrary.shared
     private let favorites = "★"
 
@@ -494,37 +495,63 @@ struct FilterPanel: View {
     }
 
     var body: some View {
-        VStack {
-            HStack {
-                Picker("Category", selection: $category) {
-                    Text("★ Favorites").tag(favorites); Text("Recent").tag("Recent")
-                    ForEach(library.categories, id: \.self) { Text($0.capitalized).tag($0) }
-                }.pickerStyle(.menu)
-                if let id = model.draft.filter?.id {
-                    Button(prefs.isFavorite(id) ? "Unfavorite" : "Favorite", systemImage: prefs.isFavorite(id) ? "star.fill" : "star") { prefs.toggleFavorite(id) }.labelStyle(.iconOnly)
-                }
-                Toggle("Eraser", isOn: $erasing).fixedSize().disabled(model.draft.filter == nil)
-            }.padding(.horizontal)
+        VStack(spacing: 12) {
+            LumiCategoryTabs(items: [(favorites, LocalizedStringKey("★ Favorites")), ("Recent", "Recent")] + library.categories.map { ($0, LocalizedStringKey($0.capitalized)) }, selection: $category)
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    Button("Off") { model.edit { $0.filter = nil; $0.filterEraser = nil } }.buttonStyle(LumiButtonStyle())
+                HStack(spacing: 12) {
+                    tile(id: nil, title: "None", on: model.draft.filter == nil) { model.edit { $0.filter = nil; $0.filterEraser = nil } }
                     ForEach(shown) { e in
-                        Button(LocalizedStringKey(e.name)) { prefs.used(e.id); let keep = model.draft.filter?.intensity ?? 1; model.edit { $0.filter = (e.id, keep) } }
-                            .buttonStyle(LumiButtonStyle()).lumiSelected(model.draft.filter?.id == e.id)
+                        tile(id: e.id, title: e.name, on: model.draft.filter?.id == e.id) { prefs.used(e.id); let keep = model.draft.filter?.intensity ?? 0.8; model.edit { $0.filter = (e.id, keep) } }
                     }
-                }.padding(.horizontal)
-            }
-            if erasing {
-                HStack {
-                    Text("Paint where the filter should go away").font(.caption).foregroundStyle(.secondary)
-                    Button("Clear eraser") { model.edit { $0.filterEraser = nil } }.buttonStyle(LumiButtonStyle())
                 }
             }
-            LumiSliderRow(title: "Intensity", value: Binding(get: { model.draft.filter?.intensity ?? 1 }, set: { v in if let f = model.draft.filter { model.draft.filter = (f.id, v) } }), range: 0...1, defaultValue: 1, onEnd: { model.commit() })
+            LumiSliderRow(title: "Strength", value: Binding(get: { model.draft.filter?.intensity ?? 1 }, set: { v in if let f = model.draft.filter { model.draft.filter = (f.id, v) } }), range: 0...1, defaultValue: 0.8, onEnd: { model.commit() })
                 .disabled(model.draft.filter == nil).opacity(model.draft.filter == nil ? 0.5 : 1)
+            HStack(spacing: 8) {
+                LumiChip(title: "Auto colour fix", symbol: "wand.and.stars") { model.autoFix() }
+                if let id = model.draft.filter?.id {
+                    LumiChip(title: prefs.isFavorite(id) ? "Unfavourite" : "Favourite", symbol: prefs.isFavorite(id) ? "star.fill" : "star") { prefs.toggleFavorite(id) }
+                    LumiChip(title: "Eraser", selected: erasing, symbol: "eraser") { erasing.toggle() }
+                    if erasing, model.draft.filterEraser != nil { LumiChip(title: "Clear") { model.edit { $0.filterEraser = nil } } }
+                }
+            }
+            if erasing { Text("Paint where the filter should go away").font(.footnote).foregroundStyle(LumiColor.textSecondary) }
         }
+        .task(id: category) { await loadThumbs() }
         .onChange(of: erasing) { _, on in model.filterEraserActive = on }
         .onDisappear { model.filterEraserActive = false }
+    }
+
+    private func tile(id: String?, title: String, on: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 5) {
+                Group {
+                    if let id, let img = thumbs[id] { Image(uiImage: img).resizable().scaledToFill() }
+                    else { LumiColor.well.overlay(Image(systemName: id == nil ? "nosign" : "photo").foregroundStyle(LumiColor.textSecondary)) }
+                }
+                .frame(width: 64, height: 64).clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(on ? LumiColor.accent : .clear, lineWidth: 3))
+                Text(LocalizedStringKey(title)).font(.system(size: 12, weight: .bold, design: .rounded)).foregroundStyle(LumiColor.text).lineLimit(1).frame(width: 68)
+            }
+        }
+        .buttonStyle(.plain).accessibilityAddTraits(on ? .isSelected : [])
+    }
+
+    /// Each filter applied to a small copy of the photo, one at a time off the main thread.
+    private func loadThumbs() async {
+        guard let source = model.thumbnailSource() else { return }
+        let entries = shown.filter { thumbs[$0.id] == nil }
+        for e in entries {
+            if Task.isCancelled { return }
+            let id = e.id
+            let img: UIImage? = await Task.detached(priority: .utility) {
+                guard let lut = FilterLibrary.shared.lut(id) else { return nil }
+                let out = lut.apply(to: source, intensity: 1)
+                guard let cg = CIContext().createCGImage(out, from: out.extent) else { return nil }
+                return UIImage(cgImage: cg)
+            }.value
+            if let img { thumbs[id] = img }
+        }
     }
 }
 
