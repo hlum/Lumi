@@ -130,7 +130,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T69 Timeline core
 - [~] T70 Clip operations and transitions
 - [~] T71 Per-clip color and effects
-- [ ] T72 Text, stickers, keyframes
+- [~] T72 Text, stickers, keyframes
 - [ ] T73 Overlay video, masks, tracking
 - [ ] T74 Audio
 - [ ] T75 Captions and teleprompter
