@@ -307,19 +307,17 @@ struct TextPanel: View {
                 }.padding(.horizontal)
             }
             Toggle("Behind subject", isOn: $behind).padding(.horizontal)
-            List {
+            VStack(spacing: 6) {
                 ForEach(model.draft.layers.layers) { l in
-                    if case .text(let s, _) = l.content {
+                    if case .text(let str, _) = l.content {
                         HStack {
-                            Text(s).fontWeight(model.selectedLayer == l.id ? .bold : .regular).onTapGesture { model.selectedLayer = l.id }
+                            Text(str).font(LumiFont.chip()).fontWeight(model.selectedLayer == l.id ? .heavy : .regular).onTapGesture { model.selectedLayer = l.id }
                             Spacer()
                             Menu("Style") { ForEach(TextStylePresets.all) { p in Button(LocalizedStringKey(p.name)) { let id = l.id; model.edit { d in var st = d.layers; st.update(id) { $0 = TextStylePresets.apply(p, to: $0) }; d.layers = st } } } }
+                            Button("Delete", systemImage: "trash", role: .destructive) { let id = l.id; model.edit { d in var st = d.layers; st.remove(id); d.layers = st } }.labelStyle(.iconOnly)
                         }
+                        .padding(.horizontal, 14).frame(minHeight: 44).background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(LumiColor.well))
                     }
-                }
-                .onDelete { idx in
-                    let ids = idx.map { model.draft.layers.layers[$0].id }
-                    model.edit { d in var s = d.layers; ids.forEach { s.remove($0) }; d.layers = s }
                 }
             }
         }
@@ -669,9 +667,11 @@ struct FacePanel: View {
 
     private var content: some View {
         VStack(spacing: 4) {
-            Picker("Group", selection: $group) { ForEach(only, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) { ForEach(only, id: \.self) { g in LumiChip(title: LocalizedStringKey(g.rawValue), selected: group == g) { group = g } } }
+            }
             ScrollView {
-                VStack(spacing: 2) {
+                VStack(spacing: 8) {
                     switch group {
                     case .looks:
                         HStack {
@@ -738,10 +738,7 @@ struct FacePanel: View {
     }
 
     private func row(_ title: String, _ value: Binding<Double>, _ range: ClosedRange<Double> = -1...1, onEnd: (() -> Void)? = nil) -> some View {
-        HStack {
-            Text(LocalizedStringKey(title)).font(.caption).frame(width: 84, alignment: .leading)
-            Slider(value: value, in: range) { if !$0 { if let onEnd { onEnd() } else { model.commit() } } }
-        }.padding(.horizontal)
+        LumiSliderRow(title: LocalizedStringKey(title), value: value, range: range, onEnd: { if let onEnd { onEnd() } else { model.commit() } })
     }
 }
 

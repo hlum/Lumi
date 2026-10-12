@@ -104,6 +104,18 @@ struct HairColorGateTests {
         #expect(GeometryTests.rgb(m, x: 62, y: 95)[0] < 60)                // bright background beside the face, inside the head region
     }
 
+    @Test func shadowedSkinBelowTheChinIsNotHair() {
+        // dark hair above, bright skin face, and a darker patch of the same skin tone (neck in shadow) under the chin
+        let e = HairTests.extent
+        var img = photo()
+        let neck = CIImage(color: CIColor(red: 0.85 * 0.35, green: 0.65 * 0.35, blue: 0.55 * 0.35)).cropped(to: CGRect(x: 75, y: 40, width: 50, height: 28))
+        img = neck.composited(over: img)
+        let m = HairMask.estimate(person: HairTests.everyone(), face: HairTests.face(), image: img)
+        #expect(m.extent == e)
+        #expect(GeometryTests.rgb(m, x: 100, y: 150)[0] > 150)            // hair still found above the face
+        #expect(GeometryTests.rgb(m, x: 100, y: 55)[0] < 60)              // shadowed neck skin is excluded
+    }
+
     @Test func noHairAboveTheFaceMeansNoGate() {
         let plain = CIImage(color: CIColor(red: 0.8, green: 0.6, blue: 0.5)).cropped(to: HairTests.extent)
         let nobody = MosaicOps.mask(rects: [], extent: HairTests.extent)

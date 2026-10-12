@@ -26,6 +26,10 @@ enum HairMask {
         if let image, let gate = colorGate(image: image, person: person, box: box) {
             hair = hair.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: gate]).cropped(to: e)
         }
+        // skin anywhere in the head region (forehead, neck, chest, ears) is not hair, however dark it is in shadow
+        if let image, let notSkin = notSkinGate(image: image, box: box) {
+            hair = hair.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: notSkin]).cropped(to: e)
+        }
         let result = subtract(hair, faceCut)
         return result.clampedToExtent().applyingGaussianBlur(sigma: Double(min(e.width, e.height)) * 0.004).cropped(to: e)
     }
@@ -54,6 +58,29 @@ enum HairMask {
         let (t0, w): (CGFloat, CGFloat) = (0.10, 0.25)                      // full match up to t0, none beyond t0 + w (sum of |dR|+|dG|+|dB|)
         let k = -1 / w, v = CIVector(x: k, y: k, z: k, w: 0)
         return diff.applyingFilter("CIColorMatrix", parameters: ["inputRVector": v, "inputGVector": v, "inputBVector": v, "inputBiasVector": CIVector(x: 1 + t0 / w, y: 1 + t0 / w, z: 1 + t0 / w, w: 0)])
+            .applyingFilter("CIColorClamp").cropped(to: e)
+    }
+
+    /// Chroma (Cb, Cr) ignores brightness, so shadowed skin still reads as skin while dark hair does not.
+    private static func chroma(_ i: CIImage) -> CIImage {
+        i.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: -0.169, y: 0.5, z: 0, w: 0), "inputGVector": CIVector(x: -0.331, y: -0.419, z: 0, w: 0), "inputBVector": CIVector(x: 0.5, y: -0.081, z: 0, w: 0), "inputBiasVector": CIVector(x: 0.5, y: 0.5, z: 0, w: 0)])
+    }
+
+    /// 1 where the pixel is not skin-coloured, sampled from the cheeks.
+    static func notSkinGate(image: CIImage, box: CGRect) -> CIImage? {
+        let e = image.extent
+        let cheek = CGRect(x: box.minX + box.width * 0.25, y: box.minY + box.height * 0.45, width: box.width * 0.5, height: box.height * 0.3).intersection(CGRect(x: 0, y: 0, width: 1, height: 1))
+        guard cheek.width > 0.005, cheek.height > 0.005 else { return nil }
+        let r = CGRect(x: e.minX + cheek.minX * e.width, y: e.minY + (1 - cheek.maxY) * e.height, width: cheek.width * e.width, height: cheek.height * e.height)
+        var px = [Float](repeating: 0, count: 4)
+        ctx.render(image.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: r)]), toBitmap: &px, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBAf, colorSpace: nil)
+        let skin = CIColor(red: CGFloat(min(max(px[0], 0), 1)), green: CGFloat(min(max(px[1], 0), 1)), blue: CGFloat(min(max(px[2], 0), 1)))
+        let skinC = chroma(CIImage(color: skin).cropped(to: e))
+        let d = skinC.applyingFilter("CIDifferenceBlendMode", parameters: [kCIInputBackgroundImageKey: chroma(image).cropped(to: e)])
+            .applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 1, y: 1, z: 0, w: 0), "inputGVector": CIVector(x: 1, y: 1, z: 0, w: 0), "inputBVector": CIVector(x: 1, y: 1, z: 0, w: 0)])
+        // skinLike = 1 up to a small distance, 0 beyond; the gate is its inverse
+        let k: CGFloat = 1 / 0.06, t0: CGFloat = 0.03
+        return d.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: k, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: k, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0), "inputBiasVector": CIVector(x: -t0 * k, y: -t0 * k, z: -t0 * k, w: 0)])
             .applyingFilter("CIColorClamp").cropped(to: e)
     }
 
