@@ -75,13 +75,19 @@ enum FaceRetouchRender {
         }
         let browWarp = (r.eyes.browShape != .natural || r.eyes.browHeight != 0) ? faces.flatMap { EyeMakeupRenderer.browStrokes($0, shape: r.eyes.browShape, height: r.eyes.browHeight) } : []
         if !r.reshape.isIdentity || r.ratio.warps || !r.shape.isIdentity || !browWarp.isEmpty {
+            let aspect = Double(out.extent.width / max(out.extent.height, 1))
             var warp = WarpEdit()
+            var handles: [WarpHandle] = []
+            let rest = FaceHandles.remainingReshape(r.reshape), restShape = FaceHandles.remainingShape(r.shape)
             for face in faces {
                 let zones = ProtectionZones.zones(face, r.ratio)
-                (FaceReshape.strokes(for: face, params: r.reshape) + FeatureRules.strokes(for: face, r.shape) + RatioRules.strokes(for: face, r.ratio)).compactMap { ProtectionZones.clip($0, zones) }.forEach { warp.add($0) }
+                (FaceReshape.strokes(for: face, params: rest) + FeatureRules.strokes(for: face, restShape) + RatioRules.strokes(for: face, r.ratio)).compactMap { ProtectionZones.clip($0, zones) }.forEach { warp.add($0) }
+                handles += FaceHandles.handles(for: face, reshape: r.reshape, shape: r.shape, ratio: r.ratio, aspect: aspect)   // the outline and features, solved as one rigid warp
             }
             browWarp.forEach { warp.add($0) }
-            out = MeshWarpRenderer.apply(warp.field(aspect: Float(out.extent.width / max(out.extent.height, 1))), to: out)
+            var field = warp.field(aspect: Float(aspect))
+            if !handles.isEmpty { field = MLSWarp.field(handles + MLSWarp.border(), aspect: aspect).adding(field) }
+            out = MeshWarpRenderer.apply(field, to: out)
         }
         return out
     }

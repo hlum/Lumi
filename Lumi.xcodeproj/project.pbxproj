@@ -85,6 +85,7 @@
 		3F879262D545D16CF7056A5E /* Credits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0497315D4AF8836E8C429B /* Credits.swift */; };
 		40AB7939D21E34FE84DA598F /* BodySliderDiagnosticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0948EAC5F34FA97D7FD571E7 /* BodySliderDiagnosticsTests.swift */; };
 		426E9F04EE4F1AA2A3B3A820 /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C2A8865BAA7EB3472CECAA /* ProjectStore.swift */; };
+		43F5F28C7A55EA7CEF4C59E5 /* FaceHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881348E94DD8973164684DDE /* FaceHandles.swift */; };
 		44FA3147D1D78AE7A8CE1AFD /* FilterStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75527BB6FAE9295252FE21E /* FilterStoreTests.swift */; };
 		450643AA42C6B62F8D57F59A /* RemoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC47F6D1DB33A9F7C52B4A8 /* RemoverTests.swift */; };
 		45A2A6315A061461D17AE80C /* ReleaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C05446CF65FFBBDCAD63DD /* ReleaseTests.swift */; };
@@ -232,6 +233,7 @@
 		CB42CE4AD60C00CD1A948136 /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27AF610CC6461065AED466A /* LocalizationTests.swift */; };
 		CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */; };
 		CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */; };
+		CDA1249A50BACD8A646B6D77 /* MLSWarpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086971437BD66588DC720363 /* MLSWarpTests.swift */; };
 		CEFB67261AB35CDDD936C623 /* AutoMosaic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EABD3FEF98A7D610ACA8EE3 /* AutoMosaic.swift */; };
 		CF9B9AB4A7A5E65AD7882F2D /* FontLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F2B57A62EB922BEE19C313 /* FontLibrary.swift */; };
 		D22BBF02A05E37D9E06152A5 /* Credits.json in Resources */ = {isa = PBXBuildFile; fileRef = 491867C4A15830F8C5BBEF55 /* Credits.json */; };
@@ -258,6 +260,7 @@
 		DF88952B315102B0BB5A7269 /* RecipeLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9695B325C436F8ED8E7CC5BB /* RecipeLibraryTests.swift */; };
 		E2A6C55622E23F1CA66D9ABA /* EyeMakeupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DCBC36458F74F9782216BE /* EyeMakeupTests.swift */; };
 		E48FF29EEA9E32DB249CCBEF /* WarpBrush.swift in Sources */ = {isa = PBXBuildFile; fileRef = D939A9C81B9C494B866DAF51 /* WarpBrush.swift */; };
+		E4BB031A6881573CFEC980DE /* MLSWarp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD92DEE3224CFA8E92CFB54 /* MLSWarp.swift */; };
 		E554558AF06DAC5841820173 /* BatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF9DBEC384E6F9CE564684 /* BatchModel.swift */; };
 		E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94F6D20B0D9131790C14898 /* CurveTests.swift */; };
 		E69EDFA4552457DB87473135 /* HealOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */; };
@@ -303,6 +306,7 @@
 		00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustOpsTests.swift; sourceTree = "<group>"; };
 		00EA08E1EDDEE0894FF78ABD /* FaceSliderDiagnosticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceSliderDiagnosticsTests.swift; sourceTree = "<group>"; };
 		06522BADBC01A7B64B050C33 /* BodyRetouchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyRetouchTests.swift; sourceTree = "<group>"; };
+		086971437BD66588DC720363 /* MLSWarpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLSWarpTests.swift; sourceTree = "<group>"; };
 		0948EAC5F34FA97D7FD571E7 /* BodySliderDiagnosticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodySliderDiagnosticsTests.swift; sourceTree = "<group>"; };
 		09D262F11B01DC23949EF8F3 /* VideoCollage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCollage.swift; sourceTree = "<group>"; };
 		09E4894996A353F0C6306103 /* RetouchDetailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetouchDetailTests.swift; sourceTree = "<group>"; };
@@ -450,6 +454,7 @@
 		85BBA9DDFE9AD6D53BCDDA41 /* VideoEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		86DACCEA338C9DDD79BE140D /* VideoEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
 		87B15287F8FAE045D1AAC02E /* BundledModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledModelTests.swift; sourceTree = "<group>"; };
+		881348E94DD8973164684DDE /* FaceHandles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceHandles.swift; sourceTree = "<group>"; };
 		88772FDC0AE6F2EB3C080BAA /* id-specs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "id-specs.json"; sourceTree = "<group>"; };
 		89B94088F944D9709DDB10F4 /* NailRegions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NailRegions.swift; sourceTree = "<group>"; };
 		8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
@@ -513,6 +518,7 @@
 		B8F49C52541F35A4F285D365 /* MaskCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskCanvas.swift; sourceTree = "<group>"; };
 		BA5640ED3C828F66CC06F9C3 /* BatchRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunner.swift; sourceTree = "<group>"; };
 		BA6B10E44FEEB7A758F73E57 /* HairTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HairTests.swift; sourceTree = "<group>"; };
+		BAD92DEE3224CFA8E92CFB54 /* MLSWarp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLSWarp.swift; sourceTree = "<group>"; };
 		BB29CD8FF14D12934C84376D /* FilterLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterLibrary.swift; sourceTree = "<group>"; };
 		BCF4268CE74382D6CF44D34E /* WatermarkRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkRenderer.swift; sourceTree = "<group>"; };
 		BD18FB10F5955B5B1EAEFC28 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -815,6 +821,7 @@
 		7064959219CBCE682FA4DF44 /* Reshape */ = {
 			isa = PBXGroup;
 			children = (
+				881348E94DD8973164684DDE /* FaceHandles.swift */,
 				3A6CF13D91A200E0A3D41E0C /* FeatureRules.swift */,
 				E05CCA82C70869920C766DDC /* RatioRules.swift */,
 			);
@@ -1043,6 +1050,7 @@
 				4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */,
 				A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */,
 				E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */,
+				BAD92DEE3224CFA8E92CFB54 /* MLSWarp.swift */,
 				3B443E2575575BE475C5FB9B /* MosaicOps.swift */,
 				E2059AFF4788F6C150A916E4 /* OutlineOps.swift */,
 				6FA639C89ECF81684B57A521 /* ProtectedWarp.swift */,
@@ -1140,6 +1148,7 @@
 				3B8AFEDB6F647E6418F76C11 /* MaterialCatalogTests.swift */,
 				73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */,
 				5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */,
+				086971437BD66588DC720363 /* MLSWarpTests.swift */,
 				9944265EEB217547CF3F82B6 /* ModelStoreTests.swift */,
 				34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */,
 				95F8FC563B28512D074DF857 /* NailRegionsTests.swift */,
@@ -1494,6 +1503,7 @@
 				62321582DF77C5697193257F /* ExportSettings.swift in Sources */,
 				1A5E5167580AFB58D4626BC7 /* EyeMakeup.swift in Sources */,
 				4BBA6FC9B958CB9512AD8233 /* FaceDetailOps.swift in Sources */,
+				43F5F28C7A55EA7CEF4C59E5 /* FaceHandles.swift in Sources */,
 				2337611A5B6D84A1BD4286A1 /* FaceMarks.swift in Sources */,
 				BF57D6B8269601D9DB8C334E /* FaceParsing.mlpackage in Sources */,
 				3593E8C2A5D2CD5282187C7F /* FaceReshape.swift in Sources */,
@@ -1526,6 +1536,7 @@
 				FE68646694ED7AE2AD506123 /* LiveConvert.swift in Sources */,
 				303459E0FE7B21A3D70A2609 /* LiveOverlays.swift in Sources */,
 				01500DBC9F403E7D92B02912 /* LumiApp.swift in Sources */,
+				E4BB031A6881573CFEC980DE /* MLSWarp.swift in Sources */,
 				4F5BE7B6D8552909CE7DEF4B /* MakeupLooks.swift in Sources */,
 				99D653B8C904143C21F97409 /* MakeupRenderer.swift in Sources */,
 				255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */,
@@ -1669,6 +1680,7 @@
 				FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */,
 				FD8882E0769ED7939AFDEEFB /* LiveConvertTests.swift in Sources */,
 				CB42CE4AD60C00CD1A948136 /* LocalizationTests.swift in Sources */,
+				CDA1249A50BACD8A646B6D77 /* MLSWarpTests.swift in Sources */,
 				943E8A0C2D6F86A8AEF6DE31 /* MakeupLooksTests.swift in Sources */,
 				E8E092FF72FAE33A15E26EA1 /* MakeupPlacementTests.swift in Sources */,
 				8E70BB46E8688EF9F20597E3 /* MaskTests.swift in Sources */,
@@ -1745,6 +1757,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.hlum.lumi;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

@@ -5,8 +5,8 @@ import Foundation
 struct DisplacementField: Codable, Equatable {
     let cols: Int
     let rows: Int
-    private(set) var dx: [Float]
-    private(set) var dy: [Float]
+    var dx: [Float]
+    var dy: [Float]
 
     init(cols: Int, rows: Int) {
         precondition(cols >= 2 && rows >= 2)

@@ -34,6 +34,10 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.hlum.lumi
         GENERATE_INFOPLIST_FILE: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      configs:
+        # personal app: Debug builds run on the phone every day, so image code is compiled optimised
+        Debug:
+          SWIFT_OPTIMIZATION_LEVEL: -O
   LumiTests:
     type: bundle.unit-test
     platform: iOS
