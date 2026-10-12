@@ -1,5 +1,6 @@
 import CoreImage
 import UIKit
+import FoundationModels
 import Vision
 
 /// One line of text found in a photo.
@@ -98,7 +99,20 @@ struct SceneCaptionSuggester: CaptionSuggesting {
             try? VNImageRequestHandler(ciImage: image).perform([req])
             return (req.results ?? []).filter { $0.confidence > 0.25 }.prefix(3).map { $0.identifier.replacingOccurrences(of: "_", with: " ") }
         }.value
+        if let written = await Self.written(from: labels), !written.isEmpty { return written }
         return Self.captions(from: labels)
+    }
+
+    /// Short captions written by the on-device language model; nil when it isn't available.
+    static func written(from labels: [String]) async -> [String]? {
+        guard !labels.isEmpty, case .available = SystemLanguageModel.default.availability else { return nil }
+        let prompt = "Write 4 short, friendly social media captions (max 6 words each) for a photo showing: \(labels.joined(separator: ", ")). One per line, no numbering, no quotes."
+        guard let text = try? await LanguageModelSession().respond(to: prompt).content else { return nil }
+        return parse(text)
+    }
+
+    static func parse(_ text: String) -> [String] {
+        text.split(separator: "\n").map { $0.trimmingCharacters(in: CharacterSet(charactersIn: " \t\"-•*0123456789.)")) }.filter { !$0.isEmpty }.prefix(4).map { String($0) }
     }
 
     static func captions(from labels: [String]) -> [String] {

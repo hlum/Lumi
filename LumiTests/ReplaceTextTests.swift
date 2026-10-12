@@ -61,6 +61,7 @@ struct ReplaceTextTests {
     @Test func captionIdeasUseWhatTheSceneContains() {
         #expect(SceneCaptionSuggester.captions(from: ["beach", "sky"]).contains("Beach and sky"))
         #expect(SceneCaptionSuggester.captions(from: []).count == 3)
+        #expect(SceneCaptionSuggester.parse("1. Sunny days\n- \"Beach mood\"\n\n").elementsEqual(["Sunny days", "Beach mood"]))
         #expect(SceneCaptionSuggester.captions(from: ["cat"]).allSatisfy { $0.localizedCaseInsensitiveContains("cat") })
     }
 }
