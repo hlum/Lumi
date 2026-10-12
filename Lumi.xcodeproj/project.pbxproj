@@ -36,6 +36,7 @@
 		1902B5A8C67FBC9C700A27F2 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */; };
 		19910705AD1775CD49C02379 /* Smoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A63C89407FE7AD33C7ED2A /* Smoothing.swift */; };
 		1A5E5167580AFB58D4626BC7 /* EyeMakeup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336D9D25B8DC482C4BCE4290 /* EyeMakeup.swift */; };
+		1B3800ABBA2B1D8F7110A09A /* RatioRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05CCA82C70869920C766DDC /* RatioRules.swift */; };
 		211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */; };
 		218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */; };
 		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
@@ -180,6 +181,7 @@
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
 		F30F07E38EDD31513B6F456A /* UpscalerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */; };
 		F4EB922F3593D5A9D7BC4031 /* FrameOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7449BB3478E8BCC8F1A69434 /* FrameOps.swift */; };
+		F5B538C6A19BF4D4B85F3316 /* RatioRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3351E81DE5DDC473C1A6F2F /* RatioRulesTests.swift */; };
 		F5B9B4E42B12238904D5FA17 /* AutoRemoveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457AF41C440227957E07867 /* AutoRemoveTests.swift */; };
 		F67AD6F02B9512BA43801A9B /* Content in Resources */ = {isa = PBXBuildFile; fileRef = 3E077721CC782EB59A850370 /* Content */; };
 		F7840F7A78F842A9518A303C /* MosaicConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */; };
@@ -332,6 +334,7 @@
 		ADBE340D78C4F6456AA07B3C /* MakeupLooksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeupLooksTests.swift; sourceTree = "<group>"; };
 		AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandOps.swift; sourceTree = "<group>"; };
 		B1B4AD0DAD1BDFE1141E4126 /* HealOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealOps.swift; sourceTree = "<group>"; };
+		B3351E81DE5DDC473C1A6F2F /* RatioRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatioRulesTests.swift; sourceTree = "<group>"; };
 		B3DCBC36458F74F9782216BE /* EyeMakeupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeMakeupTests.swift; sourceTree = "<group>"; };
 		B46D2DF1A16B93F34F960633 /* EditOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOperation.swift; sourceTree = "<group>"; };
 		B75EC58A061903DB807EB806 /* FaceReshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReshape.swift; sourceTree = "<group>"; };
@@ -362,6 +365,7 @@
 		D939A9C81B9C494B866DAF51 /* WarpBrush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarpBrush.swift; sourceTree = "<group>"; };
 		D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunnerTests.swift; sourceTree = "<group>"; };
 		DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
+		E05CCA82C70869920C766DDC /* RatioRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatioRules.swift; sourceTree = "<group>"; };
 		E2059AFF4788F6C150A916E4 /* OutlineOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineOps.swift; sourceTree = "<group>"; };
 		E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPreviewView.swift; sourceTree = "<group>"; };
 		E4411F910665922CEBCCE048 /* PersonTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTarget.swift; sourceTree = "<group>"; };
@@ -528,6 +532,14 @@
 			path = Mask;
 			sourceTree = "<group>";
 		};
+		7064959219CBCE682FA4DF44 /* Reshape */ = {
+			isa = PBXGroup;
+			children = (
+				E05CCA82C70869920C766DDC /* RatioRules.swift */,
+			);
+			path = Reshape;
+			sourceTree = "<group>";
+		};
 		7226F7675BA5664E39C6C9DC /* Text */ = {
 			isa = PBXGroup;
 			children = (
@@ -554,6 +566,7 @@
 				B75EC58A061903DB807EB806 /* FaceReshape.swift */,
 				2D4F40D958E8AEADCBA1DCC8 /* FaceRetouch.swift */,
 				D939A9C81B9C494B866DAF51 /* WarpBrush.swift */,
+				7064959219CBCE682FA4DF44 /* Reshape */,
 			);
 			path = Retouch;
 			sourceTree = "<group>";
@@ -779,6 +792,7 @@
 				27CAD8D752BD3195AA3D1BDA /* PreviewBenchmarkTests.swift */,
 				90D675AD3761C9C1642B137F /* ProjectSessionTests.swift */,
 				DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */,
+				B3351E81DE5DDC473C1A6F2F /* RatioRulesTests.swift */,
 				9695B325C436F8ED8E7CC5BB /* RecipeLibraryTests.swift */,
 				C601C878EAB11731365C44CD /* RecipeTests.swift */,
 				37C05446CF65FFBBDCAD63DD /* ReleaseTests.swift */,
@@ -1094,6 +1108,7 @@
 				426E9F04EE4F1AA2A3B3A820 /* ProjectStore.swift in Sources */,
 				0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */,
 				355FFED94480FDD5572FD0A7 /* ProtectedWarp.swift in Sources */,
+				1B3800ABBA2B1D8F7110A09A /* RatioRules.swift in Sources */,
 				06E5B097A0F5414D728A6236 /* RealESRGAN_x4.mlpackage in Sources */,
 				D7AD8B53E5E51940F310F0D2 /* Recipe.swift in Sources */,
 				8688B3D9817E40BCD09156F0 /* RecipeStorage.swift in Sources */,
@@ -1181,6 +1196,7 @@
 				678285436370AF0D2C1B5B67 /* PreviewBenchmarkTests.swift in Sources */,
 				A4FD5665776D850AC8F14C10 /* ProjectSessionTests.swift in Sources */,
 				CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */,
+				F5B538C6A19BF4D4B85F3316 /* RatioRulesTests.swift in Sources */,
 				DF88952B315102B0BB5A7269 /* RecipeLibraryTests.swift in Sources */,
 				0A021A54E63AED940A54802C /* RecipeTests.swift in Sources */,
 				45A2A6315A061461D17AE80C /* ReleaseTests.swift in Sources */,

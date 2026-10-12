@@ -9,17 +9,18 @@ struct FaceRetouch: Codable, Equatable {
     var makeup = MakeupParams()
     var detail = FaceDetailParams()
     var eyes = EyeMakeup()
-    var isIdentity: Bool { skin.isIdentity && reshape.isIdentity && makeup.isIdentity && detail.isIdentity && eyes.isIdentity }
+    var ratio = FaceRatio()
+    var isIdentity: Bool { ratio.isIdentity && skin.isIdentity && reshape.isIdentity && makeup.isIdentity && detail.isIdentity && eyes.isIdentity }
 
-    init(skin: SkinParams = SkinParams(), reshape: FaceReshapeParams = FaceReshapeParams(), makeup: MakeupParams = MakeupParams(), detail: FaceDetailParams = FaceDetailParams(), eyes: EyeMakeup = EyeMakeup()) {
-        self.skin = skin; self.reshape = reshape; self.makeup = makeup; self.detail = detail; self.eyes = eyes
+    init(skin: SkinParams = SkinParams(), reshape: FaceReshapeParams = FaceReshapeParams(), makeup: MakeupParams = MakeupParams(), detail: FaceDetailParams = FaceDetailParams(), eyes: EyeMakeup = EyeMakeup(), ratio: FaceRatio = FaceRatio()) {
+        self.ratio = ratio; self.skin = skin; self.reshape = reshape; self.makeup = makeup; self.detail = detail; self.eyes = eyes
     }
-    enum CodingKeys: String, CodingKey { case skin, reshape, makeup, detail, eyes }
+    enum CodingKeys: String, CodingKey { case skin, reshape, makeup, detail, eyes, ratio }
     init(from d: Decoder) throws {
         let c = try d.container(keyedBy: CodingKeys.self)
         self.init(skin: try c.decodeIfPresent(SkinParams.self, forKey: .skin) ?? SkinParams(), reshape: try c.decodeIfPresent(FaceReshapeParams.self, forKey: .reshape) ?? FaceReshapeParams(),
                   makeup: try c.decodeIfPresent(MakeupParams.self, forKey: .makeup) ?? MakeupParams(), detail: try c.decodeIfPresent(FaceDetailParams.self, forKey: .detail) ?? FaceDetailParams(),
-                  eyes: try c.decodeIfPresent(EyeMakeup.self, forKey: .eyes) ?? EyeMakeup())
+                  eyes: try c.decodeIfPresent(EyeMakeup.self, forKey: .eyes) ?? EyeMakeup(), ratio: try c.decodeIfPresent(FaceRatio.self, forKey: .ratio) ?? FaceRatio())
     }
 
     static func look(_ l: BeautyLook, strength: Double = 1) -> FaceRetouch {
@@ -59,12 +60,16 @@ enum FaceRetouchRender {
             if !r.skin.isIdentity, let mask = SkinMask.make(face: face, size: size, feather: 0.02) { out = SkinOps.apply(r.skin, to: out, mask: mask) }
             if !r.makeup.isIdentity { out = MakeupRenderer.apply(r.makeup, to: out, face: face) }
             if !r.detail.isIdentity { out = FaceDetailOps.apply(r.detail, to: out, face: face) }
+            if r.ratio.shade3D > 0 { out = MakeupRenderer.apply(RatioRules.shading(r.ratio), to: out, face: face) }
             if !r.eyes.isIdentity { out = EyeMakeupRenderer.apply(r.eyes, to: out, face: face) }
         }
         let browWarp = (r.eyes.browShape != .natural || r.eyes.browHeight != 0) ? faces.flatMap { EyeMakeupRenderer.browStrokes($0, shape: r.eyes.browShape, height: r.eyes.browHeight) } : []
-        if !r.reshape.isIdentity || !browWarp.isEmpty {
+        if !r.reshape.isIdentity || r.ratio.warps || !browWarp.isEmpty {
             var warp = WarpEdit()
-            FaceReshape.strokes(for: faces, params: r.reshape).forEach { warp.add($0) }
+            for face in faces {
+                let zones = ProtectionZones.zones(face, r.ratio)
+                (FaceReshape.strokes(for: face, params: r.reshape) + RatioRules.strokes(for: face, r.ratio)).compactMap { ProtectionZones.clip($0, zones) }.forEach { warp.add($0) }
+            }
             browWarp.forEach { warp.add($0) }
             out = MeshWarpRenderer.apply(warp.field, to: out)
         }

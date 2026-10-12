@@ -80,7 +80,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T37 Blemishes
 - [~] T38 Under-eye and wrinkles
 - [~] T39 Face-shape warps
-- [ ] T40 Ratio, 3D and protection
+- [~] T40 Ratio, 3D and protection
 - [~] T41 Eye, nose, mouth and brow warps
 - [~] T42 Eye detail and teeth
 - [x] T43 Manual face slim and volume
