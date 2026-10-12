@@ -91,3 +91,21 @@ struct RecipeTests {
         #expect(try JSONDecoder().decode(RecipeStore.self, from: JSONEncoder().encode(s)) == s)
     }
 }
+
+struct RecipeSummaryTests {
+    @Test func summaryNamesWhatIsInsideInPlainWords() {
+        var d = EditDocument(); d.filter = ("f1", 0.8); d.adjust = AdjustParams(contrast: 0.2); var f = FaceRetouch(); f.skin.smooth = 0.4; d.face = f
+        let r = Recipe(name: "x", from: d)
+        #expect(r.summary.contains("Colour") && r.summary.contains("Filter") && r.summary.contains("Face"))
+        #expect(Recipe(name: "empty", operations: []).summary.isEmpty)
+    }
+
+    @Test func useCountGrowsAndOldRecipesStillDecode() throws {
+        var s = RecipeStore(); let r = Recipe(name: "a", operations: [.exposure(0.2)]); s.add(r)
+        s.markUsed(r.id); s.markUsed(r.id)
+        #expect(s.recipes[0].useCount == 2)
+        let old = #"{"name":"Old","operations":[],"isFavorite":true}"#
+        let d = try JSONDecoder().decode(Recipe.self, from: Data(old.utf8))
+        #expect(d.name == "Old" && d.isFavorite && d.useCount == 0)
+    }
+}

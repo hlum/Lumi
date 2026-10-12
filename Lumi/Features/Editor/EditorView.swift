@@ -9,7 +9,7 @@ enum EditorCategory: String, CaseIterable, Identifiable {
 
 enum EditorTool: String, CaseIterable, Identifiable {
     case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filters", sticker = "Stickers", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Manual slim", clean = "Clean", face = "Face", makeup = "Makeup", color = "Color", enhance = "Enhance", export = "Export"
-    case relight = "AI Flash", effects = "Effects"
+    case relight = "AI Flash", effects = "Effects", expand = "Expand"
     case autoBeauty = "Auto beauty", skin = "Skin", reshape = "Reshape", blemish = "Blemishes", eyesTeeth = "Eyes and teeth", underEye = "Under-eye", body = "Body"
     case looks = "Looks", lips = "Lips", eyeMakeup = "Eyes", nails = "Nails"
     var id: String { rawValue }
@@ -19,7 +19,7 @@ enum EditorTool: String, CaseIterable, Identifiable {
         case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .makeup: "wand.and.stars"
         case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "sparkles"; case .export: "square.and.arrow.up.on.square"
         case .autoBeauty: "sparkle.magnifyingglass"; case .skin: "face.dashed"; case .reshape: "person.crop.circle.badge.questionmark"; case .blemish: "circle.dotted"; case .eyesTeeth: "eye"; case .underEye: "moon.zzz"
-        case .relight: "bolt.fill"; case .effects: "sparkle"
+        case .relight: "bolt.fill"; case .effects: "sparkle"; case .expand: "arrow.up.left.and.arrow.down.right.circle"
         case .body: "figure.stand"; case .looks: "sparkles.rectangle.stack"; case .lips: "mouth"; case .eyeMakeup: "eyebrow"; case .nails: "hand.raised.fingers.spread"
         }
     }
@@ -37,7 +37,7 @@ enum EditorTool: String, CaseIterable, Identifiable {
     /// Tools shown in a category's grid, in order. Export is reached from Save.
     static func tools(in c: EditorCategory) -> [EditorTool] {
         switch c {
-        case .edit: [.crop, .adjust, .filter, .color, .relight, .text, .sticker, .remove, .cutout, .effects, .enhance, .frame, .doodle, .mosaic, .mark]
+        case .edit: [.crop, .adjust, .filter, .color, .relight, .text, .sticker, .remove, .cutout, .expand, .effects, .enhance, .frame, .doodle, .mosaic, .mark]
         case .retouch: [.autoBeauty, .skin, .reshape, .blemish, .eyesTeeth, .underEye]
         case .body: [.body, .liquify]
         case .hair: [.hair]
@@ -225,6 +225,7 @@ struct EditorView: View {
         case .face: FacePanel(model: model)
         case .makeup: FacePanel(model: model, only: [.looks, .makeup, .eyes])
         case .relight: RelightPanel(model: model)
+        case .expand: ExpandPanel(model: model)
         case .effects: EffectsPanel(model: model)
         case .autoBeauty: AutoBeautyPanel(model: model)
         case .skin: SkinPanel(model: model)
@@ -393,9 +394,64 @@ struct TextPanel: View {
     @State private var font = FontLibrary.all.first!.postScript
     @State private var preset: TextPreset?
     @State private var behind = false
+    @State private var mode = Mode.add
+    @State private var lines: [TextLine] = []
+    @State private var picked: TextLine?
+    @State private var replacement = ""
+    @State private var searching = false
+    @State private var searched = false
+    @State private var ideas: [String] = []
+    enum Mode: String, CaseIterable { case add = "Add text", change = "Change text in photo" }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 12) {
+            LumiSegmented(items: Mode.allCases.map { ($0, LocalizedStringKey($0.rawValue)) }, selection: $mode, height: 40)
+            if mode == .add { addBody } else { changeBody }
+        }
+        .task { if ideas.isEmpty, let o = model.original { ideas = await SceneCaptionSuggester().suggestions(for: Renderer.proxy(o, maxDimension: 512)) } }
+    }
+
+    private var changeBody: some View {
+        VStack(spacing: 10) {
+            if !searched {
+                Text("Finds the text in the photo so you can change it. The old words are erased and the new ones match the colour and size.").font(.footnote).foregroundStyle(LumiColor.textSecondary)
+                LumiPrimaryButton(title: searching ? "Looking…" : "Find text", symbol: "text.viewfinder", disabled: searching) { find() }
+            } else if lines.isEmpty {
+                Text("No text found in this photo.").font(LumiFont.body())
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) { ForEach(lines) { l in LumiChip(title: LocalizedStringKey(l.text), selected: picked == l) { picked = l; replacement = l.text } } }
+                }
+                if picked != nil {
+                    TextField("New text", text: $replacement).lumiField()
+                    LumiPrimaryButton(title: "Replace", symbol: "arrow.triangle.2.circlepath", disabled: replacement.trimmingCharacters(in: .whitespaces).isEmpty) { replace() }
+                }
+            }
+        }
+    }
+
+    private func find() {
+        guard let o = model.original else { return }
+        searching = true
+        Task {
+            let proxy = Renderer.proxy(o, maxDimension: 1600)
+            let found = await Task.detached { (try? VisionTextReader().lines(in: proxy)) ?? [] }.value
+            lines = found; searched = true; searching = false
+        }
+    }
+
+    private func replace() {
+        guard let o = model.original, let line = picked, let plan = ReplaceText.plan(line: line, newText: replacement, in: Renderer.proxy(o, maxDimension: 1600), fontName: font) else { return }
+        model.edit { d in
+            d.removals = d.removals + [plan.mask]
+            var s = d.layers; try? s.add(plan.layer); d.layers = s
+        }
+        model.selectedLayer = plan.layer.id
+        picked = nil; searched = false; lines = []
+    }
+
+    private var addBody: some View {
+        VStack(spacing: 12) {
             HStack(spacing: 8) {
                 TextField("Add text", text: $text).lumiField()
                 LumiIconButton(symbol: "plus", label: "Add text", dark: true, disabled: text.trimmingCharacters(in: .whitespaces).isEmpty) {
@@ -411,6 +467,7 @@ struct TextPanel: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) { ForEach(TextStylePresets.all) { p in LumiChip(title: LocalizedStringKey(p.name), selected: preset == p) { font = p.style.fontName; preset = p } } }
             }
+            if !ideas.isEmpty { ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 8) { ForEach(ideas, id: \.self) { i in LumiChip(title: LocalizedStringKey(i), symbol: "lightbulb") { text = i } } } } }
             LumiToggleRow(title: "Behind subject", subtitle: "Text slips behind the person", isOn: $behind)
             VStack(spacing: 6) {
                 ForEach(model.draft.layers.layers) { l in
@@ -1193,5 +1250,37 @@ struct CleanBrushOverlay: View {
                 }
                 .onEnded { _ in remover = nil; model.commit() })
         }
+    }
+}
+
+
+/// Adds room around the photo and fills it in (the fill is the on-device inpainting model).
+struct ExpandPanel: View {
+    @Bindable var model: EditorModel
+    @State private var ratio = "Free"
+    private static let ratios: [(String, Double?)] = [("Free", nil), ("1:1", 1), ("4:5", 0.8), ("16:9", 16.0 / 9), ("9:16", 9.0 / 16), ("3:2", 1.5)]
+
+    var body: some View {
+        VStack(spacing: 12) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) { ForEach(Self.ratios, id: \.0) { r in LumiChip(title: LocalizedStringKey(r.0), selected: ratio == r.0) { pick(r) } } }
+            }
+            slider("Left", \.left); slider("Right", \.right); slider("Top", \.top); slider("Bottom", \.bottom)
+            HStack {
+                Text(LaMaInpainter.isModelAvailable ? "Works best on scenery and plain backgrounds." : "Install the removal model in Settings to fill the new space.").font(.footnote).foregroundStyle(LumiColor.textSecondary)
+                Spacer()
+                if !model.draft.expand.isIdentity { LumiChip(title: "Reset", symbol: "arrow.counterclockwise") { ratio = "Free"; model.edit { $0.expand = ExpandConfig() } } }
+            }
+        }
+    }
+
+    private func pick(_ r: (String, Double?)) {
+        ratio = r.0
+        guard let target = r.1, let o = model.original else { model.edit { $0.expand = ExpandConfig() }; return }
+        model.edit { $0.expand = ExpandConfig.toAspect(target, from: o.extent.size) }
+    }
+
+    private func slider(_ title: String, _ path: WritableKeyPath<ExpandConfig, Double>) -> some View {
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft.expand[keyPath: path] }, set: { model.draft.expand[keyPath: path] = $0; ratio = "Free" }), range: 0...1, onEnd: { model.commit() })
     }
 }

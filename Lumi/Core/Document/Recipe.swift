@@ -7,6 +7,7 @@ struct Recipe: Codable, Equatable, Identifiable {
     var operations: [EditOperation]
     var isFavorite = false
     var lastUsed: Date?
+    var useCount = 0
 
     /// Saves `document` as a recipe, optionally only some categories ("just the color grade").
     init(name: String, from document: EditDocument, categories: Set<RecipeCategory>? = nil) {
@@ -53,7 +54,7 @@ struct RecipeStore: Codable, Equatable {
         if let i = recipes.firstIndex(where: { $0.id == id }) { recipes[i].isFavorite.toggle() }
     }
     mutating func markUsed(_ id: UUID, at date: Date = .now) {
-        if let i = recipes.firstIndex(where: { $0.id == id }) { recipes[i].lastUsed = date }
+        if let i = recipes.firstIndex(where: { $0.id == id }) { recipes[i].lastUsed = date; recipes[i].useCount += 1 }
     }
 
     var favorites: [Recipe] { recipes.filter(\.isFavorite) }
@@ -73,4 +74,41 @@ struct RecipeStore: Codable, Equatable {
         Recipe(name: "Vivid pop", operations: [.adjust(AdjustParams.presets["vivid"]!), .curve(ToneCurve.presets["contrast"]!)]),
         Recipe(name: "Soft fade", operations: [.curve(ToneCurve.presets["fade"]!), .exposure(0.2)]),
     ]
+}
+
+
+extension Recipe {
+    /// "Filter, skin, eyes": what is in the recipe, in plain words.
+    var summary: String {
+        var names: [String] = []
+        for op in operations {
+            let n: String
+            switch op.kind {
+            case .exposure, .adjust, .curve, .grade, .match: n = "Colour"
+            case .filter, .filterEraser: n = "Filter"
+            case .crop, .expand: n = "Crop"
+            case .face: n = "Face"
+            case .hair: n = "Hair"
+            case .body, .warp: n = "Body"
+            case .layers, .doodle, .watermark: n = "Text and stickers"
+            case .relight, .effect: n = "Effects"
+            default: n = op.kind.rawValue.capitalized
+            }
+            if !names.contains(n) { names.append(n) }
+        }
+        return names.prefix(3).joined(separator: ", ")
+    }
+}
+
+extension Recipe {
+    /// Recipes saved before use counts existed still open.
+    init(from decoder: Decoder) throws {
+        enum K: String, CodingKey { case id, name, operations, isFavorite, lastUsed, useCount }
+        let c = try decoder.container(keyedBy: K.self)
+        self.init(name: try c.decode(String.self, forKey: .name), operations: try c.decode([EditOperation].self, forKey: .operations))
+        id = try c.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        isFavorite = try c.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false
+        lastUsed = try c.decodeIfPresent(Date.self, forKey: .lastUsed)
+        useCount = try c.decodeIfPresent(Int.self, forKey: .useCount) ?? 0
+    }
 }
