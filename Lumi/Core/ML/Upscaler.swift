@@ -41,14 +41,13 @@ enum TilePlan {
 final class RealESRGANUpscaler: Upscaling {
     static let maxInputSide = 2048
     private let model: MLModel
+    private let entry: ModelEntry
     private let context = CIContext()
 
-    static var isModelAvailable: Bool { Bundle.main.url(forResource: "RealESRGAN_x4", withExtension: "mlmodelc") != nil }
+    static var isModelAvailable: Bool { ModelStore.shared.isAvailable(.upscale) }
 
-    init() throws {
-        guard let url = Bundle.main.url(forResource: "RealESRGAN_x4", withExtension: "mlmodelc") else { throw UpscaleError.modelMissing }
-        let cfg = MLModelConfiguration(); cfg.computeUnits = .all
-        model = try MLModel(contentsOf: url, configuration: cfg)
+    init(store: ModelStore = .shared) throws {
+        do { (model, entry) = try store.load(.upscale) } catch { throw UpscaleError.modelMissing }
     }
 
     func upscale4x(_ image: CIImage) throws -> CIImage {
@@ -63,8 +62,8 @@ final class RealESRGANUpscaler: Upscaling {
             let window = src.cropped(to: CGRect(x: t.origin.x, y: ciY, width: CGFloat(TilePlan.tile), height: CGFloat(TilePlan.tile)))
                 .transformed(by: CGAffineTransform(translationX: -t.origin.x, y: -ciY))
             let input = try buffer(window, side: TilePlan.tile)
-            let out = try model.prediction(from: MLDictionaryFeatureProvider(dictionary: ["input": MLFeatureValue(pixelBuffer: input)]))
-            guard let ob = out.featureValue(for: "activation_out")?.imageBufferValue else { throw UpscaleError.predictionFailed }
+            let out = try model.prediction(from: MLDictionaryFeatureProvider(dictionary: [entry.io["input"] ?? "input": MLFeatureValue(pixelBuffer: input)]))
+            guard let ob = out.featureValue(for: entry.io["output"] ?? "activation_out")?.imageBufferValue else { throw UpscaleError.predictionFailed }
             // keep only this tile's core, placed at 4x
             let coreCI = CGRect(x: t.core.minX, y: CGFloat(h) - t.core.maxY, width: t.core.width, height: t.core.height)
             let local = CGRect(x: (coreCI.minX - t.origin.x) * 4, y: (coreCI.minY - ciY) * 4, width: coreCI.width * 4, height: coreCI.height * 4)
@@ -87,8 +86,9 @@ final class RealESRGANUpscaler: Upscaling {
 
 final class LazyUpscaler: Upscaling {
     private var real: RealESRGANUpscaler?
+    private var revision = -1
     func upscale4x(_ image: CIImage) throws -> CIImage {
-        if real == nil { real = try RealESRGANUpscaler() }
+        if real == nil || revision != ModelStore.shared.revision { real = try RealESRGANUpscaler(); revision = ModelStore.shared.revision }
         return try real!.upscale4x(image)
     }
 }

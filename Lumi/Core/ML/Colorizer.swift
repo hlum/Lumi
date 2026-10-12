@@ -28,14 +28,13 @@ final class SiggraphColorizer: Colorizing {
     static let side = 512
     static let maxInputSide = 2048
     private let model: MLModel
+    private let entry: ModelEntry
     private let context = CIContext()
 
-    static var isModelAvailable: Bool { Bundle.main.url(forResource: "SIGGraph17Colorizer", withExtension: "mlmodelc") != nil }
+    static var isModelAvailable: Bool { ModelStore.shared.isAvailable(.colorize) }
 
-    init() throws {
-        guard let url = Bundle.main.url(forResource: "SIGGraph17Colorizer", withExtension: "mlmodelc") else { throw ColorizeError.modelMissing }
-        let cfg = MLModelConfiguration(); cfg.computeUnits = .all
-        model = try MLModel(contentsOf: url, configuration: cfg)
+    init(store: ModelStore = .shared) throws {
+        do { (model, entry) = try store.load(.colorize) } catch { throw ColorizeError.modelMissing }
     }
 
     /// Runs the network on a lightness plane (0...100, side x side) and returns [a plane | b plane] (each side*side).
@@ -44,8 +43,8 @@ final class SiggraphColorizer: Colorizing {
         guard lightness.count == n * n else { throw ColorizeError.bufferFailed }
         let input = try MLMultiArray(shape: [1, 1, NSNumber(value: n), NSNumber(value: n)], dataType: .float32)
         for i in 0..<(n * n) { input[i] = NSNumber(value: lightness[i]) }
-        let out = try model.prediction(from: MLDictionaryFeatureProvider(dictionary: ["input1": MLFeatureValue(multiArray: input)]))
-        guard let arr = out.featureValue(for: "var_518")?.multiArrayValue, arr.count == 2 * n * n else { throw ColorizeError.predictionFailed }
+        let out = try model.prediction(from: MLDictionaryFeatureProvider(dictionary: [entry.io["input"] ?? "input1": MLFeatureValue(multiArray: input)]))
+        guard let arr = out.featureValue(for: entry.io["output"] ?? "var_518")?.multiArrayValue, arr.count == 2 * n * n else { throw ColorizeError.predictionFailed }
         return (0..<arr.count).map { arr[$0].floatValue }
     }
 
@@ -83,8 +82,9 @@ final class SiggraphColorizer: Colorizing {
 
 final class LazyColorizer: Colorizing {
     private var real: SiggraphColorizer?
+    private var revision = -1
     func colorize(_ image: CIImage) throws -> CIImage {
-        if real == nil { real = try SiggraphColorizer() }
+        if real == nil || revision != ModelStore.shared.revision { real = try SiggraphColorizer(); revision = ModelStore.shared.revision }
         return try real!.colorize(image)
     }
 }

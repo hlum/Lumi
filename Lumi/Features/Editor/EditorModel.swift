@@ -101,7 +101,7 @@ final class EditorModel {
     }
 
     /// The enhance tool is offered only when the model is present and the photo is small enough to upscale.
-    var canUpscale: Bool { Renderer.services.upscaler != nil && max(original?.extent.width ?? .infinity, original?.extent.height ?? .infinity) <= CGFloat(RealESRGANUpscaler.maxInputSide) }
+    var canUpscale: Bool { Renderer.services.upscaler != nil && RealESRGANUpscaler.isModelAvailable && max(original?.extent.width ?? .infinity, original?.extent.height ?? .infinity) <= CGFloat(RealESRGANUpscaler.maxInputSide) }
 
     // MARK: layer gestures (live while dragging; `commit()` records one undo step when the gesture ends)
 

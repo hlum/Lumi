@@ -38,8 +38,9 @@ enum InpaintPlan {
 /// Loads LaMa on first use so app launch isn't slowed by a ~200 MB model.
 final class LazyInpainter: Inpainting {
     private var real: LaMaInpainter?
+    private var revision = -1
     func inpaint(_ image: CIImage, mask: CIImage) throws -> CIImage {
-        if real == nil { real = try LaMaInpainter() }
+        if real == nil || revision != ModelStore.shared.revision { real = try LaMaInpainter(); revision = ModelStore.shared.revision }   // a swapped model is picked up here
         return try real!.inpaint(image, mask: mask)
     }
 }
@@ -49,15 +50,17 @@ enum InpaintError: Error, Equatable { case modelMissing, emptyMask, bufferFailed
 /// LaMa (Apache-2.0) on Core ML. Runs on a window around the mask and blends the result back at full resolution.
 final class LaMaInpainter: Inpainting {
     private let model: MLModel
+    private let entry: ModelEntry
     private let context = CIContext()
 
-    static var isModelAvailable: Bool { Bundle.main.url(forResource: "LaMa", withExtension: "mlmodelc") != nil }
+    static var isModelAvailable: Bool { ModelStore.shared.isAvailable(.inpaint) }
 
-    init() throws {
-        guard let url = Bundle.main.url(forResource: "LaMa", withExtension: "mlmodelc") else { throw InpaintError.modelMissing }
-        let cfg = MLModelConfiguration(); cfg.computeUnits = .all        // as converted
-        model = try MLModel(contentsOf: url, configuration: cfg)
+    /// Loads whichever model is active for object removal (the bundled LaMa unless the user swapped it).
+    init(store: ModelStore = .shared) throws {
+        do { (model, entry) = try store.load(.inpaint) } catch { throw InpaintError.modelMissing }
     }
+
+    private var modelSide: Int { entry.side ?? InpaintPlan.modelSide }
 
     func inpaint(_ image: CIImage, mask: CIImage) throws -> CIImage {
         let extent = image.extent
@@ -67,7 +70,7 @@ final class LaMaInpainter: Inpainting {
         let mb = InpaintPlan.bounds(ofMask: maskPixels, width: w, height: h)
         guard let crop = InpaintPlan.cropRect(maskBounds: mb, imageSize: extent.size) else { throw InpaintError.emptyMask }
 
-        let side = CGFloat(InpaintPlan.modelSide)
+        let side = CGFloat(modelSide)
         func window(_ img: CIImage) -> CIImage {
             let c = img.cropped(to: crop.offsetBy(dx: extent.minX, dy: extent.minY))
             return c.transformed(by: CGAffineTransform(translationX: -c.extent.minX, y: -c.extent.minY)
@@ -80,8 +83,8 @@ final class LaMaInpainter: Inpainting {
             .applyingFilter("CIColorClamp")
         let maskBuf = try buffer(binary, format: kCVPixelFormatType_OneComponent8)
 
-        let inputs = try MLDictionaryFeatureProvider(dictionary: ["image": MLFeatureValue(pixelBuffer: imgBuf), "mask": MLFeatureValue(pixelBuffer: maskBuf)])
-        guard let out = try model.prediction(from: inputs).featureValue(for: "output")?.imageBufferValue else { throw InpaintError.predictionFailed }
+        let inputs = try MLDictionaryFeatureProvider(dictionary: [entry.io["image"] ?? "image": MLFeatureValue(pixelBuffer: imgBuf), entry.io["mask"] ?? "mask": MLFeatureValue(pixelBuffer: maskBuf)])
+        guard let out = try model.prediction(from: inputs).featureValue(for: entry.io["output"] ?? "output")?.imageBufferValue else { throw InpaintError.predictionFailed }
 
         // scale the result back to the crop size and blend only where the (slightly grown) mask is set
         let result = CIImage(cvPixelBuffer: out).transformed(by: CGAffineTransform(scaleX: crop.width / side, y: crop.height / side))
@@ -94,7 +97,7 @@ final class LaMaInpainter: Inpainting {
 
     private func buffer(_ img: CIImage, format: OSType) throws -> CVPixelBuffer {
         var pb: CVPixelBuffer?
-        let n = InpaintPlan.modelSide
+        let n = modelSide
         guard CVPixelBufferCreate(nil, n, n, format, [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary, &pb) == kCVReturnSuccess, let pb else { throw InpaintError.bufferFailed }
         context.render(img, to: pb, bounds: CGRect(x: 0, y: 0, width: n, height: n), colorSpace: format == kCVPixelFormatType_OneComponent8 ? CGColorSpaceCreateDeviceGray() : CGColorSpace(name: CGColorSpace.sRGB))
         return pb

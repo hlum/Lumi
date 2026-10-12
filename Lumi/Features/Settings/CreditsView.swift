@@ -25,6 +25,7 @@ struct CreditsView: View {
 struct SettingsView: View {
     var body: some View {
         List {
+            NavigationLink("AI models") { ModelsView() }
             NavigationLink("Credits") { CreditsView() }
             Section("About") { LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "-") }
         }
