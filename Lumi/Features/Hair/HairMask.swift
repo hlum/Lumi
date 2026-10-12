@@ -6,7 +6,7 @@ import CoreGraphics
 enum HairMask {
     /// Head region for a face box (normalized, y-down): wider than the face, extending well above it and a little below the chin line.
     static func headRegion(face: CGRect) -> CGRect {
-        let w = face.width * 1.9, h = face.height * 2.0
+        let w = face.width * 1.9, h = face.height * 1.85
         return CGRect(x: face.midX - w / 2, y: face.minY - face.height * 0.75, width: w, height: h)
     }
 
@@ -51,7 +51,7 @@ enum HairMask {
         let weighted = average(image.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: person]))
         let ref = CIColor(red: CGFloat(min(weighted[0] / weight, 1)), green: CGFloat(min(weighted[1] / weight, 1)), blue: CGFloat(min(weighted[2] / weight, 1)))
         let diff = CIImage(color: ref).cropped(to: e).applyingFilter("CIDifferenceBlendMode", parameters: [kCIInputBackgroundImageKey: image])
-        let (t0, w): (CGFloat, CGFloat) = (0.18, 0.4)                      // full match up to t0, none beyond t0 + w (sum of |dR|+|dG|+|dB|)
+        let (t0, w): (CGFloat, CGFloat) = (0.10, 0.25)                      // full match up to t0, none beyond t0 + w (sum of |dR|+|dG|+|dB|)
         let k = -1 / w, v = CIVector(x: k, y: k, z: k, w: 0)
         return diff.applyingFilter("CIColorMatrix", parameters: ["inputRVector": v, "inputGVector": v, "inputBVector": v, "inputBiasVector": CIVector(x: 1 + t0 / w, y: 1 + t0 / w, z: 1 + t0 / w, w: 0)])
             .applyingFilter("CIColorClamp").cropped(to: e)
