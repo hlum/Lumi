@@ -11,6 +11,7 @@ struct MetalPreviewView: UIViewRepresentable {
     func makeUIView(context: Context) -> MTKView {
         let v = MTKView(frame: .zero, device: MTLCreateSystemDefaultDevice())
         v.framebufferOnly = false
+        v.isOpaque = false; v.backgroundColor = .clear; v.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
         v.enableSetNeedsDisplay = true
         v.isPaused = true
         v.delegate = context.coordinator
@@ -45,8 +46,11 @@ struct MetalPreviewView: UIViewRepresentable {
             let dx = (size.width - scaled.extent.width) / 2 - scaled.extent.minX
             let dy = (size.height - scaled.extent.height) / 2 - scaled.extent.minY
             let out = scaled.transformed(by: CGAffineTransform(translationX: dx, y: dy))
-            context.render(out, to: drawable.texture, commandBuffer: buffer,
-                           bounds: CGRect(origin: .zero, size: size), colorSpace: CGColorSpaceCreateDeviceRGB())
+            // clear first: anything outside the picture must be transparent, not whatever the drawable held before
+            let bounds = CGRect(origin: .zero, size: size)
+            let onClear = out.composited(over: CIImage(color: CIColor(red: 0, green: 0, blue: 0, alpha: 0)).cropped(to: bounds))
+            context.render(onClear, to: drawable.texture, commandBuffer: buffer,
+                           bounds: bounds, colorSpace: CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB())
             buffer.present(drawable)
             buffer.commit()
         }

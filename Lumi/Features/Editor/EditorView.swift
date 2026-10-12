@@ -122,7 +122,9 @@ struct EditorView: View {
     }
 
     private var photo: some View {
-        MetalPreviewView(image: model.preview)
+        let size = model.preview?.extent.size ?? CGSize(width: 1, height: 1)
+        return MetalPreviewView(image: model.preview)
+            .aspectRatio(max(size.width, 1) / max(size.height, 1), contentMode: .fit)
             .overlay { if tool == .text || tool == .sticker { LayerGestureOverlay(model: model) } }
             .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
