@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01500DBC9F403E7D92B02912 /* LumiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */; };
+		032BDECD1C26805FEB4E2435 /* PiP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57D1E1AD4F19107A8AC1C07 /* PiP.swift */; };
 		037F6247E2F1206A9CDB2898 /* VideoOverlayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C8D4244CDD7C87810B8E6A /* VideoOverlayModel.swift */; };
 		039F18F5B28D0A44917FD62C /* AutoMosaicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF97E50C1DAAC31F45CC303 /* AutoMosaicTests.swift */; };
 		04EE05B54308799E287B857B /* FilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */; };
@@ -80,6 +81,7 @@
 		489D8503118EBB15555EA380 /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C7C110D8246CE6F822D022 /* JobQueue.swift */; };
 		48E2388570DC973B1DCC5D83 /* BatchRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */; };
 		49A88FA92681E7582B0C6A08 /* KeyframeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACA4FD8528C53B16655AF54 /* KeyframeTests.swift */; };
+		4B25AFEB66C213412D6341BE /* Masks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8449B755C3E1DE7BAE517D /* Masks.swift */; };
 		4B80A8396CE26F50D075F927 /* MaterialCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8AFEDB6F647E6418F76C11 /* MaterialCatalogTests.swift */; };
 		4BBA6FC9B958CB9512AD8233 /* FaceDetailOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7617756AADC6EA3B700C073B /* FaceDetailOps.swift */; };
 		4F5BE7B6D8552909CE7DEF4B /* MakeupLooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D777878844812FE9639D51 /* MakeupLooks.swift */; };
@@ -141,6 +143,7 @@
 		9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */; };
 		9F8C2AB60EED891570437160 /* CollageRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3296174D0A02A8DFD1B83D /* CollageRenderTests.swift */; };
 		9FC75B88023089400072764C /* MeshWarpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */; };
+		A35A650C66FEB1BEFDB5A234 /* OverlayVideoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1690AE0D03BD3532E9C877 /* OverlayVideoTests.swift */; };
 		A3A928882F4F01F997BE2971 /* AutoBeauty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B54BF1BE2AE588D43004916 /* AutoBeauty.swift */; };
 		A410B883767CB10E1F9A3ACE /* LayerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A44F49745B7174EC0A2918 /* LayerRenderer.swift */; };
 		A4FA6B6C62D55AC7D65DC121 /* CleanOpsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E864C19CCC88309BB878613 /* CleanOpsTests.swift */; };
@@ -202,6 +205,7 @@
 		F13D0CC4FEA21D598C819C24 /* NailRegionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F8FC563B28512D074DF857 /* NailRegionsTests.swift */; };
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
 		F30F07E38EDD31513B6F456A /* UpscalerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */; };
+		F400AA68C74B3582CF54E3C5 /* Tracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD8E3175B358CE893CDE430 /* Tracking.swift */; };
 		F4EB922F3593D5A9D7BC4031 /* FrameOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7449BB3478E8BCC8F1A69434 /* FrameOps.swift */; };
 		F5B538C6A19BF4D4B85F3316 /* RatioRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3351E81DE5DDC473C1A6F2F /* RatioRulesTests.swift */; };
 		F5B9B4E42B12238904D5FA17 /* AutoRemoveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E457AF41C440227957E07867 /* AutoRemoveTests.swift */; };
@@ -273,6 +277,7 @@
 		3BCF9212741C460FB248C842 /* FontLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontLibraryTests.swift; sourceTree = "<group>"; };
 		3CE509B7E09EAD4881D427FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3E077721CC782EB59A850370 /* Content */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Content; path = Lumi/Resources/Content; sourceTree = SOURCE_ROOT; };
+		3E8449B755C3E1DE7BAE517D /* Masks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Masks.swift; sourceTree = "<group>"; };
 		4056C5884735CA99A57205A6 /* BodyReshape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyReshape.swift; sourceTree = "<group>"; };
 		419820D970D79F2603383070 /* WatermarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkStore.swift; sourceTree = "<group>"; };
 		41A7462FA0D75AFB1C2527E5 /* CleanOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanOps.swift; sourceTree = "<group>"; };
@@ -335,6 +340,7 @@
 		89B94088F944D9709DDB10F4 /* NailRegions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NailRegions.swift; sourceTree = "<group>"; };
 		8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		8A84271AE2975CD30F866726 /* ResizeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeTests.swift; sourceTree = "<group>"; };
+		8C1690AE0D03BD3532E9C877 /* OverlayVideoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayVideoTests.swift; sourceTree = "<group>"; };
 		8C21D2081DEB7065DD17200A /* GIFMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFMaker.swift; sourceTree = "<group>"; };
 		8EABD3FEF98A7D610ACA8EE3 /* AutoMosaic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoMosaic.swift; sourceTree = "<group>"; };
 		8F0C564B9C71FA8726FCBA98 /* AutoStraighten.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoStraighten.swift; sourceTree = "<group>"; };
@@ -398,6 +404,7 @@
 		CC89147D6C307519EEC7D2EB /* FaceDetailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceDetailTests.swift; sourceTree = "<group>"; };
 		CD6D5739B6A5181B9270B2D4 /* AutoRemove.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoRemove.swift; sourceTree = "<group>"; };
 		CEF418AC311167A36E69E1C9 /* LaMa.mlpackage */ = {isa = PBXFileReference; path = LaMa.mlpackage; sourceTree = "<group>"; };
+		D57D1E1AD4F19107A8AC1C07 /* PiP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiP.swift; sourceTree = "<group>"; };
 		D6B0E9270308864D7250819E /* RecipeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeStorage.swift; sourceTree = "<group>"; };
 		D9031B312E503E8C5B80DC4E /* SeamlessCollage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeamlessCollage.swift; sourceTree = "<group>"; };
 		D939A9C81B9C494B866DAF51 /* WarpBrush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarpBrush.swift; sourceTree = "<group>"; };
@@ -414,6 +421,7 @@
 		E6C8D4244CDD7C87810B8E6A /* VideoOverlayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoOverlayModel.swift; sourceTree = "<group>"; };
 		E9146527DAB38D7CB9078BD7 /* Compositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compositor.swift; sourceTree = "<group>"; };
 		E915C402422DE978B52F081C /* ColorizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorizerTests.swift; sourceTree = "<group>"; };
+		EDD8E3175B358CE893CDE430 /* Tracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracking.swift; sourceTree = "<group>"; };
 		EF3FFF083A0DD669458749B4 /* CameraSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSettings.swift; sourceTree = "<group>"; };
 		F0B3D658AE20F8A1340CF6F2 /* FreeformCollage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeformCollage.swift; sourceTree = "<group>"; };
 		F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisTests.swift; sourceTree = "<group>"; };
@@ -531,6 +539,9 @@
 			isa = PBXGroup;
 			children = (
 				E22CC38C9B53B9C2D4734A55 /* Keyframes.swift */,
+				3E8449B755C3E1DE7BAE517D /* Masks.swift */,
+				D57D1E1AD4F19107A8AC1C07 /* PiP.swift */,
+				EDD8E3175B358CE893CDE430 /* Tracking.swift */,
 				E6C8D4244CDD7C87810B8E6A /* VideoOverlayModel.swift */,
 			);
 			path = Overlays;
@@ -887,6 +898,7 @@
 				95F8FC563B28512D074DF857 /* NailRegionsTests.swift */,
 				C66CACA5EFDB0052A871CB79 /* OldPhotoTests.swift */,
 				6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */,
+				8C1690AE0D03BD3532E9C877 /* OverlayVideoTests.swift */,
 				2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */,
 				27CAD8D752BD3195AA3D1BDA /* PreviewBenchmarkTests.swift */,
 				90D675AD3761C9C1642B137F /* ProjectSessionTests.swift */,
@@ -1223,6 +1235,7 @@
 				99D653B8C904143C21F97409 /* MakeupRenderer.swift in Sources */,
 				255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */,
 				FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */,
+				4B25AFEB66C213412D6341BE /* Masks.swift in Sources */,
 				ECC1B629D1892F7926709A2C /* MaterialCatalog.swift in Sources */,
 				218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */,
 				9FC75B88023089400072764C /* MeshWarpRenderer.swift in Sources */,
@@ -1234,6 +1247,7 @@
 				088FCC0C3D051A929590020B /* OutlineOps.swift in Sources */,
 				AB4ADA92DA72CD7279D86656 /* OverlapFinder.swift in Sources */,
 				C1419303283E45506C8629FB /* PersonTarget.swift in Sources */,
+				032BDECD1C26805FEB4E2435 /* PiP.swift in Sources */,
 				68F294FA6535A8E0ACA342E3 /* Project.swift in Sources */,
 				426E9F04EE4F1AA2A3B3A820 /* ProjectStore.swift in Sources */,
 				0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */,
@@ -1261,6 +1275,7 @@
 				0C7E0DC147CDB99162857C93 /* TimelineModel.swift in Sources */,
 				A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */,
 				DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */,
+				F400AA68C74B3582CF54E3C5 /* Tracking.swift in Sources */,
 				149650652799725343BD8EC4 /* Transitions.swift in Sources */,
 				DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */,
 				2DCC9D0ACAE306EFA4366917 /* Upscaler.swift in Sources */,
@@ -1333,6 +1348,7 @@
 				F13D0CC4FEA21D598C819C24 /* NailRegionsTests.swift in Sources */,
 				7B45FDCE5160357EDE5D6CC3 /* OldPhotoTests.swift in Sources */,
 				73162FAF45A4B6259C2BCF30 /* OverlapFinderTests.swift in Sources */,
+				A35A650C66FEB1BEFDB5A234 /* OverlayVideoTests.swift in Sources */,
 				9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */,
 				678285436370AF0D2C1B5B67 /* PreviewBenchmarkTests.swift in Sources */,
 				A4FD5665776D850AC8F14C10 /* ProjectSessionTests.swift in Sources */,
