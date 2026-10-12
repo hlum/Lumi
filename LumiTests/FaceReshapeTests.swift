@@ -15,6 +15,7 @@ struct FaceReshapeTests {
         return FaceInfo(box: CGRect(x: 0.3, y: 0.25, width: 0.4, height: 0.5), landmarks: [
             "faceContour": contour, "leftEye": ring(0.3, 0.6, 0.06), "rightEye": ring(0.7, 0.6, 0.06),
             "nose": ring(0.5, 0.45, 0.07), "outerLips": ring(0.5, 0.25, 0.1),
+            "leftPupil": [CGPoint(x: 0.33, y: 0.6)], "rightPupil": [CGPoint(x: 0.67, y: 0.6)],
         ])
     }
 

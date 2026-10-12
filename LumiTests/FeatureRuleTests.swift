@@ -69,4 +69,26 @@ struct FeatureRuleTests {
         #expect(!f.isIdentity && back == f)
         #expect(try JSONDecoder().decode(FaceRetouch.self, from: Data("{}".utf8)).shape.isIdentity)
     }
+
+    @Test func gazeMovesTheIrisTowardTheMiddleOfTheEye() {
+        let s = strokes(.gaze, 1)
+        #expect(s.count == 2)
+        // the fixture's pupils sit toward the nose side of each eye... both strokes point at their eye centre
+        for st in s {
+            let eye = (FaceReshape.center(FaceReshape.points(face, "leftEye")), FaceReshape.center(FaceReshape.points(face, "rightEye")))
+            let c = st.x < 0.5 ? eye.0! : eye.1!
+            #expect((Float(c.x) - st.x) * st.dirX >= 0)
+        }
+        #expect(strokes(.gaze, 0).isEmpty)
+    }
+
+    @Test func aCentredPupilIsLeftAlone() {
+        var f = face
+        let c = FaceReshape.center(FaceReshape.points(f, "leftEye"))!
+        // box-relative landmark of the eye's centre
+        f.landmarks["leftPupil"] = [CGPoint(x: (c.x - f.box.minX) / f.box.width, y: 1 - (c.y - (1 - f.box.maxY)) / f.box.height - 0)]
+        var p = FeatureShape(); p.gaze = 1
+        let s = FeatureRules.strokes(for: f, p)
+        #expect(s.count <= 1)
+    }
 }

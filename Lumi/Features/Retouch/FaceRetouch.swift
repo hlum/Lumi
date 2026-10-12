@@ -45,7 +45,7 @@ struct VisionFaceLandmarker: FaceLandmarking {
         return (req.results ?? []).map { f in
             var lm: [String: [CGPoint]] = [:]
             if let l = f.landmarks {
-                let regions: [(String, VNFaceLandmarkRegion2D?)] = [("leftEye", l.leftEye), ("rightEye", l.rightEye), ("nose", l.nose), ("outerLips", l.outerLips), ("innerLips", l.innerLips), ("leftEyebrow", l.leftEyebrow), ("rightEyebrow", l.rightEyebrow), ("faceContour", l.faceContour)]
+                let regions: [(String, VNFaceLandmarkRegion2D?)] = [("leftEye", l.leftEye), ("rightEye", l.rightEye), ("nose", l.nose), ("outerLips", l.outerLips), ("innerLips", l.innerLips), ("leftEyebrow", l.leftEyebrow), ("rightEyebrow", l.rightEyebrow), ("faceContour", l.faceContour), ("leftPupil", l.leftPupil), ("rightPupil", l.rightPupil)]
                 for (name, r) in regions { if let r { lm[name] = r.normalizedPoints } }
             }
             return FaceInfo(box: f.boundingBox, landmarks: lm)

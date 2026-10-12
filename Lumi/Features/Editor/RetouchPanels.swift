@@ -182,7 +182,8 @@ struct EyesTeethPanel: View {
     @Bindable var model: EditorModel
     static let eyeItems: [FaceSlider] = [
         FaceSlider(title: "Brighten", path: \.detail.eyeBright, range: 0...1), FaceSlider(title: "Contacts", path: \.detail.contactAmount, range: 0...1),
-        FaceSlider(title: "Catchlight", path: \.detail.catchlight, range: 0...1), FaceSlider(title: "Eye bags", path: \.detail.eyeBags, range: 0...1),
+        FaceSlider(title: "Catchlight", path: \.detail.catchlight, range: 0...1), FaceSlider(title: "Look at camera", path: \.shape.gaze, range: 0...1),
+        FaceSlider(title: "Eye bags", path: \.detail.eyeBags, range: 0...1),
     ]
     static let teethItems: [FaceSlider] = [FaceSlider(title: "Whiten", path: \.detail.teethWhiten, range: 0...1)]
     @State private var area = Area.eyes

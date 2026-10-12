@@ -12,6 +12,8 @@ struct FeatureShape: Codable, Equatable {
     var browSpacing = 0.0, browPeak = 0.0, browLift = 0.0
     // face outline
     var vShape = 0.0, cheekbones = 0.0, forehead = 0.0
+    // eyes: gaze
+    var gaze = 0.0                      // 0...1 nudge the eyes toward looking at the camera
 
     var isIdentity: Bool { self == FeatureShape() }
 
@@ -20,7 +22,7 @@ struct FeatureShape: Codable, Equatable {
         case noseWings, noseBridge, noseTip, noseLength
         case mouthWidth, mouthFullness, mouthSmile, mouthCupid, mouthProtrusion, mouthPout
         case browSpacing, browPeak, browLift
-        case vShape, cheekbones, forehead
+        case vShape, cheekbones, forehead, gaze
 
         var path: WritableKeyPath<FeatureShape, Double> {
             switch self {
@@ -28,7 +30,7 @@ struct FeatureShape: Codable, Equatable {
             case .noseWings: \.noseWings; case .noseBridge: \.noseBridge; case .noseTip: \.noseTip; case .noseLength: \.noseLength
             case .mouthWidth: \.mouthWidth; case .mouthFullness: \.mouthFullness; case .mouthSmile: \.mouthSmile; case .mouthCupid: \.mouthCupid; case .mouthProtrusion: \.mouthProtrusion; case .mouthPout: \.mouthPout
             case .browSpacing: \.browSpacing; case .browPeak: \.browPeak; case .browLift: \.browLift
-            case .vShape: \.vShape; case .cheekbones: \.cheekbones; case .forehead: \.forehead
+            case .vShape: \.vShape; case .cheekbones: \.cheekbones; case .forehead: \.forehead; case .gaze: \.gaze
             }
         }
     }
@@ -77,6 +79,20 @@ enum FeatureRules {
             if p.eyeInner != 0 { push(inner, r: w * 0.55, dx: -side * a(p.eyeInner) * w * 0.25, dy: 0) }
             if p.eyeLids != 0 { push(top, r: w * 0.6, dx: 0, dy: -a(p.eyeLids) * w * 0.22) }
             if p.eyeSocket != 0 { zoom(CGPoint(x: c.x, y: top.y - CGFloat(w) * 0.25), r: w * 0.9, amount: -a(p.eyeSocket) * 0.5) }
+        }
+
+        // --- gaze: the iris moves toward the middle of the eye opening
+        if p.gaze > 0 {
+            for region in [("leftEye", "leftPupil"), ("rightEye", "rightPupil")] {
+                let eye = FaceReshape.points(face, region.0)
+                guard let c = FaceReshape.center(eye), let pupil = FaceReshape.points(face, region.1).first else { continue }
+                let w = Float(FaceReshape.width(eye))
+                var dx = Float(c.x - pupil.x), dy = Float(c.y - pupil.y)
+                let len = (dx * dx + dy * dy).squareRoot(), cap = w * 0.22
+                if len > cap { dx *= cap / len; dy *= cap / len }
+                guard len > w * 0.02 else { continue }          // already looking near the middle
+                push(pupil, r: w * 0.3, dx: dx * a(p.gaze), dy: dy * a(p.gaze))
+            }
         }
 
         // --- nose
