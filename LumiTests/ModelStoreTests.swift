@@ -1,3 +1,4 @@
+import CoreImage
 import Foundation
 import Testing
 @testable import Lumi
@@ -83,5 +84,31 @@ struct ModelStoreTests {
     @Test func slotsDeclareWhatTheyNeed() {
         for s in ModelSlot.allCases { #expect(!s.title.isEmpty && !s.inputRoles.isEmpty && !s.outputRoles.isEmpty && !s.hint.isEmpty) }
         #expect(ModelSlot.inpaint.inputRoles == ["image", "mask"])
+    }
+}
+
+struct MaskDecodeTests {
+    @Test func probabilitiesAreScaledAndLogitsSquashed() {
+        #expect(MaskDecode.plane([0, 0.5, 1]) == [0, 128, 255])
+        let l = MaskDecode.plane([-10, 0, 10])
+        #expect(l[0] < 3 && l[1] == 128 && l[2] > 252)
+        #expect(MaskDecode.plane([0.2, 0.9], looksLikeLogits: true)[0] > 128)       // forced
+    }
+
+    @Test func shapesWithChannelsPickTheRightPlane() {
+        let flat: [Float] = [0, 0, 0, 0, 1, 1, 1, 1]            // two 2x2 channels
+        let a = MaskDecode.extract(flat, shape: [1, 2, 2, 2], channel: 1)!
+        #expect(a.plane == [1, 1, 1, 1] && a.width == 2 && a.height == 2)
+        #expect(MaskDecode.extract(flat, shape: [2, 4])!.plane.count == 8)
+        #expect(MaskDecode.extract(flat, shape: [1, 2, 2, 2], channel: 2) == nil && MaskDecode.extract([], shape: [3, 3]) == nil)
+    }
+
+    @Test func missingModelFallsBackToTheEstimate() throws {
+        struct Fixed: HairMasking { func hairMasks(in image: CIImage) throws -> [CIImage] { [CIImage(color: .white).cropped(to: image.extent)] } }
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("hm-" + UUID().uuidString)
+        let store = ModelStore(bundle: Bundle.main, directory: dir, defaults: [])
+        let img = CIImage(color: .gray).cropped(to: CGRect(x: 0, y: 0, width: 20, height: 20))
+        #expect(!store.isAvailable(.hairSegmentation))
+        #expect(try AdaptiveHairMasker(estimate: Fixed(), store: store).hairMasks(in: img).count == 1)
     }
 }
