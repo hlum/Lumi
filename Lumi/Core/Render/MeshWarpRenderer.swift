@@ -30,7 +30,7 @@ enum MeshWarpRenderer {
     static var loadError: String? { loaded.kernel == nil ? (loaded.error ?? "no kernel") : nil }
     private static var kernel: CIKernel? { loaded.kernel }
 
-    /// The field as a small float image: R,G = offset + 0.5. CI's y axis is up, the field's is down, so dy flips.
+    /// The field as a small float image: R,G = offset + 0.5. CI's y axis is up, the field's is down, so dy flips (the rows stay in order: bitmap data starts at the top).
     static func fieldImage(_ f: DisplacementField) -> CIImage {
         var px: [Float] = []; px.reserveCapacity(f.cols * f.rows * 4)
         for j in 0..<f.rows { for i in 0..<f.cols {
@@ -38,9 +38,8 @@ enum MeshWarpRenderer {
             let cx = min(max(dx, -maxOffset), maxOffset), cy = min(max(-dy, -maxOffset), maxOffset)
             px += [cx + 0.5, cy + 0.5, 0, 1]
         } }
-        // grid row 0 is the image top (y down); CI row 0 is the bottom, so write rows reversed
-        var rows: [Float] = []
-        for j in (0..<f.rows).reversed() { rows += px[(j * f.cols * 4)..<((j + 1) * f.cols * 4)] }
+        // CIImage(bitmapData:) takes the first row as the top of the picture, the same as the field's row 0, so the rows go in as they are
+        let rows = px
         let data = rows.withUnsafeBufferPointer { Data(buffer: $0) }
         return CIImage(bitmapData: data, bytesPerRow: f.cols * 16, size: CGSize(width: f.cols, height: f.rows), format: .RGBAf, colorSpace: nil)
     }

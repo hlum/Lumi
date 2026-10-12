@@ -50,7 +50,7 @@ struct PhotoFeedbackTests {
         let body = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: CGRect(x: 32, y: 0, width: 64, height: 128)).composited(over: bg)
         var b = BodyRetouch(); b.params.waist = 1; b.protectBackground = false
         let out = BodyRetouchRender.apply(b, to: body, poses: [Self.facing()], personMask: MosaicOps.mask(rects: [CGRect(x: 0.25, y: 0, width: 0.5, height: 1)], extent: Self.rect), inpainter: nil)
-        func width(_ img: CIImage) -> Int { (0..<128).filter { GeometryTests.rgb(img, x: $0, y: 50)[0] > 150 }.count }
+        func width(_ img: CIImage) -> Int { (0..<128).filter { GeometryTests.rgb(img, x: $0, y: 79)[0] > 150 }.count }   // the waist, 38% down from the top
         #expect(width(out) < width(body) - 3, "waist \(width(body)) -> \(width(out))")
     }
 
@@ -110,8 +110,20 @@ struct PhotoFeedbackTests {
         model.load(image: img)
         model.draft.body.params.waist = 0.5
         _ = model.preview
-        try await Task.sleep(for: .seconds(2))
+        // the slow render may load the matting model first, which takes a while
+        for _ in 0..<120 where model.slowImage == nil || model.isRendering { try await Task.sleep(for: .milliseconds(500)) }
         #expect(!model.isRendering && model.slowImage != nil)
         #expect(model.preview?.extent == model.slowImage?.extent)
+    }
+
+    @Test func aWarpStrokeLandsWhereItWasPlacedVertically() {
+        // y-down 0.8 is near the bottom of the picture, which is a small y in Core Image
+        let ramp = CIFilter(name: "CILinearGradient", parameters: ["inputPoint0": CIVector(x: 0, y: 0), "inputPoint1": CIVector(x: 100, y: 0), "inputColor0": CIColor.black, "inputColor1": CIColor.white])!.outputImage!.cropped(to: CGRect(x: 0, y: 0, width: 100, height: 200))
+        var e = WarpEdit(cols: 49, rows: 49)
+        e.add(BrushStroke(kind: .push, x: 0.5, y: 0.8, radius: 0.15, strength: 1, dirX: 0.1, dirY: 0))
+        let out = MeshWarpRenderer.apply(e.field(aspect: 0.5), to: ramp)
+        let changed = (0..<200).filter { y in abs(Int(GeometryTests.rgb(out, x: 50, y: y)[0]) - Int(GeometryTests.rgb(ramp, x: 50, y: y)[0])) > 6 }
+        let centre = Double(changed.reduce(0, +)) / Double(max(changed.count, 1))
+        #expect(!changed.isEmpty && abs(centre - 40) < 15, "changed rows centre at CI y \(centre) (expected near 40)")
     }
 }
