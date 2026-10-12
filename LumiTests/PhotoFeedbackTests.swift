@@ -63,17 +63,6 @@ struct PhotoFeedbackTests {
         #expect(f.offset(x: 0.5, y: 0.95).0 == 0)
     }
 
-    @Test func quickFillReplacesTheHoleFromItsSurroundings() throws {
-        let img = CIImage(color: CIColor(red: 0.2, green: 0.4, blue: 0.6)).cropped(to: Self.rect)
-            .composited(over: CIImage(color: .black).cropped(to: Self.rect))
-        let hole = CIImage(color: .white).cropped(to: CGRect(x: 54, y: 54, width: 20, height: 20)).composited(over: CIImage(color: .black).cropped(to: Self.rect))
-        let withBlob = CIImage(color: CIColor(red: 1, green: 0, blue: 0)).cropped(to: CGRect(x: 54, y: 54, width: 20, height: 20)).composited(over: img)
-        let out = try QuickFill().inpaint(withBlob, mask: hole)
-        let px = GeometryTests.rgb(out, x: 64, y: 64)
-        #expect(abs(Int(px[0]) - 51) < 30 && abs(Int(px[2]) - 153) < 30, "filled \(px)")
-        #expect(GeometryTests.rgb(out, x: 10, y: 10) == GeometryTests.rgb(img, x: 10, y: 10))
-    }
-
     @Test func smoothingDoesNotBrightenSkin() {
         let tone = CIImage(color: CIColor(red: 0.55, green: 0.38, blue: 0.3)).cropped(to: Self.rect)
         // speckled skin: dark and light pores around the same average
@@ -102,5 +91,27 @@ struct PhotoFeedbackTests {
     @Test func smallFeaturesAreNotOutlined() {
         for m in [FaceMark.eyes, .brows, .nose, .mouth] { #expect(!m.isDrawn) }
         for m in [FaceMark.jaw, .chin, .faceWidth, .face, .cheeks, .lift] { #expect(m.isDrawn) }
+    }
+
+    @Test func onlyHeavyEditsGetABackgroundPreview() {
+        var d = EditDocument()
+        #expect(!d.needsSlowPreview)
+        d.body.params.waist = 0.5; d.body.protectBackground = false
+        #expect(!d.needsSlowPreview)
+        d.body.protectBackground = true
+        #expect(d.needsSlowPreview && !d.withoutSlowOps.needsSlowPreview)
+        d.adjust.exposure = 0.3
+        #expect(d.withoutSlowOps.operations.count == 1)
+    }
+
+    @MainActor @Test func previewMatchesTheExportOnceTheSlowRenderLands() async throws {
+        let model = EditorModel()
+        let img = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5)).cropped(to: Self.rect)
+        model.load(image: img)
+        model.draft.body.params.waist = 0.5
+        _ = model.preview
+        try await Task.sleep(for: .seconds(2))
+        #expect(!model.isRendering && model.slowImage != nil)
+        #expect(model.preview?.extent == model.slowImage?.extent)
     }
 }

@@ -93,10 +93,38 @@ final class EditorModel {
         if cropEditing { live.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1) }
         // the view reads this several times per update: render once per distinct edit
         if let c = previewCache, c.doc == live, c.proxy == proxy.extent { return c.image }
-        Renderer.interactive = true; defer { Renderer.interactive = false }
+        if live.needsSlowPreview {
+            // the same render the export does, just off the main thread and after the slider has settled
+            if slowDoc != live { scheduleSlowPreview(live, proxy: proxy) }
+            return slowImage ?? Renderer.render(proxy, document: live.withoutSlowOps)
+        }
+        if slowDoc != nil { slowDoc = nil; slowTask?.cancel(); Task { self.isRendering = false } }
         let image = Renderer.render(proxy, document: live)
         previewCache = (live, proxy.extent, image)
         return image
+    }
+
+    /// True while a slow edit (slimming with background protection, hair fill) is being drawn for the preview.
+    private(set) var isRendering = false
+    private(set) var slowImage: CIImage?
+    @ObservationIgnored private var slowDoc: EditDocument?
+    @ObservationIgnored private var slowTask: Task<Void, Never>?
+    @ObservationIgnored private var slowGeneration = 0
+
+    private func scheduleSlowPreview(_ doc: EditDocument, proxy: CIImage) {
+        slowTask?.cancel()
+        slowGeneration += 1
+        let generation = slowGeneration
+        slowDoc = doc
+        slowTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(350))     // wait for the slider to settle
+            guard !Task.isCancelled, let self, generation == self.slowGeneration else { return }
+            self.isRendering = true
+            let image = await Task.detached(priority: .userInitiated) { Renderer.render(proxy, document: doc) }.value
+            guard generation == self.slowGeneration else { return }
+            self.slowImage = image
+            self.isRendering = false
+        }
     }
     @ObservationIgnored private var previewCache: (doc: EditDocument, proxy: CGRect, image: CIImage)?
 
@@ -320,5 +348,24 @@ final class EditorModel {
     func save() async {
         do { try await saver.save(exportData()); didSave = true; saveError = nil }
         catch { saveError = error as? EditorError ?? .exportFailed; didSave = false }
+    }
+}
+
+extension EditDocument {
+    /// Edits that run a heavy model on every change, so their preview is drawn in the background.
+    var needsSlowPreview: Bool {
+        operations.contains {
+            switch $0 {
+            case .body(let b): !b.isIdentity && b.protectBackground
+            case .hair(let h): h.fill?.isEmpty == false
+            default: false
+            }
+        }
+    }
+
+    var withoutSlowOps: EditDocument {
+        var d = self
+        d.operations.removeAll { if case .body = $0 { true } else if case .hair = $0 { true } else { false } }
+        return d
     }
 }

@@ -35,19 +35,3 @@ enum ProtectedWarp {
     }
 }
 
-/// Instant stand-in for the inpainting model while a slider is being dragged: fills the mask with a blur of the pixels around it.
-struct QuickFill: Inpainting {
-    func inpaint(_ image: CIImage, mask: CIImage) throws -> CIImage {
-        let e = image.extent
-        let grow = max(2, min(e.width, e.height) * 0.006)
-        let hole = mask.clampedToExtent().applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: grow]).cropped(to: e)
-        let keep = hole.applyingFilter("CIColorInvert")
-        let sigma = Double(min(e.width, e.height)) * 0.03
-        let weighted = image.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: keep]).cropped(to: e)
-        let num = weighted.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: e)
-        let den = keep.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: e)
-        let fill = den.applyingFilter("CIDivideBlendMode", parameters: [kCIInputBackgroundImageKey: num]).cropped(to: e)   // background / input
-        let f = CIFilter.blendWithMask(); f.inputImage = fill; f.backgroundImage = image; f.maskImage = hole
-        return f.outputImage?.cropped(to: e) ?? image
-    }
-}

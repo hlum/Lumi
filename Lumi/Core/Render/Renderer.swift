@@ -26,27 +26,31 @@ enum Renderer {
         var faceLandmarker: FaceLandmarking?
         var bodyFinder: BodyFinding?
         var handFinder: HandFinding?
-        fileprivate var bodyCache: (key: String, poses: [[String: CGPoint]])?
+        // renders can run on a background task while the main thread renders another preview, so every cache goes through this lock (never held while a model runs)
+        private let lock = NSLock()
+        private var _bodyCache: (key: String, poses: [[String: CGPoint]])?
+        private var _faceCache: (key: String, faces: [FaceInfo])?
+        fileprivate var bodyCache: (key: String, poses: [[String: CGPoint]])? { get { lock.withLock { _bodyCache } } set { lock.withLock { _bodyCache = newValue } } }
         /// Last detected faces, kept so slider drags don't re-run detection every frame.
-        fileprivate var faceCache: (key: String, faces: [FaceInfo])?
+        fileprivate var faceCache: (key: String, faces: [FaceInfo])? { get { lock.withLock { _faceCache } } set { lock.withLock { _faceCache = newValue } } }
         private(set) var faceCacheKeyCount = 0
-        fileprivate func remember(faces: [FaceInfo], key: String) { faceCache = (key, faces); faceCacheKeyCount += 1 }
+        fileprivate func remember(faces: [FaceInfo], key: String) { lock.withLock { _faceCache = (key, faces); faceCacheKeyCount += 1 } }
         private var cache: [String: CIImage] = [:]
         private(set) var inpaintCalls = 0
         private(set) var keysSeen: [String] = []
         init(inpainter: Inpainting? = nil) { self.inpainter = inpainter }
         func cached(_ key: String, _ make: () throws -> CIImage?) rethrows -> CIImage? {
-            keysSeen.append(key)
-            if let c = cache[key] { return c }
+            let hit: CIImage? = lock.withLock { keysSeen.append(key); return cache[key] }
+            if let hit { return hit }
             guard let v = try make() else { return nil }
-            if cache.count > 8 { cache.removeAll() }
-            cache[key] = v; inpaintCalls += 1
+            lock.withLock {
+                if cache.count > 8 { cache.removeAll() }
+                cache[key] = v; inpaintCalls += 1
+            }
             return v
         }
     }
     nonisolated(unsafe) static var services = Services()
-    /// True while the editor draws a live preview: heavy models give way to quick stand-ins so sliders stay smooth. Exports leave it off.
-    nonisolated(unsafe) static var interactive = false
 
     static func render(_ frame: CIImage, document: EditDocument) -> CIImage {
         var img = frame
@@ -178,7 +182,7 @@ enum Renderer {
         if let c = services.bodyCache, c.key == key { poses = c.poses } else { poses = (try? finder.poses(in: image)) ?? []; services.bodyCache = (key, poses) }
         var mask: CIImage?
         if b.protectBackground, let masker = services.subjectMasker { mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil }
-        return BodyRetouchRender.apply(b, to: image, poses: poses, personMask: mask, inpainter: interactive ? QuickFill() : services.inpainter)
+        return BodyRetouchRender.apply(b, to: image, poses: poses, personMask: mask, inpainter: services.inpainter)
     }
 
     static func hairRetouched(_ h: HairRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {
@@ -192,7 +196,7 @@ enum Renderer {
             let fk = "faces|" + cacheKey(image, prefix)
             if let c = services.faceCache, c.key == fk { faces = c.faces } else { faces = (try? finder.faces(in: image)) ?? []; services.remember(faces: faces, key: fk) }
         }
-        return HairRetouchRender.apply(h, to: image, hairMasks: first.flatMap { $0 }.map { [$0] } ?? [], faces: faces, inpainter: interactive ? QuickFill() : services.inpainter)
+        return HairRetouchRender.apply(h, to: image, hairMasks: first.flatMap { $0 }.map { [$0] } ?? [], faces: faces, inpainter: services.inpainter)
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

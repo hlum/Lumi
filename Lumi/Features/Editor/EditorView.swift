@@ -149,6 +149,14 @@ struct EditorView: View {
                     .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
                     .accessibilityLabel("Hold to compare with original")
             }
+            .overlay(alignment: .topLeading) {
+                if model.isRendering {
+                    HStack(spacing: 8) { ProgressView().controlSize(.small).tint(.white); Text("Updating preview").font(.system(size: 13, weight: .semibold, design: .rounded)) }
+                        .padding(.horizontal, 12).frame(height: 32).background(Capsule().fill(.black.opacity(0.55))).foregroundStyle(.white).padding(12)
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: model.isRendering)
             .overlay(alignment: .topTrailing) {
                 if zoom > 1.01 {
                     Button { withAnimation(.snappy) { zoom = 1; zoomPan = .zero } } label: {
