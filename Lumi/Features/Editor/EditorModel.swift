@@ -38,6 +38,15 @@ final class EditorModel {
         set { draft.exposure = newValue }
     }
     var showOriginal = false
+    /// While the crop tool is open the preview shows the whole (rotated, straightened) picture and the overlay draws the crop rect.
+    var cropEditing = false
+    /// Width / height in pixels the crop rect is locked to; nil = free.
+    var cropAspect: Double?
+    /// Which part of the face the slider in use works on; the preview outlines it. Cleared shortly after the slider is released.
+    var activeMark: FaceMark?
+    /// Faces found in the picture as it looks before the face edit, for the outlines. Refreshed when a face tool opens.
+    private(set) var overlayFaces: [FaceInfo] = []
+    private var markClear: Task<Void, Never>?
     var doodleBrush = DoodleStroke.Brush.solid
     var warpBrush = WarpBrush()
     var filterEraserActive = false
@@ -67,6 +76,7 @@ final class EditorModel {
         if showOriginal { return proxy }
         // upscaling is an export-time step: running a 4x model on the preview proxy would be slow and show no more than the screen can
         var live = draft; live.upscale = nil
+        if cropEditing { live.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1) }
         return Renderer.render(proxy, document: live)
     }
 
@@ -119,6 +129,27 @@ final class EditorModel {
         guard let o = original, let masker = Renderer.services.subjectMasker, let mask = (try? masker.subjectMask(for: o)) ?? nil else { return nil }
         var c = CutoutConfig(); c.feather = 0.1
         return CustomStickerStore.shared.add(cutout: CutoutOps.apply(c, to: o, subjectMask: mask))
+    }
+
+    /// Shows or hides the outline for a slider; hiding waits a moment so the outline is still there when the finger lifts.
+    func mark(_ m: FaceMark?, editing: Bool) {
+        markClear?.cancel()
+        if editing { activeMark = m; return }
+        markClear = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(900))
+            if !Task.isCancelled { self?.activeMark = nil }
+        }
+    }
+
+    /// Looks for faces in the picture without the face edit applied (landmarks should sit on the unretouched face).
+    func refreshOverlayFaces() {
+        guard let proxy, let finder = Renderer.services.faceLandmarker else { overlayFaces = []; return }
+        var doc = draft; doc.face = FaceRetouch(); doc.upscale = nil
+        let base = Renderer.render(proxy, document: doc)
+        Task.detached { [base] in
+            let faces = (try? finder.faces(in: base)) ?? []
+            await MainActor.run { self.overlayFaces = faces }
+        }
     }
 
     func commit() { stack.commit(draft); autosave() }

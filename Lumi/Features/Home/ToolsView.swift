@@ -15,7 +15,7 @@ struct ToolsView: View {
                 } else {
                     ForEach(results) { row($0) }
                 }
-            }.padding(.horizontal, LumiShape.margin).padding(.bottom, 120)
+            }.padding(.horizontal, LumiShape.margin).padding(.bottom, 24)
         }
         .background(LumiColor.ground.ignoresSafeArea())
         .searchable(text: $query, prompt: "Search tools")

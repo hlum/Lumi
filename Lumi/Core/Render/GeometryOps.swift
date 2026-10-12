@@ -8,6 +8,8 @@ struct CropSpec: Codable, Equatable {
     var angle = 0.0               // free rotation in degrees, clockwise, -45...45
     var flipH = false
     var flipV = false
+    var keystoneV = 0.0           // -1...1 leaning verticals (shot from below or above)
+    var keystoneH = 0.0           // -1...1 converging horizontals (shot from the side)
 
     var isIdentity: Bool { self == CropSpec() }
 
@@ -28,10 +30,28 @@ struct CropSpec: Codable, Equatable {
     static func straighten(horizonTilt tilt: Double) -> Double { min(max(-tilt, -45), 45) }
 }
 
+extension CropSpec {
+    /// Old drafts have no keystone; anything missing stays at its default.
+    init(from decoder: Decoder) throws {
+        enum K: String, CodingKey { case rect, quarterTurns, angle, flipH, flipV, keystoneV, keystoneH }
+        let c = try decoder.container(keyedBy: K.self)
+        self.init()
+        rect = try c.decodeIfPresent(CGRect.self, forKey: .rect) ?? rect
+        quarterTurns = try c.decodeIfPresent(Int.self, forKey: .quarterTurns) ?? 0
+        angle = try c.decodeIfPresent(Double.self, forKey: .angle) ?? 0
+        flipH = try c.decodeIfPresent(Bool.self, forKey: .flipH) ?? false
+        flipV = try c.decodeIfPresent(Bool.self, forKey: .flipV) ?? false
+        keystoneV = try c.decodeIfPresent(Double.self, forKey: .keystoneV) ?? 0
+        keystoneH = try c.decodeIfPresent(Double.self, forKey: .keystoneH) ?? 0
+    }
+}
+
 enum GeometryOps {
     static func apply(_ spec: CropSpec, to image: CIImage) -> CIImage {
         guard !spec.isIdentity else { return image }
         var img = image.transformed(by: CGAffineTransform(translationX: -image.extent.minX, y: -image.extent.minY))
+
+        if spec.keystoneV != 0 || spec.keystoneH != 0 { img = keystone(img, v: spec.keystoneV, h: spec.keystoneH) }
 
         if spec.flipH { img = flip(img, horizontal: true) }
         if spec.flipV { img = flip(img, horizontal: false) }
@@ -51,6 +71,22 @@ enum GeometryOps {
                           width: r.width * e.width, height: r.height * e.height).integral
         let out = img.cropped(to: crop.intersection(e))
         return out.transformed(by: CGAffineTransform(translationX: -out.extent.minX, y: -out.extent.minY))
+    }
+
+    /// Straightens leaning lines: the image is rectified from a slightly inset quadrilateral, so nothing outside the picture is invented.
+    static func keystone(_ img: CIImage, v: Double, h: Double) -> CIImage {
+        let e = img.extent
+        let dx = e.width * 0.12 * abs(v), dy = e.height * 0.12 * abs(h)
+        // CI is y-up: top edge is maxY. v > 0 pulls the top edge in (stretching it out); v < 0 the bottom edge.
+        var tl = CGPoint(x: e.minX, y: e.maxY), tr = CGPoint(x: e.maxX, y: e.maxY), bl = CGPoint(x: e.minX, y: e.minY), br = CGPoint(x: e.maxX, y: e.minY)
+        if v > 0 { tl.x += dx; tr.x -= dx } else if v < 0 { bl.x += dx; br.x -= dx }
+        if h > 0 { tl.y -= dy; bl.y += dy } else if h < 0 { tr.y -= dy; br.y += dy }
+        let f = CIFilter(name: "CIPerspectiveCorrection", parameters: [kCIInputImageKey: img.clampedToExtent(), "inputTopLeft": CIVector(cgPoint: tl), "inputTopRight": CIVector(cgPoint: tr), "inputBottomLeft": CIVector(cgPoint: bl), "inputBottomRight": CIVector(cgPoint: br)])
+        guard let out = f?.outputImage, out.extent.width.isFinite else { return img }
+        // the corrected picture is the size of the quadrilateral's bounding box; scale back to the original frame
+        let o = out.extent
+        let t = CGAffineTransform(translationX: -o.minX, y: -o.minY).concatenating(CGAffineTransform(scaleX: e.width / o.width, y: e.height / o.height))
+        return out.transformed(by: t).cropped(to: CGRect(origin: .zero, size: e.size))
     }
 
     private static func flip(_ img: CIImage, horizontal: Bool) -> CIImage {

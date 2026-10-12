@@ -45,6 +45,7 @@
 		211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */; };
 		218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */; };
 		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
+		2337611A5B6D84A1BD4286A1 /* FaceMarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446B48E32E6CE57CD21ACB08 /* FaceMarks.swift */; };
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
 		26F152CB55562C0BDF70DC59 /* BrushMaterials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */; };
 		273D543B11136D4A76F4C689 /* HairShapeRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9812652ED2B4FA541D5176 /* HairShapeRules.swift */; };
@@ -95,6 +96,7 @@
 		567FA7C840479B944E7CE660 /* SkinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16E38351FDAF036F93AFF551 /* SkinTests.swift */; };
 		57863CC293DA030648DC4BCF /* ClipOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC689B9D9A04B1C5B58666D /* ClipOps.swift */; };
 		58152B2022BEA27657019F9A /* AudioTrackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C77900A5EA72B04A78ECEE /* AudioTrackTests.swift */; };
+		5A75EA2201A0494D07F54692 /* CropMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC85D7AD85B6BE2035404A46 /* CropMath.swift */; };
 		5A839506D894294EA720122A /* StabilizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CAB332BDB51563EFEC3BF1 /* StabilizerTests.swift */; };
 		5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850D7C49D60EA488C83EDB92 /* RendererTests.swift */; };
 		5B00954CB85DAF39E1F3349E /* RelightLooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65391B34A9130D32033A23D9 /* RelightLooks.swift */; };
@@ -185,6 +187,7 @@
 		C768188FF5296675939805E8 /* FreeformCollageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A31E22A18FA67291307138 /* FreeformCollageTests.swift */; };
 		C89ADA1070DB60A196C147B3 /* CleanOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A7462FA0D75AFB1C2527E5 /* CleanOps.swift */; };
 		C8C37D4236473946C8982EDE /* StickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D9C338123EE52D44EBB93E /* StickerTests.swift */; };
+		CA551E549A0746A149AF7194 /* FaceMarksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579A8761D0613BF1231125C7 /* FaceMarksTests.swift */; };
 		CB42CE4AD60C00CD1A948136 /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27AF610CC6461065AED466A /* LocalizationTests.swift */; };
 		CB9A0141233C42A6A11F1F46 /* ProjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */; };
 		CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */; };
@@ -192,6 +195,7 @@
 		CF9B9AB4A7A5E65AD7882F2D /* FontLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F2B57A62EB922BEE19C313 /* FontLibrary.swift */; };
 		D22BBF02A05E37D9E06152A5 /* Credits.json in Resources */ = {isa = PBXBuildFile; fileRef = 491867C4A15830F8C5BBEF55 /* Credits.json */; };
 		D254994CB8668CC7250C1FAA /* SilenceDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF8F949CF8880941F15A2079 /* SilenceDetector.swift */; };
+		D3A97438320340CB684CA12F /* CropMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4A553F7DBD79CE33F4F2B /* CropMathTests.swift */; };
 		D79451D1C07977D38A56950A /* HairRetouch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDE7CA45356967DF21A46A0 /* HairRetouch.swift */; };
 		D7AD8B53E5E51940F310F0D2 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EB1B596C23861FE0CBE17A /* Recipe.swift */; };
 		D83608EE7515CE4F81544548 /* ExpandOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */; };
@@ -303,6 +307,7 @@
 		419820D970D79F2603383070 /* WatermarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkStore.swift; sourceTree = "<group>"; };
 		41A7462FA0D75AFB1C2527E5 /* CleanOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanOps.swift; sourceTree = "<group>"; };
 		439B9C572B1C0592D68FAD34 /* FilterCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCatalogTests.swift; sourceTree = "<group>"; };
+		446B48E32E6CE57CD21ACB08 /* FaceMarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMarks.swift; sourceTree = "<group>"; };
 		4548288F6D84417CA426A40C /* EffectsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectsTests.swift; sourceTree = "<group>"; };
 		45966C6CA5A5390BAC7F83FB /* UndoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStack.swift; sourceTree = "<group>"; };
 		4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analyzer.swift; sourceTree = "<group>"; };
@@ -321,6 +326,7 @@
 		54B71D4970D54ED19C7EE44A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		560797701B1E028267073F3C /* TemporalBlend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporalBlend.swift; sourceTree = "<group>"; };
 		56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageView.swift; sourceTree = "<group>"; };
+		579A8761D0613BF1231125C7 /* FaceMarksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMarksTests.swift; sourceTree = "<group>"; };
 		57E9E64080230EEA3F3B18FE /* TextStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyleTests.swift; sourceTree = "<group>"; };
 		5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpscalerTests.swift; sourceTree = "<group>"; };
 		5D68FC2907097196C8F56737 /* CameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTests.swift; sourceTree = "<group>"; };
@@ -380,6 +386,7 @@
 		936C1AF23918152C57AE4A68 /* AdjustOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustOps.swift; sourceTree = "<group>"; };
 		946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReshapeTests.swift; sourceTree = "<group>"; };
 		95EB1B596C23861FE0CBE17A /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		95F4A553F7DBD79CE33F4F2B /* CropMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropMathTests.swift; sourceTree = "<group>"; };
 		95F8FC563B28512D074DF857 /* NailRegionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NailRegionsTests.swift; sourceTree = "<group>"; };
 		9695B325C436F8ED8E7CC5BB /* RecipeLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeLibraryTests.swift; sourceTree = "<group>"; };
 		97C77900A5EA72B04A78ECEE /* AudioTrackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrackTests.swift; sourceTree = "<group>"; };
@@ -442,6 +449,7 @@
 		D939A9C81B9C494B866DAF51 /* WarpBrush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarpBrush.swift; sourceTree = "<group>"; };
 		D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunnerTests.swift; sourceTree = "<group>"; };
 		DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
+		DC85D7AD85B6BE2035404A46 /* CropMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropMath.swift; sourceTree = "<group>"; };
 		E05CCA82C70869920C766DDC /* RatioRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatioRules.swift; sourceTree = "<group>"; };
 		E2059AFF4788F6C150A916E4 /* OutlineOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineOps.swift; sourceTree = "<group>"; };
 		E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPreviewView.swift; sourceTree = "<group>"; };
@@ -715,6 +723,7 @@
 			isa = PBXGroup;
 			children = (
 				2B54BF1BE2AE588D43004916 /* AutoBeauty.swift */,
+				446B48E32E6CE57CD21ACB08 /* FaceMarks.swift */,
 				B75EC58A061903DB807EB806 /* FaceReshape.swift */,
 				2D4F40D958E8AEADCBA1DCC8 /* FaceRetouch.swift */,
 				D939A9C81B9C494B866DAF51 /* WarpBrush.swift */,
@@ -878,6 +887,7 @@
 				41A7462FA0D75AFB1C2527E5 /* CleanOps.swift */,
 				214BB12F83784F9AEAACB266 /* ColorGrade.swift */,
 				4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */,
+				DC85D7AD85B6BE2035404A46 /* CropMath.swift */,
 				822743120DCD963E72152CDB /* CutoutOps.swift */,
 				AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */,
 				336D9D25B8DC482C4BCE4290 /* EyeMakeup.swift */,
@@ -938,6 +948,7 @@
 				E915C402422DE978B52F081C /* ColorizerTests.swift */,
 				BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */,
 				0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */,
+				95F4A553F7DBD79CE33F4F2B /* CropMathTests.swift */,
 				A94F6D20B0D9131790C14898 /* CurveTests.swift */,
 				2D3E37A0402B6B7066566B9E /* CustomStickerTests.swift */,
 				730D4AA73C47234B92073E64 /* CutoutTests.swift */,
@@ -948,6 +959,7 @@
 				9D78D42373B602DC28F02BF2 /* ExportSettingsTests.swift */,
 				B3DCBC36458F74F9782216BE /* EyeMakeupTests.swift */,
 				CC89147D6C307519EEC7D2EB /* FaceDetailTests.swift */,
+				579A8761D0613BF1231125C7 /* FaceMarksTests.swift */,
 				946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */,
 				A1D5F2CA599ED948B8E964D4 /* FaceRetouchTests.swift */,
 				439B9C572B1C0592D68FAD34 /* FilterCatalogTests.swift */,
@@ -1290,6 +1302,7 @@
 				3784D4A0701895F0AAEA361D /* CoverPicker.swift in Sources */,
 				3F879262D545D16CF7056A5E /* Credits.swift in Sources */,
 				371BDFA62C9238AD2D404998 /* CreditsView.swift in Sources */,
+				5A75EA2201A0494D07F54692 /* CropMath.swift in Sources */,
 				FA16BE874A77EF03C16C62E2 /* CustomStickers.swift in Sources */,
 				0C91A2CBB6E19A72F82926C5 /* CutoutOps.swift in Sources */,
 				90341E5BC7AD514792DD3A91 /* EditDocument.swift in Sources */,
@@ -1301,6 +1314,7 @@
 				62321582DF77C5697193257F /* ExportSettings.swift in Sources */,
 				1A5E5167580AFB58D4626BC7 /* EyeMakeup.swift in Sources */,
 				4BBA6FC9B958CB9512AD8233 /* FaceDetailOps.swift in Sources */,
+				2337611A5B6D84A1BD4286A1 /* FaceMarks.swift in Sources */,
 				3593E8C2A5D2CD5282187C7F /* FaceReshape.swift in Sources */,
 				D9C34E3778F02EB1DF899E44 /* FaceRetouch.swift in Sources */,
 				B2A3854739C3AE4E9185C6C9 /* FilterLibrary.swift in Sources */,
@@ -1416,6 +1430,7 @@
 				96D6CC789BC312B6C1F357D1 /* ColorTransferTests.swift in Sources */,
 				6F38BBAA6211CED47BE2976F /* ColorizerTests.swift in Sources */,
 				724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */,
+				D3A97438320340CB684CA12F /* CropMathTests.swift in Sources */,
 				E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */,
 				83346AFDA3AC7141979344AC /* CustomStickerTests.swift in Sources */,
 				DCFBD0C0527D24FDEE72F237 /* CutoutTests.swift in Sources */,
@@ -1426,6 +1441,7 @@
 				83674C9CD76993A36AA0DC52 /* ExportSettingsTests.swift in Sources */,
 				E2A6C55622E23F1CA66D9ABA /* EyeMakeupTests.swift in Sources */,
 				70009154BEC7B780DF6B9301 /* FaceDetailTests.swift in Sources */,
+				CA551E549A0746A149AF7194 /* FaceMarksTests.swift in Sources */,
 				CD217018E97A352052054CAB /* FaceReshapeTests.swift in Sources */,
 				34735321538A040EA61330F0 /* FaceRetouchTests.swift in Sources */,
 				94EF1728746C50D342A27656 /* FilterCatalogTests.swift in Sources */,

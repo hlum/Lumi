@@ -12,45 +12,23 @@ enum RootTab: String, CaseIterable, Identifiable {
         case .settings: "gearshape"
         }
     }
-    /// Camera and video open from Home; the bar carries the three everyday places.
+    /// Camera and video open from Home (and from Shortcuts); the system tab bar carries the everyday places.
     static let bar: [RootTab] = [.home, .projects, .settings]
 }
 
+/// The system tab bar: on iOS 26 it is the Liquid Glass bar, nothing custom drawn.
 struct RootTabView: View {
     @State private var route = AppRoute.shared
     var body: some View {
-        ZStack(alignment: .bottom) {
-            Group {
-                switch route.tab {
-                case .camera: NavigationStack { CameraView() }
-                case .video: NavigationStack { VideoEditorView() }
-                case .projects: NavigationStack { ProjectsView().navigationTitle("Projects") }
-                case .settings: NavigationStack { SettingsView() }
-                case .home: NavigationStack { HomeView() }
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            if !route.barHidden { bar.transition(.opacity) }
+        TabView(selection: $route.tab) {
+            Tab(RootTab.home.rawValue, systemImage: RootTab.home.symbol, value: RootTab.home) { NavigationStack { HomeView() } }
+            Tab(RootTab.projects.rawValue, systemImage: RootTab.projects.symbol, value: RootTab.projects) { NavigationStack { ProjectsView().navigationTitle("Projects") } }
+            Tab(RootTab.settings.rawValue, systemImage: RootTab.settings.symbol, value: RootTab.settings) { NavigationStack { SettingsView() } }
         }
-        .background(LumiColor.ground.ignoresSafeArea())
-    }
-
-    private var bar: some View {
-        HStack(spacing: 6) {
-            ForEach(RootTab.bar) { tab in
-                let on = route.tab == tab
-                Button { route.tab = tab } label: {
-                    VStack(spacing: 2) {
-                        Image(systemName: tab.symbol).font(.system(size: 20, weight: .regular))
-                        Text(LocalizedStringKey(tab.rawValue)).font(LumiFont.tab())
-                    }
-                    .frame(width: 84, height: 50)
-                    .foregroundStyle(on ? LumiColor.onSelectedPill : LumiColor.text.opacity(0.8))
-                    .background(Capsule().fill(on ? LumiColor.selectedPill : .clear))
-                }
-                .buttonStyle(.plain).accessibilityAddTraits(on ? .isSelected : [])
-            }
+        .tabBarMinimizeBehavior(.onScrollDown)
+        // Shortcuts ask for the camera or video tab: show them over the bar, outside it
+        .fullScreenCover(isPresented: Binding(get: { route.tab == .camera || route.tab == .video }, set: { if !$0 { route.tab = .home } })) {
+            NavigationStack { route.tab == .video ? AnyView(VideoEditorView()) : AnyView(CameraView()) }
         }
-        .padding(.horizontal, 8).frame(height: 64).lumiGlass().padding(.bottom, 10)
     }
 }

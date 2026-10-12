@@ -61,7 +61,7 @@ struct EditorView: View {
                 if model.preview != nil { bottom }
             }
         }
-        .toolbar(.hidden, for: .navigationBar).hidesLumiBar()
+        .toolbar(.hidden, for: .navigationBar).toolbar(.hidden, for: .tabBar)
         .task {
             let store = ProjectStore(context: context, directory: ProjectStore.defaultDirectory)
             model.session = ProjectSession(store: store, project: project)
@@ -129,6 +129,8 @@ struct EditorView: View {
             .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
+            .overlay { if tool == .face || tool == .makeup, let o = model.preview?.extent.size { FaceMarksOverlay(mark: model.activeMark, faces: model.overlayFaces, imageSize: o) } }
+            .overlay { if tool == .crop, let size = model.preview?.extent.size { CropOverlay(model: model, imageSize: size) } }
             .overlay { if tool == .clean, let o = model.original { CleanBrushOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
@@ -196,10 +198,10 @@ struct EditorView: View {
         }
     }
 
-    private func open(_ t: EditorTool) { snapshot = model.stack0; tool = t }
+    private func open(_ t: EditorTool) { snapshot = model.stack0; tool = t; model.cropEditing = (t == .crop); model.cropAspect = nil; if t == .face || t == .makeup { model.refreshOverlayFaces() } }
     private func close(revert: Bool) {
         if revert, let s = snapshot { model.revert(to: s) }
-        model.filterEraserActive = false; model.hairBrushActive = false
+        model.filterEraserActive = false; model.hairBrushActive = false; model.cropEditing = false
         tool = nil; snapshot = nil
     }
 }
@@ -252,32 +254,90 @@ struct AdjustPanel: View {
 
 struct CropPanel: View {
     @Bindable var model: EditorModel
+    @State private var group = Group.ratio
+    @State private var ratio = "Free"
+    enum Group: String, CaseIterable { case ratio = "Ratio", straighten = "Straighten", flip = "Rotate" }
+    static let presets: [(String, Double, Double)] = [("Free", 0, 0), ("Original", -1, -1), ("1:1", 1, 1), ("4:5 Post", 4, 5), ("3:4", 3, 4), ("9:16 Story", 9, 16), ("16:9", 16, 9), ("3:2", 3, 2), ("2:3", 2, 3), ("5:7", 5, 7)]
 
     var body: some View {
-        VStack {
-            HStack {
-                Button("Rotate", systemImage: "rotate.right") { model.edit { $0.crop.quarterTurns = ($0.crop.quarterTurns + 1) % 4 } }
-                Button("Flip H", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") { model.edit { $0.crop.flipH.toggle() } }
-                Button("Flip V", systemImage: "arrow.up.and.down.righttriangle.up.righttriangle.down") { model.edit { $0.crop.flipV.toggle() } }
-                Button("Auto", systemImage: "level") { if let o = model.original, let a = AutoStraighten.angle(for: Renderer.proxy(o, maxDimension: 1024)) { model.edit { $0.crop.angle = a } } }
-                Button("Reset", systemImage: "arrow.counterclockwise") { model.edit { $0.crop = CropSpec() } }
-            }.labelStyle(.iconOnly).buttonStyle(.bordered)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(CropSpec.ratios, id: \.name) { r in
-                        Button(r.name) {
-                            guard let o = model.original else { return }
-                            model.edit { $0.crop.rect = CropSpec.rect(aspect: r.w, r.h, in: o.extent.size) }
-                        }.buttonStyle(.bordered)
-                    }
-                }.padding(.horizontal)
-            }
-            HStack {
-                Text("Angle")
-                Slider(value: Binding(get: { model.draft.crop.angle }, set: { model.draft.crop.angle = $0 }), in: -45...45) { editing in
-                    if !editing { model.commit() }
+        VStack(spacing: 12) {
+            LumiSegmented(items: Group.allCases.map { ($0, LocalizedStringKey($0.rawValue)) }, selection: $group, height: 40)
+            switch group {
+            case .ratio:
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) { ForEach(Self.presets, id: \.0) { p in LumiChip(title: LocalizedStringKey(p.0), selected: ratio == p.0) { pick(p) } } }
                 }
-            }.padding(.horizontal)
+            case .straighten:
+                LumiSliderRow(title: "Straighten", value: Binding(get: { model.draft.crop.angle }, set: { model.draft.crop.angle = $0 }), range: -45...45, unit: 1, onEnd: { resetRect(); model.commit() })
+                LumiSliderRow(title: "Vertical", value: Binding(get: { model.draft.crop.keystoneV }, set: { model.draft.crop.keystoneV = $0 }), range: -1...1, onEnd: { model.commit() })
+                LumiSliderRow(title: "Horizontal", value: Binding(get: { model.draft.crop.keystoneH }, set: { model.draft.crop.keystoneH = $0 }), range: -1...1, onEnd: { model.commit() })
+                LumiChip(title: "Auto level", symbol: "level") {
+                    if let o = model.original, let a = AutoStraighten.angle(for: Renderer.proxy(o, maxDimension: 1024)) { model.edit { $0.crop.angle = a }; resetRect(); model.commit() }
+                }
+            case .flip:
+                HStack(spacing: 8) {
+                    LumiChip(title: "Rotate", symbol: "rotate.right") { model.edit { $0.crop.quarterTurns = ($0.crop.quarterTurns + 1) % 4; $0.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1) }; ratio = "Free"; model.cropAspect = nil }
+                    LumiChip(title: "Flip", symbol: "arrow.left.and.right.righttriangle.left.righttriangle.right") { model.edit { $0.crop.flipH.toggle() } }
+                    LumiChip(title: "Flip V", symbol: "arrow.up.and.down.righttriangle.up.righttriangle.down") { model.edit { $0.crop.flipV.toggle() } }
+                    LumiChip(title: "Reset", symbol: "arrow.counterclockwise") { model.edit { $0.crop = CropSpec() }; ratio = "Free"; model.cropAspect = nil }
+                }
+            }
+        }
+    }
+
+    private func resetRect() { model.draft.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1); ratio = "Free"; model.cropAspect = nil }
+
+    private func pick(_ p: (String, Double, Double)) {
+        ratio = p.0
+        guard let size = model.preview?.extent.size else { return }
+        if p.1 == 0 { model.cropAspect = nil; return }
+        let aspect = p.1 < 0 ? Double(size.width / size.height) : p.1 / p.2
+        model.cropAspect = aspect
+        model.edit { $0.crop.rect = CropSpec.rect(aspect: aspect, 1, in: size) }
+    }
+}
+
+/// The crop frame over the picture: thirds, dimmed outside, drag corners, edges or the inside.
+struct CropOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var active: CropMath.Handle?
+    @State private var start = CGRect.zero
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            let d = map.displayed
+            let r = model.draft.crop.rect
+            let view = CGRect(x: d.minX + r.minX * d.width, y: d.minY + r.minY * d.height, width: r.width * d.width, height: r.height * d.height)
+            ZStack {
+                Path { p in p.addRect(CGRect(origin: .zero, size: geo.size)); p.addRect(view) }.fill(Color.black.opacity(0.45), style: FillStyle(eoFill: true))
+                Path { p in
+                    for i in 1...2 {
+                        let f = CGFloat(i) / 3
+                        p.move(to: CGPoint(x: view.minX + view.width * f, y: view.minY)); p.addLine(to: CGPoint(x: view.minX + view.width * f, y: view.maxY))
+                        p.move(to: CGPoint(x: view.minX, y: view.minY + view.height * f)); p.addLine(to: CGPoint(x: view.maxX, y: view.minY + view.height * f))
+                    }
+                }.stroke(Color.white.opacity(0.5), lineWidth: 0.5)
+                Rectangle().path(in: view).stroke(Color.white, lineWidth: 1.5)
+                ForEach(Array([view.origin, CGPoint(x: view.maxX, y: view.minY), CGPoint(x: view.minX, y: view.maxY), CGPoint(x: view.maxX, y: view.maxY)].enumerated()), id: \.offset) { _, c in
+                    Circle().fill(Color.white).frame(width: 18, height: 18).shadow(radius: 2).position(c)
+                }
+            }
+            .contentShape(Rectangle())
+            .gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    if active == nil {
+                        // touch point in normalized picture space
+                        let p = CGPoint(x: (v.startLocation.x - d.minX) / max(d.width, 1), y: (v.startLocation.y - d.minY) / max(d.height, 1))
+                        active = CropMath.handle(at: p, in: model.draft.crop.rect, slop: 28 / max(min(d.width, d.height), 1))
+                        start = model.draft.crop.rect
+                    }
+                    guard let h = active else { return }
+                    let delta = CGPoint(x: v.translation.width / max(d.width, 1), y: v.translation.height / max(d.height, 1))
+                    model.draft.crop.rect = CropMath.drag(start, handle: h, by: delta, aspect: model.cropAspect, imageSize: imageSize)
+                }
+                .onEnded { _ in active = nil; model.commit() })
         }
     }
 }
@@ -304,7 +364,7 @@ struct TextPanel: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     ForEach(TextStylePresets.all) { p in
-                        Button(LocalizedStringKey(p.name)) { font = p.style.fontName; preset = p }.buttonStyle(.bordered).tint(preset == p ? .accentColor : .secondary)
+                        Button(LocalizedStringKey(p.name)) { font = p.style.fontName; preset = p }.buttonStyle(LumiButtonStyle()).lumiSelected(preset == p)
                     }
                 }.padding(.horizontal)
             }
@@ -361,25 +421,20 @@ struct CutoutPanel: View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    Button("Off") { model.edit { $0.cutout = nil } }.buttonStyle(.bordered)
+                    Button("Off") { model.edit { $0.cutout = nil } }.buttonStyle(LumiButtonStyle())
                     ForEach(choices, id: \.0) { name, bg in
-                        Button(name) { model.edit { var c = $0.cutout ?? CutoutConfig(); c.background = bg; $0.cutout = c } }.buttonStyle(.bordered)
+                        Button(name) { model.edit { var c = $0.cutout ?? CutoutConfig(); c.background = bg; $0.cutout = c } }.buttonStyle(LumiButtonStyle())
                     }
                 }.padding(.horizontal)
             }
-            Button("Save as sticker", systemImage: "face.smiling") { model.makeStickerFromSubject() }.buttonStyle(.bordered)
+            Button("Save as sticker", systemImage: "face.smiling") { model.makeStickerFromSubject() }.buttonStyle(LumiButtonStyle())
             slider("Soft edge", \.feather, 0...1)
             slider("Edge shift", \.shift, -1...1)
         }
     }
 
     private func slider(_ title: String, _ path: WritableKeyPath<CutoutConfig, Double>, _ range: ClosedRange<Double>) -> some View {
-        HStack {
-            Text(title).font(.caption).frame(width: 70, alignment: .leading)
-            Slider(value: Binding(get: { config[keyPath: path] }, set: { v in var c = config; c[keyPath: path] = v; model.draft.cutout = c }), in: range) { editing in
-                if !editing { model.commit() }
-            }
-        }.padding(.horizontal).disabled(model.draft.cutout == nil)
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { config[keyPath: path] }, set: { v in var c = config; c[keyPath: path] = v; model.draft.cutout = c }), range: range, onEnd: { model.commit() }).disabled(model.draft.cutout == nil)
     }
 }
 
@@ -411,22 +466,21 @@ struct FilterPanel: View {
             }.padding(.horizontal)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    Button("Off") { model.edit { $0.filter = nil; $0.filterEraser = nil } }.buttonStyle(.bordered)
+                    Button("Off") { model.edit { $0.filter = nil; $0.filterEraser = nil } }.buttonStyle(LumiButtonStyle())
                     ForEach(shown) { e in
                         Button(LocalizedStringKey(e.name)) { prefs.used(e.id); let keep = model.draft.filter?.intensity ?? 1; model.edit { $0.filter = (e.id, keep) } }
-                            .buttonStyle(.bordered).tint(model.draft.filter?.id == e.id ? .accentColor : .secondary)
+                            .buttonStyle(LumiButtonStyle()).lumiSelected(model.draft.filter?.id == e.id)
                     }
                 }.padding(.horizontal)
             }
             if erasing {
                 HStack {
                     Text("Paint where the filter should go away").font(.caption).foregroundStyle(.secondary)
-                    Button("Clear eraser") { model.edit { $0.filterEraser = nil } }.buttonStyle(.bordered)
+                    Button("Clear eraser") { model.edit { $0.filterEraser = nil } }.buttonStyle(LumiButtonStyle())
                 }
             }
-            Slider(value: Binding(get: { model.draft.filter?.intensity ?? 1 }, set: { v in if let f = model.draft.filter { model.draft.filter = (f.id, v) } }), in: 0...1) { editing in
-                if !editing { model.commit() }
-            }.padding(.horizontal).disabled(model.draft.filter == nil)
+            LumiSliderRow(title: "Intensity", value: Binding(get: { model.draft.filter?.intensity ?? 1 }, set: { v in if let f = model.draft.filter { model.draft.filter = (f.id, v) } }), range: 0...1, defaultValue: 1, onEnd: { model.commit() })
+                .disabled(model.draft.filter == nil).opacity(model.draft.filter == nil ? 0.5 : 1)
         }
         .onChange(of: erasing) { _, on in model.filterEraserActive = on }
         .onDisappear { model.filterEraserActive = false }
@@ -443,7 +497,7 @@ struct StickerPanel: View {
         VStack {
             TextField("Search", text: $query).textFieldStyle(.roundedBorder).padding(.horizontal)
             HStack {
-                Button("Make from subject", systemImage: "person.crop.circle.badge.plus") { if model.makeStickerFromSubject() == nil { noSubject = true } }.buttonStyle(.bordered)
+                Button("Make from subject", systemImage: "person.crop.circle.badge.plus") { if model.makeStickerFromSubject() == nil { noSubject = true } }.buttonStyle(LumiButtonStyle())
                 ForEach(CustomStickerStore.shared.items) { c in
                     Button { add(c.id) } label: {
                         if let ci = CustomStickerStore.shared.image(c.id), let cg = CIContext().createCGImage(Renderer.proxy(ci, maxDimension: 96), from: Renderer.proxy(ci, maxDimension: 96).extent) { Image(decorative: cg, scale: 1).resizable().scaledToFit().frame(width: 44, height: 44) } else { Text(c.name) }
@@ -462,10 +516,7 @@ struct StickerPanel: View {
                     }
                 }.padding(.horizontal)
             }
-            HStack {
-                Text("Outline").font(.caption)
-                Slider(value: $outline, in: 0...0.05)
-            }.padding(.horizontal)
+            LumiSliderRow(title: "Outline", value: $outline, range: 0...0.05, onEnd: { model.commit() })
         }
     }
 
@@ -482,13 +533,10 @@ struct FramePanel: View {
             Picker("Style", selection: Binding(get: { model.draft.frame.style }, set: { v in model.edit { var f = $0.frame; f.style = v; if f.padding == 0 { f.padding = 0.04 }; $0.frame = f } })) {
                 ForEach(FrameConfig.Style.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) }
             }.pickerStyle(.segmented).padding(.horizontal)
-            HStack {
-                Text("Padding").font(.caption)
-                Slider(value: Binding(get: { model.draft.frame.padding }, set: { model.draft.frame.padding = $0 }), in: 0...0.25) { if !$0 { model.commit() } }
-            }.padding(.horizontal)
+            LumiSliderRow(title: "Padding", value: Binding(get: { model.draft.frame.padding }, set: { model.draft.frame.padding = $0 }), range: 0...0.25, onEnd: { model.commit() })
             HStack {
                 ForEach([("White", RGBA.white), ("Black", RGBA.black), ("Cream", RGBA(r: 1, g: 0.95, b: 0.8, a: 1))], id: \.0) { name, c in
-                    Button(name) { model.edit { var f = $0.frame; f.color = c; $0.frame = f } }.buttonStyle(.bordered)
+                    Button(name) { model.edit { var f = $0.frame; f.color = c; $0.frame = f } }.buttonStyle(LumiButtonStyle())
                 }
             }
         }
@@ -502,7 +550,7 @@ struct DoodlePanel: View {
             Picker("Brush", selection: Bindable(model).doodleBrush) { ForEach(DoodleStroke.Brush.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) } }.pickerStyle(.menu)
             HStack {
                 ForEach([("Red", RGBA(r: 1, g: 0.3, b: 0.35, a: 1)), ("Yellow", RGBA(r: 1, g: 0.85, b: 0.2, a: 1)), ("Blue", RGBA(r: 0.3, g: 0.6, b: 1, a: 1)), ("White", RGBA.white)], id: \.0) { n, c in
-                    Button(n) { model.doodleColor = c }.buttonStyle(.bordered)
+                    Button(n) { model.doodleColor = c }.buttonStyle(LumiButtonStyle())
                 }
             }
             Button("Undo stroke", systemImage: "arrow.uturn.backward") { model.edit { $0.doodle = Array($0.doodle.dropLast()) } }.labelStyle(.iconOnly).disabled(model.draft.doodle.isEmpty)
@@ -534,9 +582,9 @@ struct EnhancePanel: View {
             if model.canUpscale {
                 Text("Sharper, bigger photo. Applied when you save.").font(.caption).foregroundStyle(.secondary)
                 HStack {
-                    Button("Off") { model.edit { $0.upscale = nil } }.buttonStyle(.bordered)
-                    Button("2×") { model.edit { $0.upscale = 2 } }.buttonStyle(.bordered).tint(model.draft.upscale == 2 ? .accentColor : .secondary)
-                    Button("4×") { model.edit { $0.upscale = 4 } }.buttonStyle(.bordered).tint(model.draft.upscale == 4 ? .accentColor : .secondary)
+                    Button("Off") { model.edit { $0.upscale = nil } }.buttonStyle(LumiButtonStyle())
+                    Button("2×") { model.edit { $0.upscale = 2 } }.buttonStyle(LumiButtonStyle()).lumiSelected(model.draft.upscale == 2)
+                    Button("4×") { model.edit { $0.upscale = 4 } }.buttonStyle(LumiButtonStyle()).lumiSelected(model.draft.upscale == 4)
                 }
             } else {
                 Text("Enhance works on photos up to 2048 px on the long side.").font(.caption).foregroundStyle(.secondary).padding()
@@ -544,16 +592,16 @@ struct EnhancePanel: View {
             if Renderer.services.colorizer != nil, let o = model.original, max(o.extent.width, o.extent.height) <= CGFloat(SiggraphColorizer.maxInputSide) {
                 HStack {
                     Text("Colorize").font(.caption)
-                    Button("Off") { model.edit { $0.colorize = nil } }.buttonStyle(.bordered)
-                    Button("50%") { model.edit { $0.colorize = 0.5 } }.buttonStyle(.bordered)
-                    Button("100%") { model.edit { $0.colorize = 1 } }.buttonStyle(.bordered)
+                    Button("Off") { model.edit { $0.colorize = nil } }.buttonStyle(LumiButtonStyle())
+                    Button("50%") { model.edit { $0.colorize = 0.5 } }.buttonStyle(LumiButtonStyle())
+                    Button("100%") { model.edit { $0.colorize = 1 } }.buttonStyle(LumiButtonStyle())
                 }
             }
             if let o = model.original {
                 Button("Restore old photo", systemImage: "wand.and.stars") {
                     let plan = OldPhotoRestore.plan(for: o, canUpscale: model.canUpscale, canColorize: Renderer.services.colorizer != nil)
                     model.edit { $0 = OldPhotoRestore.apply(plan, to: $0) }
-                }.buttonStyle(.borderedProminent)
+                }.buttonStyle(LumiButtonStyle(prominent: true))
             }
         }
     }
@@ -565,16 +613,16 @@ struct ExportPanel: View {
         VStack(spacing: 10) {
             Picker("Format", selection: $model.exportSettings.format) { ForEach(ImageFormat.allCases, id: \.self) { Text($0.rawValue.uppercased()).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
             if model.exportSettings.format != .png {
-                HStack { Text("Quality").font(.caption); Slider(value: $model.exportSettings.quality, in: 0.3...1) }.padding(.horizontal)
+                LumiSliderRow(title: "Quality", value: $model.exportSettings.quality, range: 0.3...1, onEnd: { model.commit() })
             }
             Picker("Max size", selection: Binding(get: { model.exportSettings.maxLongSide ?? 0 }, set: { model.exportSettings.maxLongSide = $0 == 0 ? nil : $0 })) {
                 Text("Original").tag(0); Text("4096").tag(4096); Text("2048").tag(2048); Text("1080").tag(1080)
             }.pickerStyle(.segmented).padding(.horizontal)
             HStack {
                 Text("Print").font(.caption)
-                Button("10×15 cm") { model.applyPrintSize(width: 10, height: 15, unit: .cm, dpi: 300) }.buttonStyle(.bordered)
-                Button("A4") { model.applyPrintSize(width: 210, height: 297, unit: .mm, dpi: 300) }.buttonStyle(.bordered)
-                Button("Off") { model.clearPrintSize() }.buttonStyle(.bordered)
+                Button("10×15 cm") { model.applyPrintSize(width: 10, height: 15, unit: .cm, dpi: 300) }.buttonStyle(LumiButtonStyle())
+                Button("A4") { model.applyPrintSize(width: 210, height: 297, unit: .mm, dpi: 300) }.buttonStyle(LumiButtonStyle())
+                Button("Off") { model.clearPrintSize() }.buttonStyle(LumiButtonStyle())
             }
             if let s = model.exportPixelSize, let b = model.estimatedBytes {
                 Text("\(s.w) × \(s.h) px · about \(ByteCountFormatter.string(fromByteCount: Int64(b), countStyle: .file))").font(.caption).foregroundStyle(.secondary)
@@ -608,9 +656,9 @@ struct ColorPanel: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(ColorGrade.curvePresets.keys.sorted(), id: \.self) { name in
-                            Button(name.capitalized) { let c = ColorGrade.curvePresets[name]!; model.edit { $0.grade.rgbCurve = c.rgb; $0.grade.redCurve = c.r; $0.grade.greenCurve = c.g; $0.grade.blueCurve = c.b } }.buttonStyle(.bordered)
+                            Button(name.capitalized) { let c = ColorGrade.curvePresets[name]!; model.edit { $0.grade.rgbCurve = c.rgb; $0.grade.redCurve = c.r; $0.grade.greenCurve = c.g; $0.grade.blueCurve = c.b } }.buttonStyle(LumiButtonStyle())
                         }
-                        Button("Reset") { model.edit { $0.grade.rgbCurve = ToneCurve(); $0.grade.redCurve = ToneCurve(); $0.grade.greenCurve = ToneCurve(); $0.grade.blueCurve = ToneCurve() }; shadows = 0; mids = 0; highs = 0 }.buttonStyle(.bordered)
+                        Button("Reset") { model.edit { $0.grade.rgbCurve = ToneCurve(); $0.grade.redCurve = ToneCurve(); $0.grade.greenCurve = ToneCurve(); $0.grade.blueCurve = ToneCurve() }; shadows = 0; mids = 0; highs = 0 }.buttonStyle(LumiButtonStyle())
                     }.padding(.horizontal)
                 }
                 slider("Shadows", $shadows, apply: curve); slider("Midtones", $mids, apply: curve); slider("Highlights", $highs, apply: curve)
@@ -644,10 +692,7 @@ struct ColorPanel: View {
     }
 
     private func slider(_ title: String, _ value: Binding<Double>, range: ClosedRange<Double> = -1...1, apply: (() -> Void)? = nil) -> some View {
-        HStack {
-            Text(LocalizedStringKey(title)).font(.caption).frame(width: 90, alignment: .leading)
-            Slider(value: Binding(get: { value.wrappedValue }, set: { value.wrappedValue = $0; apply?() }), in: range) { if !$0 { model.commit() } }
-        }.padding(.horizontal)
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { value.wrappedValue }, set: { value.wrappedValue = $0; apply?() }), range: range, onEnd: { model.commit() })
     }
 }
 
@@ -677,15 +722,15 @@ struct FacePanel: View {
                     switch group {
                     case .looks:
                         HStack {
-                            ForEach(AutoBeauty.looks) { l in Button(LocalizedStringKey(l.name)) { lookID = l.id; apply() }.buttonStyle(.bordered).tint(lookID == l.id ? .accentColor : .secondary) }
-                            Button("Off") { model.edit { $0.face = FaceRetouch() } }.buttonStyle(.bordered)
+                            ForEach(AutoBeauty.looks) { l in Button(LocalizedStringKey(l.name)) { lookID = l.id; apply() }.buttonStyle(LumiButtonStyle()).lumiSelected(lookID == l.id) }
+                            Button("Off") { model.edit { $0.face = FaceRetouch() } }.buttonStyle(LumiButtonStyle())
                         }
                         row("Strength", $strength, 0...1) { apply() }
                         Text("Makeup looks").font(.caption).foregroundStyle(.secondary)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
                                 ForEach(MakeupLooks.all) { l in
-                                    Button(LocalizedStringKey(l.name)) { applyMakeup(l) }.buttonStyle(.bordered)
+                                    Button(LocalizedStringKey(l.name)) { applyMakeup(l) }.buttonStyle(LumiButtonStyle())
                                 }
                             }.padding(.horizontal)
                         }
@@ -739,8 +784,21 @@ struct FacePanel: View {
         Binding(get: { model.draft.face[keyPath: path] }, set: { model.draft.face[keyPath: path] = $0 })
     }
 
+    /// What each slider works on, so the preview can outline it.
+    private static let marks: [String: FaceMark] = [
+        "Jaw": .jaw, "Face width": .faceWidth, "Chin": .chin, "Eyes": .eyes, "Nose": .nose, "Mouth": .mouth, "Cheek volume": .cheeks, "Lift": .lift,
+        "Move left/right": .face, "Move up/down": .face, "Rotate": .face, "Symmetry": .face, "Even out jaw": .jaw, "3D shading": .contour,
+        "Smooth": .skin, "Texture": .skin, "Whiten": .skin, "Rosy": .skin, "Tan": .skin,
+        "Lipstick": .lips, "Blush": .blush, "Lip shine": .lips, "Contour": .contour, "Highlight": .highlight, "Foundation": .skin,
+        "Shadow": .eyes, "Eyeliner": .eyes, "Lashes": .eyes, "Brow color": .brows, "Brow height": .brows,
+        "Flash": .skin, "Under-eye": .underEye, "Fine lines": .skin, "Teeth": .teeth, "Bright eyes": .eyes,
+    ]
+
     private func row(_ title: String, _ value: Binding<Double>, _ range: ClosedRange<Double> = -1...1, onEnd: (() -> Void)? = nil) -> some View {
-        LumiSliderRow(title: LocalizedStringKey(title), value: value, range: range, onEnd: { if let onEnd { onEnd() } else { model.commit() } })
+        let mark = Self.marks[title]
+        return LumiSliderRow(title: LocalizedStringKey(title), value: value, range: range,
+                             onEditing: { editing in if let mark { model.mark(mark, editing: editing) } },
+                             onEnd: { if let onEnd { onEnd() } else { model.commit() } })
     }
 }
 
@@ -751,8 +809,8 @@ struct LiquifyPanel: View {
             Picker("Brush", selection: Binding(get: { model.warpBrush.kind }, set: { model.warpBrush.kind = $0 })) {
                 Text("Slim").tag(BrushStroke.Kind.push); Text("Zoom in").tag(BrushStroke.Kind.bloat); Text("Zoom out").tag(BrushStroke.Kind.pinch)
             }.pickerStyle(.segmented).padding(.horizontal)
-            HStack { Text("Size").font(.caption); Slider(value: Binding(get: { model.warpBrush.size }, set: { model.warpBrush.size = $0 }), in: 0.03...0.3) }.padding(.horizontal)
-            HStack { Text("Strength").font(.caption); Slider(value: Binding(get: { model.warpBrush.strength }, set: { model.warpBrush.strength = $0 }), in: 0.1...1) }.padding(.horizontal)
+            LumiSliderRow(title: "Size", value: Binding(get: { model.warpBrush.size }, set: { model.warpBrush.size = $0 }), range: 0.03...0.3, onEnd: { model.commit() })
+            LumiSliderRow(title: "Strength", value: Binding(get: { model.warpBrush.strength }, set: { model.warpBrush.strength = $0 }), range: 0.1...1, onEnd: { model.commit() })
             Text("Drag on the photo. Undo steps back one drag.").font(.caption).foregroundStyle(.secondary)
         }
     }
@@ -794,24 +852,24 @@ struct MarkPanel: View {
         VStack(spacing: 6) {
             HStack {
                 TextField("Your mark", text: $text).textFieldStyle(.roundedBorder)
-                Button("Apply") { model.edit { $0.watermark = text.isEmpty ? nil : current } }.buttonStyle(.borderedProminent)
-                Button("Save", systemImage: "star") { if !text.isEmpty { box.save(current) } }.labelStyle(.iconOnly).buttonStyle(.bordered)
-                Button("Off") { model.edit { $0.watermark = nil } }.buttonStyle(.bordered)
+                Button("Apply") { model.edit { $0.watermark = text.isEmpty ? nil : current } }.buttonStyle(LumiButtonStyle(prominent: true))
+                Button("Save", systemImage: "star") { if !text.isEmpty { box.save(current) } }.labelStyle(.iconOnly).buttonStyle(LumiButtonStyle())
+                Button("Off") { model.edit { $0.watermark = nil } }.buttonStyle(LumiButtonStyle())
             }.padding(.horizontal)
             HStack {
                 ForEach(TimeStampStyle.allCases, id: \.self) { st in
-                    Button(st.rawValue.capitalized) { text = WatermarkMath.timeStamp(.now, style: st) }.buttonStyle(.bordered)
+                    Button(st.rawValue.capitalized) { text = WatermarkMath.timeStamp(.now, style: st) }.buttonStyle(LumiButtonStyle())
                 }
                 Toggle("Tiled", isOn: $tiled).fixedSize()
             }.padding(.horizontal)
-            HStack { Text("Opacity").font(.caption); Slider(value: $opacity, in: 0.1...1) }.padding(.horizontal)
-            HStack { Text("Size").font(.caption); Slider(value: $size, in: 0.03...0.2) }.padding(.horizontal)
+            LumiSliderRow(title: "Opacity", value: $opacity, range: 0.1...1, onEnd: { model.commit() })
+            LumiSliderRow(title: "Size", value: $size, range: 0.03...0.2, onEnd: { model.commit() })
             if !box.library.items.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(box.library.items) { w in
                             Button(w.name) { if case .text(let t) = w.kind { text = t }; tiled = w.isTiled; opacity = w.opacity; size = w.size; model.edit { $0.watermark = w } }
-                                .buttonStyle(.bordered).contextMenu { Button("Delete", role: .destructive) { box.delete(w.id) } }
+                                .buttonStyle(LumiButtonStyle()).contextMenu { Button("Delete", role: .destructive) { box.delete(w.id) } }
                         }
                     }.padding(.horizontal)
                 }
@@ -851,11 +909,11 @@ struct MosaicPanel: View {
             Picker("Style", selection: Binding(get: { model.draft.mosaic.style }, set: { v in model.edit { var m = $0.mosaic; m.style = v; $0.mosaic = m } })) {
                 Text("Pixel").tag(MosaicOps.Style.pixel); Text("Blur").tag(MosaicOps.Style.blur)
             }.pickerStyle(.segmented).padding(.horizontal)
-            HStack { Text("Strength").font(.caption); Slider(value: Binding(get: { model.draft.mosaic.block }, set: { model.draft.mosaic.block = $0 }), in: 0.005...0.08) { if !$0 { model.commit() } } }.padding(.horizontal)
+            LumiSliderRow(title: "Strength", value: Binding(get: { model.draft.mosaic.block }, set: { model.draft.mosaic.block = $0 }), range: 0.005...0.08, onEnd: { model.commit() })
             HStack {
                 Toggle("Faces", isOn: Binding(get: { model.draft.mosaic.coverFaces }, set: { v in model.edit { var m = $0.mosaic; m.coverFaces = v; $0.mosaic = m } })).fixedSize()
                 Toggle("Chat", isOn: Binding(get: { model.draft.mosaic.chatMode }, set: { v in model.edit { var m = $0.mosaic; m.chatMode = v; $0.mosaic = m } })).fixedSize()
-                Button("Clear") { model.edit { $0.mosaic = MosaicConfig() } }.buttonStyle(.bordered)
+                Button("Clear") { model.edit { $0.mosaic = MosaicConfig() } }.buttonStyle(LumiButtonStyle())
             }
             Text("Drag on the photo to cover an area by hand.").font(.caption).foregroundStyle(.secondary)
         }
@@ -923,7 +981,7 @@ struct HairPanel: View {
             Picker("Category", selection: $category) { ForEach(categories, id: \.self) { Text(LocalizedStringKey($0)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    Button("Off") { model.edit { $0.hair = HairRetouch() } }.buttonStyle(.bordered)
+                    Button("Off") { model.edit { $0.hair = HairRetouch() } }.buttonStyle(LumiButtonStyle())
                     ForEach(HairRetouch.swatches.filter { $0.category == category }, id: \.name) { s in
                         Button { model.edit { var h = $0.hair; h.dye.color = s.color; h.dye.strength = max(h.dye.strength, 0.8); $0.hair = h } } label: {
                             Circle().fill(Color(red: s.color.r, green: s.color.g, blue: s.color.b)).frame(width: 34, height: 34).overlay(Circle().stroke(.secondary, lineWidth: 1))
@@ -941,10 +999,7 @@ struct HairPanel: View {
     }
 
     private func row(_ title: String, _ path: WritableKeyPath<EditDocument, Double>, _ range: ClosedRange<Double> = 0...1) -> some View {
-        HStack {
-            Text(LocalizedStringKey(title)).font(.caption).frame(width: 80, alignment: .leading)
-            Slider(value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), in: range) { if !$0 { model.commit() } }
-        }.padding(.horizontal)
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), range: range, onEnd: { model.commit() })
     }
 }
 
@@ -989,14 +1044,11 @@ struct CleanPanel: View {
             slider("Source ←→", \.offsetX, -0.5...0.5)
             slider("Source ↑↓", \.offsetY, -0.5...0.5)
             slider("Noise reduction", \.denoise, 0...1)
-            Button("Clear clone") { model.edit { var c = $0.clean; c.cloneMask = nil; $0.clean = c } }.buttonStyle(.bordered)
+            Button("Clear clone") { model.edit { var c = $0.clean; c.cloneMask = nil; $0.clean = c } }.buttonStyle(LumiButtonStyle())
         }
     }
     private func slider(_ title: String, _ path: WritableKeyPath<CleanConfig, Double>, _ range: ClosedRange<Double>) -> some View {
-        HStack {
-            Text(LocalizedStringKey(title)).font(.caption).frame(width: 96, alignment: .leading)
-            Slider(value: Binding(get: { model.draft.clean[keyPath: path] }, set: { model.draft.clean[keyPath: path] = $0 }), in: range) { if !$0 { model.commit() } }
-        }.padding(.horizontal)
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft.clean[keyPath: path] }, set: { model.draft.clean[keyPath: path] = $0 }), range: range, onEnd: { model.commit() })
     }
 }
 

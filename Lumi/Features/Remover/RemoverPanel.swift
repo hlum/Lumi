@@ -13,10 +13,10 @@ struct RemoverPanel: View {
                     .pickerStyle(.segmented).padding(.horizontal)
                 Slider(value: Bindable(remover).brushSize, in: 0.01...0.15).padding(.horizontal).disabled(remover.mode == .box)
                 HStack {
-                    Button("People", systemImage: "person.2") { selectPassersBy(remover) }.buttonStyle(.bordered)
-                    Button("Text", systemImage: "textformat") { selectText(remover) }.buttonStyle(.bordered)
+                    Button("People", systemImage: "person.2") { selectPassersBy(remover) }.buttonStyle(LumiButtonStyle())
+                    Button("Text", systemImage: "textformat") { selectText(remover) }.buttonStyle(LumiButtonStyle())
                     Button("Undo stroke", systemImage: "arrow.uturn.backward") { remover.undoStroke() }.disabled(!remover.canUndo)
-                    Button(isWorking ? "Removing…" : "Remove") { apply(remover) }.buttonStyle(.borderedProminent).disabled(!remover.hasSelection || isWorking)
+                    Button(isWorking ? "Removing…" : "Remove") { apply(remover) }.buttonStyle(LumiButtonStyle(prominent: true)).disabled(!remover.hasSelection || isWorking)
                 }.labelStyle(.iconOnly)
             } else { ProgressView() }
         }

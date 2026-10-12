@@ -20,7 +20,7 @@ struct HomeView: View {
                 HStack {
                     Text("Lumi").font(LumiFont.largeTitle())
                     Spacer()
-                    NavigationLink { ToolsView().hidesLumiBar() } label: {
+                    NavigationLink { ToolsView() } label: {
                         Image(systemName: "magnifyingglass").font(.system(size: 20, weight: .semibold)).foregroundStyle(LumiColor.text)
                             .frame(width: 44, height: 44).background(Circle().fill(LumiColor.surface)).shadow(color: .black.opacity(0.08), radius: 4, y: 2)
                     }.accessibilityLabel("Search tools")
@@ -39,7 +39,7 @@ struct HomeView: View {
                     fix("sparkles", "Sharpen a blurry photo", .enhance)
                 }
             }
-            .padding(.horizontal, LumiShape.margin).padding(.top, 8).padding(.bottom, 130)
+            .padding(.horizontal, LumiShape.margin).padding(.top, 8).padding(.bottom, 24)
         }
         .background(LumiColor.ground.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
@@ -66,7 +66,7 @@ struct HomeView: View {
     }
 
     private func tile<D: View>(_ symbol: String, _ title: LocalizedStringKey, @ViewBuilder _ destination: @escaping () -> D) -> some View {
-        NavigationLink { destination().hidesLumiBar() } label: {
+        NavigationLink { destination().toolbar(.hidden, for: .tabBar) } label: {
             VStack(spacing: 6) {
                 Image(systemName: symbol).font(.system(size: 24)).foregroundStyle(LumiColor.accentText)
                 Text(title).font(LumiFont.caption()).foregroundStyle(LumiColor.text).lineLimit(1).minimumScaleFactor(0.8)

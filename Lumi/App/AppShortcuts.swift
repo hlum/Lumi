@@ -7,7 +7,6 @@ import Observation
 final class AppRoute {
     nonisolated(unsafe) static let shared = AppRoute()
     var tab = RootTab.home
-    var barHidden = false             // full-screen tools (editor, camera) hide the tab bar
     var pendingTool: String?          // ToolCatalog id the Home screen should open, then clear
 
     func openCamera() { tab = .camera; pendingTool = nil }
@@ -34,9 +33,3 @@ struct LumiShortcuts: AppShortcutsProvider {
     }
 }
 
-extension View {
-    /// Hides the floating tab bar while this screen is showing.
-    func hidesLumiBar() -> some View {
-        onAppear { AppRoute.shared.barHidden = true }.onDisappear { AppRoute.shared.barHidden = false }
-    }
-}

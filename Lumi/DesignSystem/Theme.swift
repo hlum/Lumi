@@ -149,6 +149,8 @@ struct LumiSliderRow: View {
     @Binding var value: Double
     var range: ClosedRange<Double> = -1...1
     var defaultValue: Double = 0
+    var unit = 100.0                    // readout = value x unit (degrees use 1)
+    var onEditing: (Bool) -> Void = { _ in }
     var onEnd: () -> Void = {}
     var body: some View {
         VStack(spacing: 2) {
@@ -159,7 +161,7 @@ struct LumiSliderRow: View {
                     .onTapGesture(count: 2) { value = defaultValue; onEnd() }
                     .accessibilityHidden(true)
             }
-            Slider(value: $value, in: range) { if !$0 { onEnd() } }
+            Slider(value: $value, in: range) { onEditing($0); if !$0 { onEnd() } }
                 .tint(LumiColor.accent)
                 .accessibilityLabel(title).accessibilityValue(readout)
         }
@@ -167,7 +169,7 @@ struct LumiSliderRow: View {
         .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LumiColor.well))
     }
     private var readout: String {
-        let v = Int((value * 100).rounded())
+        let v = Int((value * unit).rounded())
         return range.lowerBound < 0 && v > 0 ? "+\(v)" : "\(v)"
     }
 }
@@ -202,13 +204,26 @@ struct LumiPanelHeader: View {
     }
 }
 
-/// Floating glass tab bar background.
-struct LumiGlass: ViewModifier {
-    var radius: CGFloat = 32
-    func body(content: Content) -> some View {
-        content.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(.white.opacity(0.6), lineWidth: 1))
-            .shadow(color: .black.opacity(0.16), radius: 20, y: 10)
+// MARK: button style for the older panels
+
+private struct LumiSelectedKey: EnvironmentKey { static let defaultValue = false }
+extension EnvironmentValues { var lumiSelected: Bool { get { self[LumiSelectedKey.self] } set { self[LumiSelectedKey.self] = newValue } } }
+extension View { func lumiSelected(_ on: Bool) -> some View { environment(\.lumiSelected, on) } }
+
+/// Pill button: outlined, accent-filled when selected, dark when prominent.
+struct LumiButtonStyle: ButtonStyle {
+    var prominent = false
+    @Environment(\.lumiSelected) private var selected
+    @Environment(\.isEnabled) private var enabled
+    func makeBody(configuration: Configuration) -> some View {
+        let fill: Color = prominent ? LumiColor.selectedPill : (selected ? LumiColor.accent : LumiColor.surface)
+        let ink: Color = prominent ? LumiColor.onSelectedPill : (selected ? LumiColor.onAccent : LumiColor.text)
+        configuration.label
+            .font(LumiFont.chip()).lineLimit(1)
+            .padding(.horizontal, 14).frame(minHeight: LumiShape.minTarget)
+            .foregroundStyle(ink)
+            .background(Capsule().fill(fill))
+            .overlay(Capsule().strokeBorder(selected ? LumiColor.accent : (prominent ? .clear : LumiColor.hairline), lineWidth: 1.5))
+            .opacity(enabled ? (configuration.isPressed ? 0.7 : 1) : 0.4)
     }
 }
-extension View { func lumiGlass(radius: CGFloat = 32) -> some View { modifier(LumiGlass(radius: radius)) } }
