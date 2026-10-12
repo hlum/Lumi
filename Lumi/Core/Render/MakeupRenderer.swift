@@ -146,10 +146,17 @@ enum MakeupRenderer {
 
     // MARK: render
 
-    static func apply(_ p: MakeupParams, to image: CIImage, face: FaceInfo) -> CIImage {
+    /// `parse` (the face-parsing result for this face) gives pixel-exact lips and skin; without it the landmark shapes are used.
+    static func apply(_ p: MakeupParams, to image: CIImage, face: FaceInfo, parse: FaceParse? = nil) -> CIImage {
         guard !p.isIdentity else { return image }
         var out = image
         let size = image.extent.size
+        // skin makeup never lands on hair, brows, eyes, glasses or lips
+        let skinOnly = parse?.mask([.skin, .nose], extent: image.extent, soften: 2)
+        // powder fades out over a wide area: soften spot shapes by a share of the face width
+        let faceSigma = Double(MakeupRenderer.faceBox(face).width * size.width) * 0.07
+        func powder(_ m: CIImage) -> CIImage { m.clampedToExtent().applyingGaussianBlur(sigma: faceSigma).cropped(to: image.extent) }
+        func onSkin(_ m: CIImage) -> CIImage { skinOnly.map { m.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: $0]).cropped(to: image.extent) } ?? m }
         func solid(_ c: RGBA) -> CIImage { CIImage(color: CIColor(red: c.r, green: c.g, blue: c.b)).cropped(to: image.extent) }
         func scaled(_ mask: CIImage, _ k: Double) -> CIImage {
             mask.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: k, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: k, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0)])
@@ -160,9 +167,8 @@ enum MakeupRenderer {
             return m.outputImage?.cropped(to: image.extent) ?? out
         }
 
-        if p.lipOpacity > 0, var lips = lipMask(face, size: size) {
-            lips = lips.clampedToExtent().applyingGaussianBlur(sigma: Double(size.width) * 0.002).cropped(to: lips.extent)
-            let mode = p.lipFinish == .matte ? "CIMultiplyBlendMode" : "CISoftLightBlendMode"
+        if p.lipOpacity > 0, var lips = parse.map({ $0.mask([.upperLip, .lowerLip], extent: image.extent, soften: 2.2) }) ?? lipMask(face, size: size) {
+            if parse == nil { lips = lips.clampedToExtent().applyingGaussianBlur(sigma: Double(size.width) * 0.002).cropped(to: lips.extent) }
             var m = lips
             if p.ombre > 0 {     // fade toward the lip center: inner erode via blur then subtract a share
                 let center = lips.clampedToExtent().applyingGaussianBlur(sigma: Double(size.width) * 0.012).cropped(to: lips.extent)
@@ -171,12 +177,12 @@ enum MakeupRenderer {
                     .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scaled(m, p.ombre)]).cropped(to: lips.extent)
                 m = m.applyingFilter("CIColorClamp")
             }
-            out = tint(p.lipColor, mask: m, opacity: p.lipOpacity, mode: mode)
-            if p.lipFinish == .gloss {
-                out = tint(RGBA.white, mask: lips.clampedToExtent().applyingGaussianBlur(sigma: Double(size.width) * 0.01).cropped(to: lips.extent), opacity: 0.18, mode: "CISoftLightBlendMode")
-            }
+            // colour from the lipstick, light and creases from the lip; teeth are never in the parsed lip mask
+            let painted = LipTint.apply(out, color: p.lipColor, finish: p.lipFinish, meanL: LipTint.meanLuma(out, mask: lips))
+            let f = CIFilter.blendWithMask(); f.inputImage = painted; f.backgroundImage = out; f.maskImage = scaled(m, min(max(p.lipOpacity, 0), 1))
+            out = f.outputImage?.cropped(to: image.extent) ?? out
         }
-        if p.foundation > 0, let skin = SkinMask.make(face: face, size: size, feather: 0.03) {
+        if p.foundation > 0, let skin = (skinOnly ?? SkinMask.make(face: face, size: size, feather: 0.03)) {
             // pull the face toward its own average color and soften, which evens out patches and redness
             let avg = out.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: MakeupRenderer.ciRect(MakeupRenderer.faceBox(face), size: size))])
             var px = [UInt8](repeating: 0, count: 4)
@@ -185,13 +191,13 @@ enum MakeupRenderer {
             out = tint(tone, mask: skin, opacity: p.foundation * 0.6, mode: "CIColorBlendMode")   // tone of the face average, light and texture of the photo
         }
         if p.contour > 0, let m = MakeupRenderer.spotsMask(contourSpots(face), size: size) {
-            out = tint(RGBA(r: 0.45, g: 0.3, b: 0.25, a: 1), mask: m, opacity: p.contour * 0.7, mode: "CIMultiplyBlendMode")
+            out = tint(RGBA(r: 0.45, g: 0.3, b: 0.25, a: 1), mask: onSkin(powder(m)), opacity: p.contour * 0.55, mode: "CIMultiplyBlendMode")
         }
         if p.highlight > 0, let m = MakeupRenderer.spotsMask(highlightSpots(face), size: size) {
-            out = tint(RGBA.white, mask: m, opacity: min(p.highlight * 1.2, 1), mode: "CISoftLightBlendMode")
+            out = tint(RGBA.white, mask: onSkin(powder(m)), opacity: min(p.highlight * 0.9, 1), mode: "CISoftLightBlendMode")
         }
         if p.blushOpacity > 0, let blush = blushMask(face, style: p.blushStyle, size: size) {
-            out = tint(p.blushColor, mask: blush, opacity: p.blushOpacity, mode: "CISoftLightBlendMode")
+            out = tint(p.blushColor, mask: onSkin(powder(blush)), opacity: p.blushOpacity * 0.8, mode: "CISoftLightBlendMode")
         }
         return out
     }

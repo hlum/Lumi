@@ -55,23 +55,24 @@ struct VisionFaceLandmarker: FaceLandmarking {
 
 enum FaceRetouchRender {
     /// Skin, makeup and detail are painted first (landmarks match the source), then the reshape warp moves it all.
-    static func apply(_ r: FaceRetouch, to image: CIImage, faces: [FaceInfo]) -> CIImage {
+    static func apply(_ r: FaceRetouch, to image: CIImage, faces: [FaceInfo], parses: [FaceParse?] = []) -> CIImage {
         guard !r.isIdentity, !faces.isEmpty || !r.blemish.manual.isEmpty else { return image }
         // every mask below is built at the origin; shift a cropped or offset picture there and back so nothing lands misplaced
         let origin = image.extent.origin
         if origin != .zero {
             let there = CGAffineTransform(translationX: -origin.x, y: -origin.y)
-            return apply(r, to: image.transformed(by: there), faces: faces).transformed(by: there.inverted())
+            return apply(r, to: image.transformed(by: there), faces: faces).transformed(by: there.inverted())   // parse windows are in the original coordinates, so they are left out here
         }
         var out = image
         let size = image.extent.size
         if !r.blemish.isIdentity { out = BlemishOps.apply(r.blemish, to: out, faces: faces) }       // spots go first, so smoothing never blurs them in
-        for face in faces {
+        for (i, face) in faces.enumerated() {
+            let parse = i < parses.count ? parses[i] : nil
             if !r.skin.isIdentity, let mask = SkinMask.make(face: face, size: size, feather: 0.02) { out = SkinOps.apply(r.skin, to: out, mask: mask) }
-            if !r.makeup.isIdentity { out = MakeupRenderer.apply(r.makeup, to: out, face: face) }
+            if !r.makeup.isIdentity { out = MakeupRenderer.apply(r.makeup, to: out, face: face, parse: parse) }
             if !r.detail.isIdentity { out = FaceDetailOps.apply(r.detail, to: out, face: face) }
             if r.ratio.shade3D > 0 { out = MakeupRenderer.apply(RatioRules.shading(r.ratio), to: out, face: face) }
-            if !r.eyes.isIdentity { out = EyeMakeupRenderer.apply(r.eyes, to: out, face: face) }
+            if !r.eyes.isIdentity { out = EyeMakeupRenderer.apply(r.eyes, to: out, face: face, parse: parse) }
         }
         let browWarp = (r.eyes.browShape != .natural || r.eyes.browHeight != 0) ? faces.flatMap { EyeMakeupRenderer.browStrokes($0, shape: r.eyes.browShape, height: r.eyes.browHeight) } : []
         if !r.reshape.isIdentity || r.ratio.warps || !r.shape.isIdentity || !browWarp.isEmpty {

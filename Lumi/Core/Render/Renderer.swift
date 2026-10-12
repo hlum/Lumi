@@ -44,6 +44,17 @@ enum Renderer {
         private(set) var inpaintCalls = 0
         private(set) var keysSeen: [String] = []
         init(inpainter: Inpainting? = nil) { self.inpainter = inpainter }
+        private var values: [String: Any] = [:]
+        /// Same as `cached` for model results that aren't images (a face parse).
+        func cachedValue<T>(_ key: String, _ make: () throws -> T?) rethrows -> T? {
+            let hit: T? = lock.withLock { values[key] as? T }
+            if let hit { return hit }
+            if deferMissesOnMain, Thread.isMainThread { lock.withLock { _missed = true }; return nil }
+            guard let v = try make() else { return nil }
+            lock.withLock { if values.count > 16 { values.removeAll() }; values[key] = v }
+            return v
+        }
+
         func cached(_ key: String, _ make: () throws -> CIImage?) rethrows -> CIImage? {
             let hit: CIImage? = lock.withLock { keysSeen.append(key); return cache[key] }
             if let hit { return hit }
@@ -59,6 +70,10 @@ enum Renderer {
     nonisolated(unsafe) static var services = Services()
 
     static func render(_ frame: CIImage, document: EditDocument) -> CIImage {
+        // every cache key below names the source photo, so two photos of the same size never share faces, masks or fills
+        let thread = Thread.current.threadDictionary, previous = thread[sourceKey]
+        thread[sourceKey] = sourceID(frame)
+        defer { thread[sourceKey] = previous }
         var img = frame
         var beforeFilter: CIImage?
         for (i, op) in document.operations.enumerated() {
@@ -154,7 +169,12 @@ enum Renderer {
         let faces: [FaceInfo]
         if let c = services.faceCache, c.key == key { faces = c.faces }
         else { faces = (try? finder.faces(in: image)) ?? []; services.remember(faces: faces, key: key) }
-        return FaceRetouchRender.apply(f, to: image, faces: faces)
+        // pixel-exact lips, skin, brows and eyes for makeup: one face-parsing pass per face, cached like the other model results
+        var parses: [FaceParse?] = []
+        if !f.makeup.isIdentity || !f.eyes.isIdentity {
+            parses = faces.enumerated().map { i, face in (try? services.cachedValue("parse|\(i)|" + key) { try FaceParser().parse(image, faceBox: face.box) }) ?? nil }
+        }
+        return FaceRetouchRender.apply(f, to: image, faces: faces, parses: parses)
     }
 
     /// Layers flagged "behind subject" need the subject mask; it is found once per (image, earlier ops) and reused.
@@ -208,7 +228,27 @@ enum Renderer {
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {
         let enc = JSONEncoder(); enc.outputFormatting = [.sortedKeys]
         let digest = SHA256.hash(data: (try? enc.encode(prefix)) ?? Data())
-        return "\(image.extent.size)|" + digest.map { String(format: "%02x", $0) }.joined()
+        let source = Thread.current.threadDictionary[sourceKey] as? String ?? "-"
+        return "\(source)|\(image.extent.size)|" + digest.map { String(format: "%02x", $0) }.joined()
+    }
+
+    private static let sourceKey = "lumi.render.source"
+    nonisolated(unsafe) private static var sourceIDs = NSMapTable<CIImage, NSString>(keyOptions: .weakMemory, valueOptions: .strongMemory)
+    private static let sourceLock = NSLock()
+
+    /// A fingerprint of the photo's pixels (an 8x8 thumbnail), remembered per image object.
+    static func sourceID(_ frame: CIImage) -> String {
+        if let known = sourceLock.withLock({ sourceIDs.object(forKey: frame) }) { return known as String }
+        let e = frame.extent
+        var id = "\(e.size)"
+        if e.width > 0, e.height > 0, !e.isInfinite {
+            let thumb = frame.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY).scaledBy(x: 8 / e.width, y: 8 / e.height))
+            var px = [UInt8](repeating: 0, count: 8 * 8 * 4)
+            CIContext(options: [.workingColorSpace: NSNull()]).render(thumb, toBitmap: &px, rowBytes: 32, bounds: CGRect(x: 0, y: 0, width: 8, height: 8), format: .RGBA8, colorSpace: nil)
+            id += "|" + SHA256.hash(data: Data(px)).prefix(8).map { String(format: "%02x", $0) }.joined()
+        }
+        sourceLock.withLock { sourceIDs.setObject(id as NSString, forKey: frame) }
+        return id
     }
 
     /// Runs the inpainter once per (operations so far, image size); later renders reuse the result.

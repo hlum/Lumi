@@ -5,6 +5,8 @@ import Testing
 @Suite(.serialized)
 struct DiffusionTests {
     static let modelDir = DiffusionInpainter.directory()
+    /// The real pipeline needs ~3 GB and half a minute: only when asked for (touch Documents/run_sd on the phone).
+    static let runModel = modelDir != nil && FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/run_sd")
 
     @Test func timestepsRunFromNoisyToCleanWithTheOffset() {
         let s = DDIMScheduler(steps: 20)
@@ -73,7 +75,7 @@ struct DiffusionTests {
         #expect(t.encode("").count == 77 && t.encode("").allSatisfy { $0 == 49406 || $0 == 49407 })
     }
 
-    @Test(.enabled(if: DiffusionTests.modelDir != nil)) func fillsAHoleWithTheSurroundingsWhenTheModelIsInstalled() throws {
+    @Test(.enabled(if: DiffusionTests.runModel)) func fillsAHoleWithTheSurroundingsWhenTheModelIsInstalled() throws {
         // a long test run leaves too little memory: the pipeline then refuses (and the app falls back to LaMa) instead of letting the GPU abort
         guard DiffusionInpainter.hasRoom else { #expect(throws: InpaintError.self) { try DiffusionInpainter(directory: DiffusionTests.modelDir!).inpaint(CIImage(color: .white).cropped(to: CGRect(x: 0, y: 0, width: 64, height: 64)), mask: CIImage(color: .white).cropped(to: CGRect(x: 0, y: 0, width: 64, height: 64))) }; return }
         let rect = CGRect(x: 0, y: 0, width: 512, height: 512)
@@ -90,7 +92,7 @@ struct DiffusionTests {
     }
 
     /// Looks at a real photo when one has been copied to the app's Documents (not part of the normal run).
-    @Test(.enabled(if: DiffusionTests.modelDir != nil && FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/sd_input.jpg"))) func fillsAHoleInARealPhoto() throws {
+    @Test(.enabled(if: DiffusionTests.runModel && FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/sd_input.jpg"))) func fillsAHoleInARealPhoto() throws {
         guard DiffusionInpainter.hasRoom else { return }
         let docs = URL(fileURLWithPath: NSHomeDirectory() + "/Documents")
         let photo = try #require(CIImage(contentsOf: docs.appendingPathComponent("sd_input.jpg")))

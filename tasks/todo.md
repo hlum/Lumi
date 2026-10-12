@@ -28,7 +28,7 @@ Lumi is a personal app that will not be released, so research/non-commercial mod
 - [x] Q1 Constrained mesh-warp engine (rigid MLS, 1/d⁴ weights, pins, local solve; `MLSWarp`). Line-preserving energy pass deferred until the body bench needs it
 - [~] Q2 Face reshape on the new engine (chin, jaw, V shape, width, cheekbones, lift, eyes, nose, mouth done in `FaceHandles`; Eyes/Nose/Mouth/Brows detail tabs and forehead still on brushes)
 - [~] Q3 Body reshape on the new engine (`BodyHandles`: mask edges per part, arm/torso separation, pins outside the outline, leg length stretches whole rows; side views and seated poses still weak)
-- [ ] Q4 Makeup on face parsing (pixel masks, luminance-preserving colour, finishes, occlusion)
+- [~] Q4 Makeup on face parsing (`FaceParser`, `LipTint` kernel: parsed lips/brows/skin, teeth and hair excluded, light-preserving colour, matte/satin/gloss; soft powder; still to do: skin-tone-adaptive strength, ombre on parsed lips, eye shadow shape)
 - [ ] Q5 Dense face landmarks (MediaPipe 478)
 - [ ] Q6 3D body shape fit (SMPL-X) for weight/shape sliders
 - [ ] Q7 Learned body-reshape flow (BR-5K model) as a second engine, compared on the bench

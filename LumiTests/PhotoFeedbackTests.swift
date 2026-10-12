@@ -137,3 +137,12 @@ struct BodyJointNameTests {
         #expect(VisionBodyFinder.names[.leftHip] == "left_hip_1_joint" && VisionBodyFinder.names[.leftKnee] == "left_knee_1_joint")
     }
 }
+
+struct RenderCacheKeyTests {
+    @Test func twoPhotosOfTheSameSizeGetDifferentKeys() {
+        let r = CGRect(x: 0, y: 0, width: 64, height: 48)
+        let a = CIImage(color: .red).cropped(to: r), b = CIImage(color: .blue).cropped(to: r)
+        #expect(Renderer.sourceID(a) != Renderer.sourceID(b))
+        #expect(Renderer.sourceID(a) == Renderer.sourceID(a))
+    }
+}

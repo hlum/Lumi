@@ -73,7 +73,8 @@ enum RecreateLook {
         var px = [UInt8](repeating: 0, count: Int(e.width) * Int(e.height) * 4)
         ctx.render(image, toBitmap: &px, rowBytes: Int(e.width) * 4, bounds: e, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
         var r = 0.0, g = 0.0, b = 0.0, n = 0.0
-        for i in 0..<m.count where m[i] > 128 { r += Double(px[i * 4]); g += Double(px[i * 4 + 1]); b += Double(px[i * 4 + 2]); n += 1 }
+        // weighted by the mask, so soft masks (a shadow fading toward the brow) count their strong part most
+        for i in 0..<m.count where m[i] > 32 { let w = Double(m[i]) / 255; r += w * Double(px[i * 4]); g += w * Double(px[i * 4 + 1]); b += w * Double(px[i * 4 + 2]); n += w }
         guard n > 3 else { return nil }
         return RGBA(r: r / n / 255, g: g / n / 255, b: b / n / 255, a: 1)
     }

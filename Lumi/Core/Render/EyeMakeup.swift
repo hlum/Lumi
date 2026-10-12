@@ -63,7 +63,13 @@ enum EyeMakeupRenderer {
         // a band that follows the upper lid and rises about half an eye-width above it
         let band = lid + lid.reversed().map { CGPoint(x: $0.x, y: $0.y - w * 0.5) }
         let m = draw(size: size) { ctx, px in
-            ctx.setFillColor(gray: 1, alpha: 1); ctx.addLines(between: band.map(px)); ctx.closePath(); ctx.fillPath()
+            // strongest at the lash line, fading toward the brow, like a brushed shadow
+            ctx.saveGState(); ctx.addLines(between: band.map(px)); ctx.closePath(); ctx.clip()
+            let low = lid.map(\.y).max() ?? 0, high = (lid.map(\.y).min() ?? 0) - w * 0.5
+            if let g = CGGradient(colorSpace: CGColorSpaceCreateDeviceGray(), colorComponents: [1, 1, 0.85, 1, 0, 1], locations: [0, 0.6, 1], count: 3) {
+                ctx.drawLinearGradient(g, start: px(CGPoint(x: lid[0].x, y: low)), end: px(CGPoint(x: lid[0].x, y: high)), options: [])
+            }
+            ctx.restoreGState()
             // the eyeball itself stays clear
             ctx.setFillColor(gray: 0, alpha: 1); ctx.addLines(between: eye.map(px)); ctx.closePath(); ctx.fillPath()
         }
@@ -139,19 +145,27 @@ enum EyeMakeupRenderer {
     }
 
     /// Paints shadow, liner, lashes and brow color. (Brow shape and height are warp strokes: see `browStrokes`.)
-    static func apply(_ m: EyeMakeup, to image: CIImage, face: FaceInfo) -> CIImage {
+    static func apply(_ m: EyeMakeup, to image: CIImage, face: FaceInfo, parse: FaceParse? = nil) -> CIImage {
         guard !m.isIdentity else { return image }
+        // with the parsed face: shadow stays off the eyes and brows, and the brow colour follows the real brow hairs
+        let keepClear = parse?.mask([.leftBrow, .rightBrow], extent: image.extent, soften: 1.5)   // the parsed "eye" includes the lids, where shadow belongs
+        func clear(_ mask: CIImage) -> CIImage {
+            guard let keepClear else { return mask }
+            return keepClear.applyingFilter("CIColorInvert").applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: mask]).cropped(to: image.extent)
+        }
         let size = image.extent.size
         var out = image
         for (region, side) in [("leftEye", m.left), ("rightEye", m.right)] where !side.isIdentity {
             let eye = FaceReshape.points(face, region)
             guard eye.count >= 3 else { continue }
-            if side.shadow > 0, let mask = shadowMask(eye, size: size) { out = paint(side.shadowColor, over: out, mask: mask, opacity: side.shadow * 0.8, mode: "CIMultiplyBlendMode") }
+            if side.shadow > 0, let mask = shadowMask(eye, size: size) { out = paint(side.shadowColor, over: out, mask: clear(mask), opacity: side.shadow * 0.8, mode: "CIMultiplyBlendMode") }
             let outerRight = (FaceReshape.center(eye)?.x ?? 0) > MakeupRenderer.faceBox(face).midX
             if side.liner > 0, let mask = linerMask(eye, size: size, thickness: side.liner, style: side.linerStyle, outerRight: outerRight) { out = paint(RGBA(r: 0.05, g: 0.03, b: 0.03, a: 1), over: out, mask: mask, opacity: min(side.liner * (side.linerStyle == .smudged ? 1.1 : 1.4), 1), mode: "CISourceOverCompositing") }
             if side.lashes > 0, let mask = linerMask(eye, size: size, thickness: 0.4 + side.lashes * 0.6, style: .wing, outerRight: outerRight) { out = paint(RGBA(r: 0.02, g: 0.02, b: 0.02, a: 1), over: out, mask: mask, opacity: side.lashes, mode: "CISourceOverCompositing") }
         }
-        if m.browOpacity > 0 {
+        if m.browOpacity > 0, let parse {
+            out = paint(m.browColor, over: out, mask: parse.mask([.leftBrow, .rightBrow], extent: image.extent, soften: 1), opacity: m.browOpacity, mode: "CISoftLightBlendMode")
+        } else if m.browOpacity > 0 {
             for region in ["leftEyebrow", "rightEyebrow"] {
                 if let mask = browMask(FaceReshape.points(face, region), size: size) { out = paint(m.browColor, over: out, mask: mask, opacity: m.browOpacity, mode: "CISoftLightBlendMode") }
             }

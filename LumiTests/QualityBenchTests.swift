@@ -9,7 +9,9 @@ import UIKit
 struct QualityBenchTests {
     static let docs = URL(fileURLWithPath: NSHomeDirectory() + "/Documents")
     static let bench = docs.appendingPathComponent("bench"), out = docs.appendingPathComponent("bench_out")
-    static var photos: [URL] { ((try? FileManager.default.contentsOfDirectory(at: bench, includingPropertiesForKeys: nil)) ?? []).filter { $0.pathExtension == "jpg" }.sorted { $0.path < $1.path } }
+    /// The bench runs only when armed by `scripts/bench.sh push` (it is slow and heavy; `pull` disarms it).
+    static var armed: Bool { (try? String(contentsOf: bench.appendingPathComponent("RUN"), encoding: .utf8))?.hasPrefix("1") == true }
+    static var photos: [URL] { !armed ? [] : ((try? FileManager.default.contentsOfDirectory(at: bench, includingPropertiesForKeys: nil)) ?? []).filter { $0.pathExtension == "jpg" }.sorted { $0.path < $1.path } }
     static let ctx = CIContext()
 
     struct Tile { var label: String; var image: CIImage; var marks: (CGContext, CGSize) -> Void = { _, _ in } }
@@ -119,5 +121,35 @@ struct QualityBenchTests {
             if let lama = try? LaMaInpainter() { tiles.append(Tile(label: "waist+hips, protected", image: BodyRetouchRender.apply(b, to: proxy, poses: poses, personMask: mask, inpainter: lama))) }
             try Self.write(Self.sheet(tiles, height: 520, columns: 6), "\(name)_body")
         }
+    }
+
+    @Test(.enabled(if: !QualityBenchTests.photos.filter { $0.lastPathComponent.hasPrefix("face_") }.isEmpty)) func faceParsingSheet() throws {
+        let palette: [FacePart: UIColor] = [.skin: .orange, .leftBrow: .brown, .rightBrow: .brown, .leftEye: .cyan, .rightEye: .cyan, .glasses: .purple, .nose: .yellow,
+                                            .mouth: .white, .upperLip: .red, .lowerLip: .magenta, .hair: .blue, .leftEar: .green, .rightEar: .green, .neck: .gray, .hat: .black]
+        var tiles: [Tile] = []
+        for url in Self.photos where url.lastPathComponent.hasPrefix("face_") {
+            guard let photo = CIImage(contentsOf: url, options: [.applyOrientationProperty: true]) else { continue }
+            let proxy = Renderer.proxy(photo, maxDimension: 900)
+            guard let box = ((try? Renderer.services.faceFinder?.faceBoxes(in: proxy)) ?? []).first else { continue }
+            let parse = try FaceParser().parse(proxy, faceBox: box)
+            var over = proxy
+            for (part, color) in palette {
+                let m = parse.mask([part], extent: proxy.extent, soften: 0)
+                let tint = CIImage(color: CIColor(color: color.withAlphaComponent(0.55))).cropped(to: proxy.extent)
+                over = tint.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: over, kCIInputMaskImageKey: m]).cropped(to: proxy.extent)
+            }
+            let label = url.deletingPathExtension().lastPathComponent.replacingOccurrences(of: "face_", with: "") + String(format: " lips %.3f teeth %.3f", parse.fraction(.upperLip) + parse.fraction(.lowerLip), parse.fraction(.mouth))
+            tiles.append(Tile(label: label, image: over))
+        }
+        try Self.write(Self.sheet(tiles, height: 420, columns: 5), "parsing")
+    }
+
+    @Test(.enabled(if: QualityBenchTests.armed)) func eyeShadowMask() throws {
+        let photo = try #require(CIImage(contentsOf: Self.bench.appendingPathComponent("face_light_woman.jpg"), options: [.applyOrientationProperty: true]))
+        let proxy = Renderer.proxy(photo, maxDimension: 900)
+        let face = try #require(try Renderer.services.faceLandmarker?.faces(in: proxy).first)
+        let eye = FaceReshape.points(face, "leftEye")
+        let mask = try #require(EyeMakeupRenderer.shadowMask(eye, size: proxy.extent.size))
+        try Self.write(Self.sheet([Tile(label: "shadow mask", image: Self.crop(mask, around: eye, pad: 1.5))], height: 360, columns: 1), "eyeshadow_mask")
     }
 }
