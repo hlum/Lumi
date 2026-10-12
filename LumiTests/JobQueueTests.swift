@@ -16,7 +16,7 @@ struct JobQueueTests {
 
     @Test func progressIsReportedAndClamped() async {
         let c = JobCenter()
-        let id = c.submit("p") { h in h.progress(0.4); try await Task.sleep(for: .milliseconds(400)); h.progress(7) }
+        let id = c.submit("p") { h in h.progress(0.4); try await Task.sleep(for: .seconds(2)); h.progress(7) }
         for _ in 0..<80 where c.jobs.first(where: { $0.id == id })?.progress != 0.4 { try? await Task.sleep(for: .milliseconds(10)) }   // wait for the report, however loaded the device is
         #expect(c.jobs.first { $0.id == id }?.progress == 0.4)
         await c.idle()

@@ -98,26 +98,44 @@ extension EditorView {
 }
 
 struct AdjustPanel: View {
+    enum Group: String, CaseIterable {
+        case light = "Light", color = "Color", detail = "Detail", finish = "Finish"
+        var keys: [AdjustParams.Key] {
+            switch self {
+            case .light: [.exposure, .brightness, .contrast, .highlights, .shadows, .whites, .blacks]
+            case .color: [.temperature, .tint, .vibrance, .saturation]
+            case .detail: [.texture, .clarity, .dehaze, .sharpen]
+            case .finish: [.vignette, .fade, .grain]
+            }
+        }
+    }
     @Bindable var model: EditorModel
-    @State private var key = AdjustParams.Key.brightness
+    @State private var group = Group.light
 
     var body: some View {
-        VStack {
+        VStack(spacing: 4) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     ForEach(AdjustParams.presets.keys.sorted(), id: \.self) { name in
                         Button(name.capitalized) { model.edit { $0.adjust = AdjustParams.presets[name]! } }.buttonStyle(.bordered)
                     }
+                    Button("Reset all", systemImage: "arrow.counterclockwise") { model.edit { $0.adjust = AdjustParams() } }.buttonStyle(.bordered).disabled(model.draft.adjust.isIdentity)
                 }.padding(.horizontal)
             }
-            Picker("Setting", selection: $key) { ForEach(AdjustParams.Key.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) } }
-                .pickerStyle(.menu)
-            HStack {
-                Slider(value: Binding(get: { model.draft.adjust[key] }, set: { model.draft.adjust[key] = $0 }),
-                       in: key.range) { editing in if !editing { model.commit() } }
-                Button("Reset", systemImage: "arrow.counterclockwise") { model.edit { $0.adjust.reset(key) } }
-                    .labelStyle(.iconOnly).disabled(model.draft.adjust[key] == 0)
-            }.padding(.horizontal)
+            Picker("Group", selection: $group) { ForEach(Group.allCases, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(group.keys, id: \.self) { key in
+                        HStack(spacing: 8) {
+                            Text(LocalizedStringKey(key.rawValue.capitalized)).font(.caption).frame(width: 78, alignment: .leading)
+                            Slider(value: Binding(get: { model.draft.adjust[key] }, set: { model.draft.adjust[key] = $0 }), in: key.range) { editing in if !editing { model.commit() } }
+                            // shown as -100...100 like other editors; double tap resets
+                            Text(String(Int((model.draft.adjust[key] * 100).rounded()))).font(.caption.monospacedDigit()).frame(width: 34, alignment: .trailing)
+                                .onTapGesture(count: 2) { model.edit { $0.adjust.reset(key) } }
+                        }.padding(.horizontal).accessibilityElement(children: .combine)
+                    }
+                }
+            }
         }
     }
 }
