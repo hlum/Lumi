@@ -107,9 +107,9 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T55 Recipes
 - [~] T56 Batch edit
 - [~] T57 Collage templates
-- [ ] T58 Freeform, split, seamless collage
+- [~] T58 Freeform, split, seamless collage
 - [~] T59 Long stitch and screenshot stitch
-- [ ] T60 Materials, templates, wallpapers
+- [~] T60 Materials, templates, wallpapers
 - [ ] ⏸ Checkpoint 8
 
 **Phase 9: Camera**
