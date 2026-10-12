@@ -95,6 +95,7 @@
 		77511270278CA352D3264608 /* ToolCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32D907B200F01A399C6B4A8 /* ToolCatalogTests.swift */; };
 		7790F3D91D0795A7FAAA5488 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6FD85211E45314EB0ED25 /* EditorView.swift */; };
 		79FF034FB18F4F413E86370E /* VideoComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7233467637F2A94C45646F28 /* VideoComposer.swift */; };
+		7AA524A4125D1382DC51BC7C /* NailRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B94088F944D9709DDB10F4 /* NailRegions.swift */; };
 		7AB2BC445A4AF8ABE80F6BF8 /* OldPhotoRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788DF2261AEB09E177FF9289 /* OldPhotoRestore.swift */; };
 		7B45FDCE5160357EDE5D6CC3 /* OldPhotoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66CACA5EFDB0052A871CB79 /* OldPhotoTests.swift */; };
 		7CCE26ACDB38E30D8CD65959 /* IDSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5107722F421BA333413EB76 /* IDSpecTests.swift */; };
@@ -178,6 +179,7 @@
 		EC92C4B2F0B935E419CA2FE9 /* WarpBrushTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF973DC6AA690593AEA1A9C0 /* WarpBrushTests.swift */; };
 		ECA917048D902CA3547F60D5 /* VideoComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21ABBB579D51544D0B17726 /* VideoComposerTests.swift */; };
 		ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */; };
+		F13D0CC4FEA21D598C819C24 /* NailRegionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F8FC563B28512D074DF857 /* NailRegionsTests.swift */; };
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
 		F30F07E38EDD31513B6F456A /* UpscalerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */; };
 		F4EB922F3593D5A9D7BC4031 /* FrameOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7449BB3478E8BCC8F1A69434 /* FrameOps.swift */; };
@@ -302,6 +304,7 @@
 		85BBA9DDFE9AD6D53BCDDA41 /* VideoEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		86DACCEA338C9DDD79BE140D /* VideoEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
 		88772FDC0AE6F2EB3C080BAA /* id-specs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "id-specs.json"; sourceTree = "<group>"; };
+		89B94088F944D9709DDB10F4 /* NailRegions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NailRegions.swift; sourceTree = "<group>"; };
 		8A1E35B7E5DEA809FB0AA0FA /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		8A84271AE2975CD30F866726 /* ResizeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeTests.swift; sourceTree = "<group>"; };
 		8C21D2081DEB7065DD17200A /* GIFMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFMaker.swift; sourceTree = "<group>"; };
@@ -314,6 +317,7 @@
 		936C1AF23918152C57AE4A68 /* AdjustOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustOps.swift; sourceTree = "<group>"; };
 		946BE4AEBA63A41DA8303669 /* FaceReshapeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReshapeTests.swift; sourceTree = "<group>"; };
 		95EB1B596C23861FE0CBE17A /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		95F8FC563B28512D074DF857 /* NailRegionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NailRegionsTests.swift; sourceTree = "<group>"; };
 		9695B325C436F8ED8E7CC5BB /* RecipeLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeLibraryTests.swift; sourceTree = "<group>"; };
 		97E2F88951C047018D76E36B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		98A35D36608CEFCA9D306681 /* IDSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDSpecs.swift; sourceTree = "<group>"; };
@@ -618,6 +622,7 @@
 			children = (
 				AD4A66AD237D031E560D4083 /* AnalysisCache.swift */,
 				4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */,
+				89B94088F944D9709DDB10F4 /* NailRegions.swift */,
 				B811579D45E6D169E012A01C /* SkinMask.swift */,
 				13A63C89407FE7AD33C7ED2A /* Smoothing.swift */,
 				9F91992465D157A7E3AB46D7 /* SpotDetector.swift */,
@@ -786,6 +791,7 @@
 				73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */,
 				5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */,
 				34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */,
+				95F8FC563B28512D074DF857 /* NailRegionsTests.swift */,
 				C66CACA5EFDB0052A871CB79 /* OldPhotoTests.swift */,
 				6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */,
 				2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */,
@@ -1100,6 +1106,7 @@
 				14DAF77265B638DB6BC2BCEA /* MetalPreviewView.swift in Sources */,
 				F7840F7A78F842A9518A303C /* MosaicConfig.swift in Sources */,
 				46364E99557352F8FD9CC391 /* MosaicOps.swift in Sources */,
+				7AA524A4125D1382DC51BC7C /* NailRegions.swift in Sources */,
 				7AB2BC445A4AF8ABE80F6BF8 /* OldPhotoRestore.swift in Sources */,
 				088FCC0C3D051A929590020B /* OutlineOps.swift in Sources */,
 				AB4ADA92DA72CD7279D86656 /* OverlapFinder.swift in Sources */,
@@ -1190,6 +1197,7 @@
 				30D91C257C34D1091A684B33 /* MeshWarpRendererTests.swift in Sources */,
 				0FD4B6E6528FF12F415776A6 /* MeshWarpTests.swift in Sources */,
 				0F186A6F26C5A5750AA2FC7E /* MosaicWatermarkRenderTests.swift in Sources */,
+				F13D0CC4FEA21D598C819C24 /* NailRegionsTests.swift in Sources */,
 				7B45FDCE5160357EDE5D6CC3 /* OldPhotoTests.swift in Sources */,
 				73162FAF45A4B6259C2BCF30 /* OverlapFinderTests.swift in Sources */,
 				9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */,
