@@ -37,7 +37,7 @@ enum EditorTool: String, CaseIterable, Identifiable {
     /// Tools shown in a category's grid, in order. Export is reached from Save.
     static func tools(in c: EditorCategory) -> [EditorTool] {
         switch c {
-        case .edit: [.crop, .adjust, .filter, .color, .relight, .text, .sticker, .remove, .cutout, .effects, .clean, .enhance, .frame, .doodle, .mosaic, .mark]
+        case .edit: [.crop, .adjust, .filter, .color, .relight, .text, .sticker, .remove, .cutout, .effects, .enhance, .frame, .doodle, .mosaic, .mark]
         case .retouch: [.autoBeauty, .skin, .reshape, .blemish, .eyesTeeth, .underEye]
         case .body: [.body, .liquify]
         case .hair: [.hair]
@@ -168,7 +168,9 @@ struct EditorView: View {
                 case .clean: if let o = original { CleanBrushOverlay(model: model, imageSize: o) }
                 case .liquify: if let o = original { LiquifyOverlay(model: model, imageSize: o) }
                 case .doodle: if let o = original { DoodleOverlay(model: model, imageSize: o) }
-                case .remove: if let r = model.remover, let o = original { RemoverOverlay(remover: r, imageSize: o) }
+                case .remove:
+                    if model.cloneActive, let o = original { CleanBrushOverlay(model: model, imageSize: o) }
+                    else if let r = model.remover, let o = original { RemoverOverlay(remover: r, imageSize: o) }
                 default: EmptyView()
                 }
             }

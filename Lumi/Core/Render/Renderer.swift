@@ -19,6 +19,7 @@ enum Renderer {
         var faceFinder: FaceFinding?
         var textFinder: TextFinding?
         var peopleFinder: PeopleFinding?
+        var objectFinder: ObjectFinding?
         var hairMasker: HairMasking?
         var upscaler: Upscaling?
         var colorizer: Colorizing?

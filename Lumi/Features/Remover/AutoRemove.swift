@@ -26,6 +26,25 @@ struct VisionPeopleFinder: PeopleFinding {
     }
 }
 
+/// Things in the photo that are not people: found as foreground instances that no person covers.
+protocol ObjectFinding { func objects(in image: CIImage, people: [PersonInstance]) throws -> [PersonInstance] }
+
+struct VisionObjectFinder: ObjectFinding {
+    func objects(in image: CIImage, people: [PersonInstance]) throws -> [PersonInstance] {
+        let req = VNGenerateForegroundInstanceMaskRequest()
+        let handler = VNImageRequestHandler(ciImage: image)
+        try handler.perform([req])
+        guard let obs = req.results?.first else { return [] }
+        let found: [PersonInstance] = try obs.allInstances.compactMap { idx in
+            let buf = try obs.generateScaledMaskForImage(forInstances: IndexSet(integer: idx), from: handler)
+            let mask = CIImage(cvPixelBuffer: buf).cropped(to: image.extent)
+            guard let b = MaskBounds.normalizedBounds(of: mask) else { return nil }
+            return PersonInstance(mask: mask, box: b)
+        }
+        return AutoRemove.objects(from: found, excluding: people)
+    }
+}
+
 enum MaskBounds {
     /// Bounding box of the white area, normalized with a bottom-left origin; nil if empty.
     static func normalizedBounds(of mask: CIImage) -> CGRect? {
@@ -50,6 +69,17 @@ enum AutoRemove {
     private static func score(_ p: PersonInstance) -> Double {
         let dx = Double(p.box.midX) - 0.5, dy = Double(p.box.midY) - 0.5
         return p.area * (1 - min((dx * dx + dy * dy).squareRoot(), 0.7))
+    }
+
+    /// Instances that are not (mostly) a person. Overlap is measured on the boxes.
+    static func objects(from instances: [PersonInstance], excluding people: [PersonInstance], overlap: Double = 0.5) -> [PersonInstance] {
+        instances.filter { inst in
+            !people.contains { p in
+                let i = inst.box.intersection(p.box)
+                guard !i.isNull, inst.area > 0 else { return false }
+                return Double(i.width * i.height) / inst.area > overlap
+            }
+        }
     }
 
     static func passersBy(_ people: [PersonInstance]) -> [PersonInstance] {

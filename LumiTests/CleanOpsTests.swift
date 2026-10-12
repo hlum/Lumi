@@ -1,4 +1,5 @@
 import CoreImage
+import CoreImage
 import Testing
 @testable import Lumi
 
@@ -49,5 +50,35 @@ struct CleanOpsTests {
         #expect(back.clean.denoise == 0.4)
         d.clean = CleanConfig()
         #expect(d.operations.isEmpty)
+    }
+}
+
+struct MaskDilationTests {
+    @Test func growsEverySideByTheRadiusAndStopsAtTheEdges() {
+        var m = MaskCanvas(width: 20, height: 20)
+        m.fill(rect: CGRect(x: 9, y: 9, width: 2, height: 2))
+        let d = m.dilated(by: 3)
+        #expect(d[6, 9] == 255 && d[13, 10] == 255 && d[9, 6] == 255 && d[10, 13] == 255 && d[6, 6] == 255)
+        #expect(d[5, 9] == 0 && d[14, 9] == 0 && d[9, 5] == 0 && d[9, 14] == 0)
+        var edge = MaskCanvas(width: 10, height: 10); edge.fill(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        let e = edge.dilated(by: 4)
+        #expect(e[4, 0] == 255 && e[0, 4] == 255 && e[5, 0] == 0)
+    }
+
+    @Test func emptyMasksAndZeroRadiusAreUnchanged() {
+        let m = MaskCanvas(width: 8, height: 8)
+        #expect(m.dilated(by: 5) == m)
+        var f = MaskCanvas(width: 8, height: 8); f.fill(rect: CGRect(x: 2, y: 2, width: 2, height: 2))
+        #expect(f.dilated(by: 0) == f)
+    }
+
+    @Test func objectsExcludeAnythingMostlyCoveredByAPerson() {
+        func inst(_ r: CGRect) -> PersonInstance { PersonInstance(mask: CIImage(color: .white).cropped(to: CGRect(x: 0, y: 0, width: 4, height: 4)), box: r) }
+        let person = inst(CGRect(x: 0.1, y: 0.1, width: 0.4, height: 0.8))
+        let bag = inst(CGRect(x: 0.15, y: 0.4, width: 0.1, height: 0.1))          // inside the person
+        let bench = inst(CGRect(x: 0.6, y: 0.1, width: 0.3, height: 0.2))
+        let out = AutoRemove.objects(from: [person, bag, bench], excluding: [person])
+        #expect(out == [bench])
+        #expect(AutoRemove.objects(from: [bench], excluding: []) == [bench])
     }
 }

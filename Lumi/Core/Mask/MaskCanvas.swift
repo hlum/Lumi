@@ -54,6 +54,29 @@ struct MaskCanvas: Codable, Equatable {
 
     mutating func invert() { pixels = pixels.map { 255 - $0 } }
 
+    /// The mask grown by `radius` pixels in every direction (a square window, done as two passes).
+    func dilated(by radius: Int) -> MaskCanvas {
+        guard radius > 0, !isEmpty else { return self }
+        var horizontal = pixels
+        for y in 0..<height {
+            let row = y * width
+            for x in 0..<width {
+                var m: UInt8 = 0
+                for dx in max(0, x - radius)...min(width - 1, x + radius) { m = max(m, pixels[row + dx]) }
+                horizontal[row + x] = m
+            }
+        }
+        var out = self
+        for x in 0..<width {
+            for y in 0..<height {
+                var m: UInt8 = 0
+                for dy in max(0, y - radius)...min(height - 1, y + radius) { m = max(m, horizontal[dy * width + x]) }
+                out.pixels[y * width + x] = m
+            }
+        }
+        return out
+    }
+
     mutating func union(_ other: MaskCanvas) {
         precondition(other.width == width && other.height == height)
         for i in pixels.indices { pixels[i] = max(pixels[i], other.pixels[i]) }

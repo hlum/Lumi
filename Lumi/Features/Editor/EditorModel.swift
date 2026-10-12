@@ -45,6 +45,8 @@ final class EditorModel {
     /// Which part of the face the slider in use works on; the preview outlines it. Cleared shortly after the slider is released.
     var activeMark: FaceMark?
     var lightEraserActive = false
+    /// The Remove tool's Clone tab is open, so painting on the photo clones instead of removing.
+    var cloneActive = false
     /// Move preview: the picture as it looks now, played through a slow camera move.
     private(set) var motion: AnimatePhoto?
     private var motionFrame: CIImage?
