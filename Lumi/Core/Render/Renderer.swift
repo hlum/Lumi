@@ -23,6 +23,8 @@ enum Renderer {
         var upscaler: Upscaling?
         var colorizer: Colorizing?
         var faceLandmarker: FaceLandmarking?
+        var bodyFinder: BodyFinding?
+        fileprivate var bodyCache: (key: String, poses: [[String: CGPoint]])?
         /// Last detected faces, kept so slider drags don't re-run detection every frame.
         fileprivate var faceCache: (key: String, faces: [FaceInfo])?
         private(set) var faceCacheKeyCount = 0
@@ -64,6 +66,7 @@ enum Renderer {
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
             case .clean(let c): img = CleanOps.apply(c, to: img)
+            case .body(let b): img = bodyRetouched(b, from: img, prefix: Array(document.operations[0..<i]))
             case .hair(let h): img = hairRetouched(h, from: img, prefix: Array(document.operations[0..<i]))
             case .face(let f): img = retouched(f, from: img, prefix: Array(document.operations[0..<i]))
             case .grade(let g): img = g.lut().apply(to: img)
@@ -139,6 +142,16 @@ enum Renderer {
             mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil
         }
         return LayerRenderer.render(stack, over: image, subjectMask: mask)
+    }
+
+    static func bodyRetouched(_ b: BodyRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard !b.isIdentity, let finder = services.bodyFinder else { return image }
+        let key = "body|" + cacheKey(image, prefix)
+        let poses: [[String: CGPoint]]
+        if let c = services.bodyCache, c.key == key { poses = c.poses } else { poses = (try? finder.poses(in: image)) ?? []; services.bodyCache = (key, poses) }
+        var mask: CIImage?
+        if b.protectBackground, let masker = services.subjectMasker { mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil }
+        return BodyRetouchRender.apply(b, to: image, poses: poses, personMask: mask, inpainter: services.inpainter)
     }
 
     static func hairRetouched(_ h: HairRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {

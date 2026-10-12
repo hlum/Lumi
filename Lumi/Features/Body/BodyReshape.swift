@@ -4,11 +4,36 @@ import Foundation
 /// Slider values, each -1...1 (0 = off).
 struct BodyReshapeParams: Codable, Equatable {
     var waist = 0.0, legLength = 0.0, legSlim = 0.0, armSlim = 0.0, shoulder = 0.0, headSize = 0.0, hips = 0.0
+    var thighs = 0.0, calves = 0.0, legStraighten = 0.0
 
     var isIdentity: Bool { self == BodyReshapeParams() }
     mutating func clamp() {
         func c(_ v: inout Double) { v = min(max(v, -1), 1) }
-        c(&waist); c(&legLength); c(&legSlim); c(&armSlim); c(&shoulder); c(&headSize); c(&hips)
+        c(&waist); c(&legLength); c(&legSlim); c(&armSlim); c(&shoulder); c(&headSize); c(&hips); c(&thighs); c(&calves); c(&legStraighten)
+    }
+
+    enum Key: String, CaseIterable, Codable {
+        case waist, legLength, legSlim, armSlim, shoulder, headSize, hips, thighs, calves, legStraighten
+        var path: WritableKeyPath<BodyReshapeParams, Double> {
+            switch self {
+            case .waist: \.waist; case .legLength: \.legLength; case .legSlim: \.legSlim; case .armSlim: \.armSlim; case .shoulder: \.shoulder
+            case .headSize: \.headSize; case .hips: \.hips; case .thighs: \.thighs; case .calves: \.calves; case .legStraighten: \.legStraighten
+            }
+        }
+    }
+}
+
+extension BodyReshapeParams {
+    init(from decoder: Decoder) throws {
+        struct K: CodingKey { var stringValue: String; var intValue: Int? { nil }; init?(stringValue: String) { self.stringValue = stringValue }; init?(intValue: Int) { nil } }
+        let c = try decoder.container(keyedBy: K.self)
+        self.init()
+        for k in Key.allCases { self[keyPath: k.path] = try c.decodeIfPresent(Double.self, forKey: K(stringValue: k.rawValue)!) ?? 0 }
+    }
+    func encode(to encoder: Encoder) throws {
+        struct K: CodingKey { var stringValue: String; var intValue: Int? { nil }; init?(stringValue: String) { self.stringValue = stringValue }; init?(intValue: Int) { nil } }
+        var c = encoder.container(keyedBy: K.self)
+        for k in Key.allCases { try c.encode(self[keyPath: k.path], forKey: K(stringValue: k.rawValue)!) }
     }
 }
 
@@ -71,6 +96,22 @@ enum BodyReshape {
             let hipMid = mid(lh, rh)!, ankleMid = mid(la, ra)!, kneeMid = mid(lk, rk)!
             let span = Float(dist(hipMid, ankleMid))
             out.append(BrushStroke(kind: .push, x: Float(kneeMid.x), y: Float(kneeMid.y), radius: span * 0.55, strength: 1, dirX: 0, dirY: Float(p.legLength) * span * 0.12))
+        }
+        // Thighs and calves: squeeze (positive slims) at their midpoints, separately from the whole-leg slider.
+        func slimSegment(_ top: CGPoint?, _ bottom: CGPoint?, side: Double, amount: Double) {
+            guard let top, let bottom else { return }
+            let c = lerp(top, bottom, 0.5), w = Float(dist(top, bottom)) * 0.3
+            out.append(BrushStroke(kind: .push, x: Float(c.x - side * Double(w) * 0.5), y: Float(c.y), radius: w * 1.4, strength: 1, dirX: Float(side * amount) * w * 0.4, dirY: 0))
+        }
+        if p.thighs != 0 { slimSegment(lh, lk, side: 1, amount: p.thighs); slimSegment(rh, rk, side: -1, amount: p.thighs) }
+        if p.calves != 0 { slimSegment(lk, la, side: 1, amount: p.calves); slimSegment(rk, ra, side: -1, amount: p.calves) }
+        // Straighten: nudge each knee toward the line between its hip and ankle.
+        if p.legStraighten != 0 {
+            for (hip, knee, ankle) in [(lh, lk, la), (rh, rk, ra)] {
+                guard let hip, let knee, let ankle else { continue }
+                let target = lerp(hip, ankle, 0.5), dx = Float(target.x - knee.x)
+                out.append(BrushStroke(kind: .push, x: Float(knee.x), y: Float(knee.y), radius: Float(dist(hip, ankle)) * 0.35, strength: 1, dirX: dx * Float(p.legStraighten), dirY: 0))
+            }
         }
         // Arms: squeeze each arm at the elbow toward the torso side.
         if p.armSlim != 0 {

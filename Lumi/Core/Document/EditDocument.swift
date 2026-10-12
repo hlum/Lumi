@@ -112,6 +112,11 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.isIdentity ? nil : .hair(newValue)) { if case .hair = $0 { true } else { false } } }
     }
 
+    var body: BodyRetouch {
+        get { operations.lazy.compactMap { if case .body(let v) = $0 { v } else { nil } }.last ?? BodyRetouch() }
+        set { set(newValue.isIdentity ? nil : .body(newValue)) { if case .body = $0 { true } else { false } } }
+    }
+
     var clean: CleanConfig {
         get { operations.lazy.compactMap { if case .clean(let v) = $0 { v } else { nil } }.last ?? CleanConfig() }
         set { set(newValue.isIdentity ? nil : .clean(newValue)) { if case .clean = $0 { true } else { false } } }
