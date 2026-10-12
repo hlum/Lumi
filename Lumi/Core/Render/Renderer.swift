@@ -141,11 +141,17 @@ enum Renderer {
     }
 
     static func hairRetouched(_ h: HairRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {
-        guard !h.isIdentity, let masker = services.hairMasker else { return image }
+        guard !h.isIdentity else { return image }
+        guard let masker = services.hairMasker else { return image }
         // the estimated hair masks depend only on the pixels before this step, so slider drags reuse them
         let key = "hair|" + cacheKey(image, prefix)
         let first = try? services.cached(key) { try masker.hairMasks(in: image).first }
-        return HairRetouchRender.apply(h, to: image, hairMasks: first.flatMap { $0 }.map { [$0] } ?? [])
+        var faces: [FaceInfo] = []
+        if h.volume != 0 || h.hairline != 0, let finder = services.faceLandmarker {
+            let fk = "faces|" + cacheKey(image, prefix)
+            if let c = services.faceCache, c.key == fk { faces = c.faces } else { faces = (try? finder.faces(in: image)) ?? []; services.remember(faces: faces, key: fk) }
+        }
+        return HairRetouchRender.apply(h, to: image, hairMasks: first.flatMap { $0 }.map { [$0] } ?? [], faces: faces, inpainter: services.inpainter)
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

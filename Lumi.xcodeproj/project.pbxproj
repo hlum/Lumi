@@ -41,6 +41,7 @@
 		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
 		26F152CB55562C0BDF70DC59 /* BrushMaterials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */; };
+		273D543B11136D4A76F4C689 /* HairShapeRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9812652ED2B4FA541D5176 /* HairShapeRules.swift */; };
 		2B428336931DE42B36FE7E1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE509B7E09EAD4881D427FE /* Assets.xcassets */; };
 		2DCC9D0ACAE306EFA4366917 /* Upscaler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */; };
 		3000A029E09623068E131F57 /* CollageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */; };
@@ -270,6 +271,7 @@
 		68BFE211254C95958D5476D6 /* SpotAndBeautyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotAndBeautyTests.swift; sourceTree = "<group>"; };
 		69EA3A082E4527360B4F44E8 /* ToolCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolCatalog.swift; sourceTree = "<group>"; };
 		6BFB0E250D702AE35BBAD6AC /* CollageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageRenderer.swift; sourceTree = "<group>"; };
+		6C9812652ED2B4FA541D5176 /* HairShapeRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HairShapeRules.swift; sourceTree = "<group>"; };
 		6CC803D2823C57FF5D41BFB0 /* OverlapFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapFinderTests.swift; sourceTree = "<group>"; };
 		6DF6CFD18F7C3EAE265C65AD /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
 		6F0159F8BE79D28E537D81F6 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -684,6 +686,7 @@
 			children = (
 				681568430459B80D1CACBFE9 /* HairMask.swift */,
 				1CDE7CA45356967DF21A46A0 /* HairRetouch.swift */,
+				6C9812652ED2B4FA541D5176 /* HairShapeRules.swift */,
 			);
 			path = Hair;
 			sourceTree = "<group>";
@@ -1055,6 +1058,7 @@
 				9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */,
 				112AC2C40F6B9C3E43A84C4C /* HairMask.swift in Sources */,
 				D79451D1C07977D38A56950A /* HairRetouch.swift in Sources */,
+				273D543B11136D4A76F4C689 /* HairShapeRules.swift in Sources */,
 				E69EDFA4552457DB87473135 /* HealOps.swift in Sources */,
 				156F970EA97DB975DE17F769 /* HomeView.swift in Sources */,
 				959C6AE0A59BD54BD22B2D90 /* IDSpecs.swift in Sources */,

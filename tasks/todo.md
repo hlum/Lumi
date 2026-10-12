@@ -93,7 +93,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [x] T47 Makeup content, looks, recreate
 - [ ] T48 Nail try-on
 - [x] T49 Hair color
-- [ ] T50 Hair shape
+- [x] T50 Hair shape
 - [ ] ⏸ Checkpoint 6
 
 **Phase 7: Body**

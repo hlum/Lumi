@@ -91,5 +91,64 @@ struct HairRetouchTests {
         let ok = EstimatedHairMasker(faces: FakeLandmarker(faces: [EyeMakeupTests.face()]), subject: FakeMasker())
         #expect(try ok.hairMasks(in: CIImage(color: .gray).cropped(to: CGRect(x: 0, y: 0, width: 200, height: 200))).count == 1)
     }
+
+    // MARK: hair shape
+    static func faceInfo() -> FaceInfo { EyeMakeupTests.face() }
+
+    @Test func volumeAndHairlineRulesPlaceStrokesAboveTheFace() {
+        let f = Self.faceInfo(), box = MakeupRenderer.faceBox(f)
+        let v = HairShapeRules.strokes(faces: [f], volume: 1, hairline: 0)
+        #expect(v.count == 1 && v[0].kind == .bloat && Double(v[0].y) < box.minY)                    // the crown is above the face
+        #expect(HairShapeRules.strokes(faces: [f], volume: -1, hairline: 0)[0].kind == .pinch)
+        let up = HairShapeRules.strokes(faces: [f], volume: 0, hairline: 1), down = HairShapeRules.strokes(faces: [f], volume: 0, hairline: -1)
+        #expect(up[0].dirY < 0 && down[0].dirY > 0)                                                  // positive raises the hairline (up is negative y)
+        #expect(HairShapeRules.strokes(faces: [], volume: 1, hairline: 1).isEmpty && HairShapeRules.strokes(faces: [f], volume: 0, hairline: 0).isEmpty)
+    }
+
+    @Test func volumeAndHairlineMoveThePicture() {
+        let pattern = CIFilter(name: "CILinearGradient", parameters: ["inputPoint0": CIVector(x: 0, y: 0), "inputPoint1": CIVector(x: 0, y: 300), "inputColor0": CIColor.black, "inputColor1": CIColor.white])!.outputImage!.cropped(to: CGRect(x: 0, y: 0, width: 300, height: 300))
+        var h = HairRetouch(); h.volume = 1; h.hairline = 0.5
+        let out = HairRetouchRender.apply(h, to: pattern, hairMasks: [], faces: [Self.faceInfo()])
+        let strokes = HairShapeRules.strokes(faces: [Self.faceInfo()], volume: 1, hairline: 0.5)
+        var w = WarpEdit(); strokes.forEach { w.add($0) }
+        let moved = (0..<300).contains { x in (150..<300).contains { y in GeometryTests.rgb(out, x: x, y: y) != GeometryTests.rgb(pattern, x: x, y: y) } }
+        #expect(out.extent == pattern.extent && moved, "strokes \(strokes.count) identity \(w.field.isIdentity) kernel \(MeshWarpRenderer.loadError ?? "ok") off \(w.field.offset(x: 0.5, y: 0.1)) off2 \(w.field.offset(x: 0.5, y: 0.3)) outpx \(GeometryTests.rgb(out, x: 100, y: 250)) inpx \(GeometryTests.rgb(pattern, x: 100, y: 250))")
+        #expect(GeometryTests.near(RendererTests.pixel(HairRetouchRender.apply(h, to: pattern, hairMasks: [], faces: [])), RendererTests.pixel(pattern)))      // no faces: nothing to warp
+    }
+
+    @Test func glowBrightensHairHighlightsOnly() {
+        let img = CIImage(color: CIColor(red: 0.95, green: 0.95, blue: 0.95)).cropped(to: CGRect(x: 40, y: 70, width: 20, height: 20)).composited(over: CIImage(color: CIColor(red: 0.3, green: 0.3, blue: 0.3)).cropped(to: Self.ext))
+        var h = HairRetouch(); h.glow = 1
+        let out = HairRetouchRender.apply(h, to: img, hairMasks: [Self.topHair])
+        func l(_ i: CIImage, _ y: Int) -> Int { let c = GeometryTests.rgb(i, x: 50, y: y); return Int(c[0]) + Int(c[1]) + Int(c[2]) }
+        #expect(l(out, 80) >= l(img, 80) - 3 && l(out, 64) > l(img, 64), "out \(l(out, 80)) img \(l(img, 80)) top \(GeometryTests.rgb(out, x: 50, y: 80)) \(GeometryTests.rgb(img, x: 50, y: 80)) halo \(l(out, 64)) vs \(l(img, 64))")
+        #expect(GeometryTests.near(GeometryTests.rgb(out, x: 50, y: 10), GeometryTests.rgb(img, x: 50, y: 10)))
+    }
+
+    @Test func flyawayCleanupSoftensOnlyTheOutline() {
+        let stripes = CIFilter(name: "CIStripesGenerator", parameters: ["inputWidth": 2, "inputColor0": CIColor.white, "inputColor1": CIColor.black])!.outputImage!.cropped(to: Self.ext)
+        var h = HairRetouch(); h.flyaway = 1
+        let out = HairRetouchRender.apply(h, to: stripes, hairMasks: [Self.topHair])
+        let nearEdge = (45..<55).contains { y in (0..<100).contains { x in GeometryTests.rgb(out, x: x, y: y) != GeometryTests.rgb(stripes, x: x, y: y) } }
+        let farFromEdge = (75..<95).contains { y in (0..<100).contains { x in GeometryTests.rgb(out, x: x, y: y) != GeometryTests.rgb(stripes, x: x, y: y) } }
+        #expect(nearEdge && !farFromEdge)
+    }
+
+    @Test func thinSpotFillGoesThroughTheInpainter() {
+        var h = HairRetouch()
+        var spot = MaskCanvas(width: 20, height: 20); spot.fill(rect: CGRect(x: 0, y: 0, width: 20, height: 5))          // top rows of the picture
+        h.fill = spot
+        let out = HairRetouchRender.apply(h, to: Self.brown(), hairMasks: [Self.topHair], inpainter: FakeInpainter())    // fake paints green where masked
+        #expect(GeometryTests.rgb(out, x: 50, y: 97)[1] > 200 && GeometryTests.near(GeometryTests.rgb(out, x: 50, y: 30), GeometryTests.rgb(Self.brown(), x: 50, y: 30)))
+        #expect(GeometryTests.near(RendererTests.pixel(HairRetouchRender.apply(h, to: Self.brown(), hairMasks: [Self.topHair], inpainter: nil)), RendererTests.pixel(Self.brown())))   // no inpainter: unchanged
+    }
+
+    @Test func shapeFieldsPersistAndOldHairDraftsOpen() throws {
+        var h = HairRetouch(); h.volume = 0.4; h.glow = 0.3; h.fill = MaskCanvas(width: 4, height: 4)
+        #expect(!h.isIdentity)
+        #expect(try JSONDecoder().decode(HairRetouch.self, from: JSONEncoder().encode(h)) == h)
+        let old = try JSONDecoder().decode(HairRetouch.self, from: Data(#"{"dye":{"color":{"r":1,"g":0,"b":0,"a":1},"strength":0.5,"keepShine":0.5},"deOil":0.2}"#.utf8))
+        #expect(old.deOil == 0.2 && old.volume == 0 && old.fill == nil)
+    }
 }
 }

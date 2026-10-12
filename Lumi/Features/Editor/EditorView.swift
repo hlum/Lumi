@@ -799,17 +799,18 @@ struct HairPanel: View {
                 }.padding(.horizontal)
             }
             row("Dye", \.hair.dye.strength); row("Keep shine", \.hair.dye.keepShine); row("De-oil", \.hair.deOil); row("Smooth", \.hair.smooth); row("Roots", \.hair.rootRetouch)
+            row("Volume", \.hair.volume, -1...1); row("Hairline", \.hair.hairline, -1...1); row("Glow", \.hair.glow); row("Flyaways", \.hair.flyaway)
             HStack {
                 Toggle("Brush", isOn: $model.hairBrushActive).fixedSize()
-                Picker("Mode", selection: $model.hairBrushAdds) { Text("Add").tag(true); Text("Erase").tag(false) }.pickerStyle(.segmented)
+                Picker("Mode", selection: $model.hairBrushMode) { Text("Add").tag(HairBrushMode.add); Text("Erase").tag(HairBrushMode.erase); Text("Fill").tag(HairBrushMode.fill) }.pickerStyle(.segmented)
             }.padding(.horizontal)
         }
     }
 
-    private func row(_ title: String, _ path: WritableKeyPath<EditDocument, Double>) -> some View {
+    private func row(_ title: String, _ path: WritableKeyPath<EditDocument, Double>, _ range: ClosedRange<Double> = 0...1) -> some View {
         HStack {
             Text(LocalizedStringKey(title)).font(.caption).frame(width: 80, alignment: .leading)
-            Slider(value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), in: 0...1) { if !$0 { model.commit() } }
+            Slider(value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), in: range) { if !$0 { model.commit() } }
         }.padding(.horizontal)
     }
 }
@@ -836,7 +837,11 @@ struct HairBrushOverlay: View {
         var h = model.draft.hair
         let committed = model.stack0.hair
         func merged(_ base: MaskCanvas?) -> MaskCanvas { guard var b = base, b.width == stroke.width, b.height == stroke.height else { return stroke }; b.union(stroke); return b }
-        if model.hairBrushAdds { h.add = merged(committed.add) } else { h.remove = merged(committed.remove) }
+        switch model.hairBrushMode {
+        case .add: h.add = merged(committed.add)
+        case .erase: h.remove = merged(committed.remove)
+        case .fill: h.fill = merged(committed.fill)
+        }
         model.draft.hair = h
     }
 }

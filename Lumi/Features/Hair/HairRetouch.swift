@@ -9,7 +9,29 @@ struct HairRetouch: Codable, Equatable {
     var rootRetouch = 0.0           // 0...1 darken and blend the roots near the scalp
     var add: MaskCanvas?            // brushed-in hair
     var remove: MaskCanvas?         // brushed-out areas that are not hair
-    var isIdentity: Bool { dye.isIdentity && deOil == 0 && smooth == 0 && rootRetouch == 0 }
+    var volume = 0.0                // -1...1 fuller or flatter crown
+    var hairline = 0.0              // -1...1 raise or lower the hairline
+    var glow = 0.0                  // 0...1 soft shine on the highlights
+    var flyaway = 0.0               // 0...1 tidy stray hairs along the outline
+    var fill: MaskCanvas?           // thin spots and parting to fill from the surrounding hair
+    var isIdentity: Bool { dye.isIdentity && deOil == 0 && smooth == 0 && rootRetouch == 0 && volume == 0 && hairline == 0 && glow == 0 && flyaway == 0 && (fill?.isEmpty ?? true) }
+
+    init() {}
+    enum CodingKeys: String, CodingKey { case dye, deOil, smooth, rootRetouch, add, remove, volume, hairline, glow, flyaway, fill }
+    init(from d: Decoder) throws {
+        let c = try d.container(keyedBy: CodingKeys.self)
+        dye = try c.decodeIfPresent(HairColorParams.self, forKey: .dye) ?? HairColorParams()
+        deOil = try c.decodeIfPresent(Double.self, forKey: .deOil) ?? 0
+        smooth = try c.decodeIfPresent(Double.self, forKey: .smooth) ?? 0
+        rootRetouch = try c.decodeIfPresent(Double.self, forKey: .rootRetouch) ?? 0
+        add = try c.decodeIfPresent(MaskCanvas.self, forKey: .add)
+        remove = try c.decodeIfPresent(MaskCanvas.self, forKey: .remove)
+        volume = try c.decodeIfPresent(Double.self, forKey: .volume) ?? 0
+        hairline = try c.decodeIfPresent(Double.self, forKey: .hairline) ?? 0
+        glow = try c.decodeIfPresent(Double.self, forKey: .glow) ?? 0
+        flyaway = try c.decodeIfPresent(Double.self, forKey: .flyaway) ?? 0
+        fill = try c.decodeIfPresent(MaskCanvas.self, forKey: .fill)
+    }
 
     static let swatches: [(category: String, name: String, color: RGBA)] = [
         ("Natural", "Black", RGBA(r: 0.06, g: 0.05, b: 0.05, a: 1)), ("Natural", "Dark brown", RGBA(r: 0.2, g: 0.12, b: 0.08, a: 1)), ("Natural", "Chestnut", RGBA(r: 0.4, g: 0.22, b: 0.12, a: 1)),
@@ -32,14 +54,31 @@ struct EstimatedHairMasker: HairMasking {
 }
 
 enum HairRetouchRender {
-    static func apply(_ h: HairRetouch, to image: CIImage, hairMasks: [CIImage]) -> CIImage {
+    static func apply(_ h: HairRetouch, to image: CIImage, hairMasks: [CIImage], faces: [FaceInfo] = [], inpainter: Inpainting? = nil) -> CIImage {
         guard !h.isIdentity else { return image }
         let e = image.extent
         // one mask for all faces, plus brush edits
         var mask = hairMasks.reduce(CIImage(color: .black).cropped(to: e)) { $1.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: $0]).cropped(to: e) }
         mask = HairMask.refine(mask, add: h.add, remove: h.remove)
         var out = image
+        // thin spots and parting: fill from the surrounding hair first, so later steps see the filled result
+        if let f = h.fill, !f.isEmpty, let inpainter { out = (try? inpainter.inpaint(out, mask: MaskScaling.scaled(f, to: e))) ?? out }
         if h.dye.strength > 0 { out = HairOps.recolor(h.dye, image: out, mask: mask) }
+        if h.glow > 0 {
+            // Core Image's bloom softly spreads the brightest parts of the hair
+            let bloom = CIFilter.bloom(); bloom.inputImage = out
+            bloom.radius = Float(min(e.width, e.height) * 0.03); bloom.intensity = Float(0.4 + h.glow * 0.8)
+            out = blend(bloom.outputImage?.cropped(to: e) ?? out, over: out, mask: mask, amount: h.glow)
+        }
+        if h.flyaway > 0 {
+            // the outline band (dilated minus eroded mask) gets a gentle blur that swallows stray hairs
+            let r = Double(min(e.width, e.height)) * 0.012
+            let big = mask.clampedToExtent().applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: r]).cropped(to: e)
+            let small = mask.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: r]).cropped(to: e)
+            let band = small.applyingFilter("CISubtractBlendMode", parameters: [kCIInputBackgroundImageKey: big]).cropped(to: e)       // background minus input = big - small
+            let soft = out.clampedToExtent().applyingGaussianBlur(sigma: r * 0.7).cropped(to: e)
+            out = blend(soft, over: out, mask: band, amount: h.flyaway)
+        }
         if h.deOil > 0 {
             // pull bright specular peaks down toward the local average
             let blurred = out.clampedToExtent().applyingGaussianBlur(sigma: Double(min(e.width, e.height)) * 0.01).cropped(to: e)
@@ -51,6 +90,11 @@ enum HairRetouchRender {
             out = blend(soft, over: out, mask: mask, amount: h.smooth * 0.8)
         }
         if h.rootRetouch > 0 { out = roots(h, out, mask: mask) }
+        if h.volume != 0 || h.hairline != 0 {
+            var warp = WarpEdit()
+            HairShapeRules.strokes(faces: faces, volume: h.volume, hairline: h.hairline).forEach { warp.add($0) }
+            if !warp.field.isIdentity { out = MeshWarpRenderer.apply(warp.field, to: out) }
+        }
         return out
     }
 
