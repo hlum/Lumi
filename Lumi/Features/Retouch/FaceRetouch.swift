@@ -12,17 +12,18 @@ struct FaceRetouch: Codable, Equatable {
     var ratio = FaceRatio()
     var shape = FeatureShape()
     var blemish = BlemishParams()
-    var isIdentity: Bool { blemish.isIdentity && shape.isIdentity && ratio.isIdentity && skin.isIdentity && reshape.isIdentity && makeup.isIdentity && detail.isIdentity && eyes.isIdentity }
+    var nails = NailPaint()
+    var isIdentity: Bool { nails.isIdentity && blemish.isIdentity && shape.isIdentity && ratio.isIdentity && skin.isIdentity && reshape.isIdentity && makeup.isIdentity && detail.isIdentity && eyes.isIdentity }
 
-    init(skin: SkinParams = SkinParams(), reshape: FaceReshapeParams = FaceReshapeParams(), makeup: MakeupParams = MakeupParams(), detail: FaceDetailParams = FaceDetailParams(), eyes: EyeMakeup = EyeMakeup(), ratio: FaceRatio = FaceRatio(), shape: FeatureShape = FeatureShape(), blemish: BlemishParams = BlemishParams()) {
-        self.blemish = blemish; self.shape = shape; self.ratio = ratio; self.skin = skin; self.reshape = reshape; self.makeup = makeup; self.detail = detail; self.eyes = eyes
+    init(skin: SkinParams = SkinParams(), reshape: FaceReshapeParams = FaceReshapeParams(), makeup: MakeupParams = MakeupParams(), detail: FaceDetailParams = FaceDetailParams(), eyes: EyeMakeup = EyeMakeup(), ratio: FaceRatio = FaceRatio(), shape: FeatureShape = FeatureShape(), blemish: BlemishParams = BlemishParams(), nails: NailPaint = NailPaint()) {
+        self.nails = nails; self.blemish = blemish; self.shape = shape; self.ratio = ratio; self.skin = skin; self.reshape = reshape; self.makeup = makeup; self.detail = detail; self.eyes = eyes
     }
-    enum CodingKeys: String, CodingKey { case skin, reshape, makeup, detail, eyes, ratio, shape, blemish }
+    enum CodingKeys: String, CodingKey { case skin, reshape, makeup, detail, eyes, ratio, shape, blemish, nails }
     init(from d: Decoder) throws {
         let c = try d.container(keyedBy: CodingKeys.self)
         self.init(skin: try c.decodeIfPresent(SkinParams.self, forKey: .skin) ?? SkinParams(), reshape: try c.decodeIfPresent(FaceReshapeParams.self, forKey: .reshape) ?? FaceReshapeParams(),
                   makeup: try c.decodeIfPresent(MakeupParams.self, forKey: .makeup) ?? MakeupParams(), detail: try c.decodeIfPresent(FaceDetailParams.self, forKey: .detail) ?? FaceDetailParams(),
-                  eyes: try c.decodeIfPresent(EyeMakeup.self, forKey: .eyes) ?? EyeMakeup(), ratio: try c.decodeIfPresent(FaceRatio.self, forKey: .ratio) ?? FaceRatio(), shape: try c.decodeIfPresent(FeatureShape.self, forKey: .shape) ?? FeatureShape(), blemish: try c.decodeIfPresent(BlemishParams.self, forKey: .blemish) ?? BlemishParams())
+                  eyes: try c.decodeIfPresent(EyeMakeup.self, forKey: .eyes) ?? EyeMakeup(), ratio: try c.decodeIfPresent(FaceRatio.self, forKey: .ratio) ?? FaceRatio(), shape: try c.decodeIfPresent(FeatureShape.self, forKey: .shape) ?? FeatureShape(), blemish: try c.decodeIfPresent(BlemishParams.self, forKey: .blemish) ?? BlemishParams(), nails: try c.decodeIfPresent(NailPaint.self, forKey: .nails) ?? NailPaint())
     }
 
     static func look(_ l: BeautyLook, strength: Double = 1) -> FaceRetouch {

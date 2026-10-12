@@ -74,3 +74,45 @@ enum NailRenderer {
         return f.outputImage?.cropped(to: e) ?? image
     }
 }
+
+/// What the nails get painted with.
+struct NailPaint: Codable, Equatable {
+    enum Finish: String, Codable, CaseIterable { case cream, glossy, shimmer, french }
+    var color = RGBA(r: 0.85, g: 0.2, b: 0.35, a: 1)
+    var finish = Finish.glossy
+    var opacity = 0.0                 // 0 = off
+    var isIdentity: Bool { opacity <= 0 }
+}
+
+extension NailRenderer {
+    /// Paints with a finish: cream is flat colour; glossy adds a light streak; shimmer adds sparkle; french paints only the tip white and leaves the rest sheer.
+    static func paint(_ nails: [Nail], _ p: NailPaint, to image: CIImage) -> CIImage {
+        guard !nails.isEmpty, !p.isIdentity else { return image }
+        let color = CIColor(red: p.color.r, green: p.color.g, blue: p.color.b)
+        switch p.finish {
+        case .cream: return apply(nails, color: color, opacity: p.opacity, to: image)
+        case .glossy:
+            let base = apply(nails, color: color, opacity: p.opacity, to: image)
+            // a thin bright streak along each nail, a little off center
+            let streaks = nails.map { n -> Nail in var s = n; s.width = n.width * 0.18; s.length = n.length * 0.6; s.center = CGPoint(x: n.center.x - cos(n.angle + .pi / 2) * n.width * 0.22, y: n.center.y - sin(n.angle + .pi / 2) * n.width * 0.22); return s }
+            return apply(streaks, color: CIColor(red: 1, green: 1, blue: 1), opacity: min(p.opacity * 0.55, 0.6), to: base)
+        case .shimmer:
+            let base = apply(nails, color: color, opacity: p.opacity, to: image)
+            let e = image.extent
+            let sparkle = (CIFilter(name: "CIRandomGenerator")?.outputImage ?? CIImage()).applyingFilter("CIColorControls", parameters: [kCIInputSaturationKey: 0, kCIInputContrastKey: 4])
+                .applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 3, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 3, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: 3, w: 0), "inputBiasVector": CIVector(x: -2, y: -2, z: -2, w: 0)]).applyingFilter("CIColorClamp").cropped(to: e)
+            let nailMask = apply(nails, color: .white, opacity: 1, to: CIImage(color: .black).cropped(to: e))
+            let masked = sparkle.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: nailMask]).cropped(to: e)
+            return masked.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: base]).cropped(to: e)
+        case .french:
+            // sheer pink base over the whole nail, white over its outer 35%
+            let base = apply(nails, color: CIColor(red: 0.95, green: 0.75, blue: 0.75), opacity: p.opacity * 0.35, to: image)
+            let tips = nails.map { n -> Nail in
+                var t = n; t.length = n.length * 0.35; t.width = n.width * 0.95
+                t.center = CGPoint(x: n.center.x + cos(n.angle) * n.length * 0.33, y: n.center.y + sin(n.angle) * n.length * 0.33)
+                return t
+            }
+            return apply(tips, color: .white, opacity: p.opacity, to: base)
+        }
+    }
+}

@@ -24,6 +24,7 @@ enum Renderer {
         var colorizer: Colorizing?
         var faceLandmarker: FaceLandmarking?
         var bodyFinder: BodyFinding?
+        var handFinder: HandFinding?
         fileprivate var bodyCache: (key: String, poses: [[String: CGPoint]])?
         /// Last detected faces, kept so slider drags don't re-run detection every frame.
         fileprivate var faceCache: (key: String, faces: [FaceInfo])?
@@ -127,7 +128,12 @@ enum Renderer {
     }
 
     static func retouched(_ f: FaceRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {
-        guard !f.isIdentity, let finder = services.faceLandmarker else { return image }
+        guard !f.isIdentity else { return image }
+        // nails come from hand pose, not from faces, so a photo of a hand works
+        var base = image
+        if !f.nails.isIdentity, let hands = services.handFinder { base = NailRenderer.paint(NailRegions.find(in: image, finder: hands), f.nails, to: image) }
+        guard let finder = services.faceLandmarker else { return base }
+        let image = base
         let key = "face|" + cacheKey(image, prefix)
         let faces: [FaceInfo]
         if let c = services.faceCache, c.key == key { faces = c.faces }

@@ -48,4 +48,44 @@ struct NailRegionsTests {
         let img = CIImage(color: .gray).cropped(to: CGRect(x: 0, y: 0, width: 50, height: 50))
         #expect(NailRenderer.apply(NailRegions.nails(from: [finger]), color: .red, opacity: 0, to: img) == img)
     }
+
+    @Test func everyFinishPaintsTheNailAndLeavesTheRestAlone() {
+        let img = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5)).cropped(to: CGRect(x: 0, y: 0, width: 200, height: 200))
+        let nails = NailRegions.nails(from: [finger])
+        let c = nails[0].center
+        for f in NailPaint.Finish.allCases {
+            var p = NailPaint(); p.finish = f; p.opacity = 1; p.color = RGBA(r: 0.9, g: 0.1, b: 0.2, a: 1)
+            let out = NailRenderer.paint(nails, p, to: img)
+            #expect(out.extent == img.extent, "\(f)")
+            #expect(px(out, 10, 10) == px(img, 10, 10), "\(f)")
+            // somewhere on the nail the picture changed
+            let changed = stride(from: -8, through: 8, by: 2).contains { d in px(out, Int(c.x * 200), Int(c.y * 200) + d) != px(img, Int(c.x * 200), Int(c.y * 200) + d) }
+            #expect(changed, "\(f)")
+        }
+        #expect(NailRenderer.paint([], NailPaint(color: RGBA(), finish: .cream, opacity: 1), to: img) == img)
+        #expect(NailRenderer.paint(nails, NailPaint(), to: img) == img)
+    }
+
+    @Test func frenchTipIsWhiteAndTheBaseIsSheer() {
+        let img = CIImage(color: CIColor(red: 0.5, green: 0.4, blue: 0.4)).cropped(to: CGRect(x: 0, y: 0, width: 400, height: 400))
+        let big = [Nail(center: CGPoint(x: 0.5, y: 0.5), width: 0.3, length: 0.4, angle: -.pi / 2)]       // pointing up the picture
+        var p = NailPaint(); p.finish = .french; p.opacity = 1
+        let out = NailRenderer.paint(big, p, to: img)
+        let tip = px(out, 200, Int(400 * (0.5 - 0.17))), base = px(out, 200, Int(400 * (0.5 + 0.12)))
+        #expect(tip[0] > 220 && tip[1] > 220 && base[0] < 200)
+    }
+
+    @Test func nailPaintInTheDocumentPaintsFromHandPose() {
+        let img = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5)).cropped(to: CGRect(x: 0, y: 0, width: 200, height: 200))
+        let saved = (Renderer.services.handFinder, Renderer.services.faceLandmarker)
+        defer { (Renderer.services.handFinder, Renderer.services.faceLandmarker) = saved }
+        Renderer.services.faceLandmarker = nil
+        Renderer.services.handFinder = Fake(hands: [[finger]])
+        var d = EditDocument(); var f = FaceRetouch(); f.nails.opacity = 1; f.nails.finish = .cream; d.face = f
+        let out = Renderer.render(img, document: d)
+        let c = NailRegions.nails(from: [finger])[0].center
+        #expect(px(out, Int(c.x * 200), Int(c.y * 200))[0] != px(img, Int(c.x * 200), Int(c.y * 200))[0] || px(out, Int(c.x * 200), Int(c.y * 200))[1] != px(img, Int(c.x * 200), Int(c.y * 200))[1])
+        Renderer.services.handFinder = Fake(hands: [])
+        #expect(Renderer.render(img, document: d).extent == img.extent)                       // no hand: nothing painted, no crash
+    }
 }
