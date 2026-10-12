@@ -288,3 +288,11 @@ struct LumiToggleRow: View {
         .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(LumiColor.well))
     }
 }
+
+extension View {
+    /// Text field look: a rounded well, 48 pt tall.
+    func lumiField() -> some View {
+        self.font(LumiFont.body()).padding(.horizontal, 14).frame(minHeight: 48)
+            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(LumiColor.well))
+    }
+}

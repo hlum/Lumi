@@ -396,24 +396,22 @@ struct TextPanel: View {
 
     var body: some View {
         VStack {
-            Picker("Font", selection: $font) { ForEach(FontLibrary.all) { Text($0.name).tag($0.postScript) } }.pickerStyle(.menu)
-            HStack {
-                TextField("Add text", text: $text).textFieldStyle(.roundedBorder)
-                Button("Add") {
+            HStack(spacing: 8) {
+                TextField("Add text", text: $text).lumiField()
+                LumiIconButton(symbol: "plus", label: "Add text", dark: true, disabled: text.trimmingCharacters(in: .whitespaces).isEmpty) {
                     var style = preset?.style ?? TextStyle(); style.fontName = font
                     var layer = Layer(content: .text(text, style)); layer.behindSubject = behind
                     model.edit { d in var s = d.layers; try? s.add(layer); d.layers = s }; model.selectedLayer = layer.id   // the stack rejects empty text
                     text = ""
-                }.disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
-            }.padding(.horizontal)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(TextStylePresets.all) { p in
-                        Button(LocalizedStringKey(p.name)) { font = p.style.fontName; preset = p }.buttonStyle(LumiButtonStyle()).lumiSelected(preset == p)
-                    }
-                }.padding(.horizontal)
+                }
             }
-            Toggle("Behind subject", isOn: $behind).padding(.horizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) { ForEach(FontLibrary.all) { f in LumiChip(title: LocalizedStringKey(f.name), selected: font == f.postScript) { font = f.postScript } } }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) { ForEach(TextStylePresets.all) { p in LumiChip(title: LocalizedStringKey(p.name), selected: preset == p) { font = p.style.fontName; preset = p } } }
+            }
+            LumiToggleRow(title: "Behind subject", subtitle: "Text slips behind the person", isOn: $behind)
             VStack(spacing: 6) {
                 ForEach(model.draft.layers.layers) { l in
                     if case .text(let str, _) = l.content {
@@ -567,7 +565,7 @@ struct StickerPanel: View {
 
     var body: some View {
         VStack {
-            TextField("Search", text: $query).textFieldStyle(.roundedBorder).padding(.horizontal)
+            TextField("Search stickers", text: $query).lumiField()
             HStack {
                 Button("Make from subject", systemImage: "person.crop.circle.badge.plus") { if model.makeStickerFromSubject() == nil { noSubject = true } }.buttonStyle(LumiButtonStyle())
                 ForEach(CustomStickerStore.shared.items) { c in
@@ -602,15 +600,9 @@ struct FramePanel: View {
     @Bindable var model: EditorModel
     var body: some View {
         VStack {
-            Picker("Style", selection: Binding(get: { model.draft.frame.style }, set: { v in model.edit { var f = $0.frame; f.style = v; if f.padding == 0 { f.padding = 0.04 }; $0.frame = f } })) {
-                ForEach(FrameConfig.Style.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) }
-            }.pickerStyle(.segmented).padding(.horizontal)
+            LumiSegmented(items: FrameConfig.Style.allCases.map { ($0, LocalizedStringKey($0.rawValue.capitalized)) }, selection: Binding(get: { model.draft.frame.style }, set: { v in model.edit { var f = $0.frame; f.style = v; if f.padding == 0 { f.padding = 0.04 }; $0.frame = f } }), height: 40)
             LumiSliderRow(title: "Padding", value: Binding(get: { model.draft.frame.padding }, set: { model.draft.frame.padding = $0 }), range: 0...0.25, onEnd: { model.commit() })
-            HStack {
-                ForEach([("White", RGBA.white), ("Black", RGBA.black), ("Cream", RGBA(r: 1, g: 0.95, b: 0.8, a: 1))], id: \.0) { name, c in
-                    Button(name) { model.edit { var f = $0.frame; f.color = c; $0.frame = f } }.buttonStyle(LumiButtonStyle())
-                }
-            }
+            LumiSwatchRow(colors: [("White", RGBA.white), ("Black", RGBA.black), ("Cream", RGBA(r: 1, g: 0.95, b: 0.8, a: 1)), ("Blush", RGBA(r: 0.98, g: 0.82, b: 0.85, a: 1)), ("Sky", RGBA(r: 0.7, g: 0.85, b: 0.98, a: 1))], selected: model.draft.frame.color) { c in model.edit { var f = $0.frame; f.color = c; $0.frame = f } }
         }
     }
 }
@@ -619,13 +611,11 @@ struct DoodlePanel: View {
     @Bindable var model: EditorModel
     var body: some View {
         VStack {
-            Picker("Brush", selection: Bindable(model).doodleBrush) { ForEach(DoodleStroke.Brush.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) } }.pickerStyle(.menu)
-            HStack {
-                ForEach([("Red", RGBA(r: 1, g: 0.3, b: 0.35, a: 1)), ("Yellow", RGBA(r: 1, g: 0.85, b: 0.2, a: 1)), ("Blue", RGBA(r: 0.3, g: 0.6, b: 1, a: 1)), ("White", RGBA.white)], id: \.0) { n, c in
-                    Button(n) { model.doodleColor = c }.buttonStyle(LumiButtonStyle())
-                }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) { ForEach(DoodleStroke.Brush.allCases, id: \.self) { b in LumiChip(title: LocalizedStringKey(b.rawValue.capitalized), selected: model.doodleBrush == b) { model.doodleBrush = b } } }
             }
-            Button("Undo stroke", systemImage: "arrow.uturn.backward") { model.edit { $0.doodle = Array($0.doodle.dropLast()) } }.labelStyle(.iconOnly).disabled(model.draft.doodle.isEmpty)
+            LumiSwatchRow(colors: [("Red", RGBA(r: 1, g: 0.3, b: 0.35, a: 1)), ("Yellow", RGBA(r: 1, g: 0.85, b: 0.2, a: 1)), ("Blue", RGBA(r: 0.3, g: 0.6, b: 1, a: 1)), ("Green", RGBA(r: 0.3, g: 0.8, b: 0.5, a: 1)), ("White", RGBA.white), ("Black", RGBA.black)], selected: model.doodleColor) { model.doodleColor = $0 }
+            HStack { LumiChip(title: "Undo stroke", symbol: "arrow.uturn.backward") { model.edit { $0.doodle = Array($0.doodle.dropLast()) } }.disabled(model.draft.doodle.isEmpty); Spacer() }
         }
     }
 }
@@ -652,28 +642,31 @@ struct EnhancePanel: View {
     var body: some View {
         VStack(spacing: 12) {
             if model.canUpscale {
-                Text("Sharper, bigger photo. Applied when you save.").font(.caption).foregroundStyle(.secondary)
-                HStack {
-                    Button("Off") { model.edit { $0.upscale = nil } }.buttonStyle(LumiButtonStyle())
-                    Button("2×") { model.edit { $0.upscale = 2 } }.buttonStyle(LumiButtonStyle()).lumiSelected(model.draft.upscale == 2)
-                    Button("4×") { model.edit { $0.upscale = 4 } }.buttonStyle(LumiButtonStyle()).lumiSelected(model.draft.upscale == 4)
+                Text("Sharper, bigger photo. Applied when you save.").font(.footnote).foregroundStyle(LumiColor.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: 8) {
+                    LumiChip(title: "Off", selected: model.draft.upscale == nil) { model.edit { $0.upscale = nil } }
+                    LumiChip(title: "HD  2×", selected: model.draft.upscale == 2) { model.edit { $0.upscale = 2 } }
+                    LumiChip(title: "Ultra HD  4×", selected: model.draft.upscale == 4) { model.edit { $0.upscale = 4 } }
                 }
             } else {
-                Text("Enhance works on photos up to 2048 px on the long side.").font(.caption).foregroundStyle(.secondary).padding()
+                Text("Enhance works on photos up to 2048 px on the long side, with the model installed.").font(.footnote).foregroundStyle(LumiColor.textSecondary).padding()
             }
             if SiggraphColorizer.isModelAvailable, let o = model.original, max(o.extent.width, o.extent.height) <= CGFloat(SiggraphColorizer.maxInputSide) {
-                HStack {
-                    Text("Colorize").font(.caption)
-                    Button("Off") { model.edit { $0.colorize = nil } }.buttonStyle(LumiButtonStyle())
-                    Button("50%") { model.edit { $0.colorize = 0.5 } }.buttonStyle(LumiButtonStyle())
-                    Button("100%") { model.edit { $0.colorize = 1 } }.buttonStyle(LumiButtonStyle())
+                HStack(spacing: 8) {
+                    Text("Add colour").font(LumiFont.caption())
+                    LumiChip(title: "Off", selected: model.draft.colorize == nil) { model.edit { $0.colorize = nil } }
+                    LumiChip(title: "50%", selected: model.draft.colorize == 0.5) { model.edit { $0.colorize = 0.5 } }
+                    LumiChip(title: "100%", selected: model.draft.colorize == 1) { model.edit { $0.colorize = 1 } }
                 }
             }
             if let o = model.original {
-                Button("Restore old photo", systemImage: "wand.and.stars") {
+                Button {
                     let plan = OldPhotoRestore.plan(for: o, canUpscale: model.canUpscale, canColorize: SiggraphColorizer.isModelAvailable)
                     model.edit { $0 = OldPhotoRestore.apply(plan, to: $0) }
-                }.buttonStyle(LumiButtonStyle(prominent: true))
+                } label: {
+                    Label("Restore old photo", systemImage: "wand.and.stars").font(LumiFont.chip()).frame(maxWidth: .infinity, minHeight: 48)
+                        .foregroundStyle(LumiColor.onSelectedPill).background(Capsule().fill(LumiColor.selectedPill))
+                }.buttonStyle(.plain)
             }
         }
     }
@@ -683,21 +676,19 @@ struct ExportPanel: View {
     @Bindable var model: EditorModel
     var body: some View {
         VStack(spacing: 10) {
-            Picker("Format", selection: $model.exportSettings.format) { ForEach(ImageFormat.allCases, id: \.self) { Text($0.rawValue.uppercased()).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            LumiSegmented(items: ImageFormat.allCases.map { ($0, LocalizedStringKey($0.rawValue.uppercased())) }, selection: $model.exportSettings.format, height: 40)
             if model.exportSettings.format != .png {
                 LumiSliderRow(title: "Quality", value: $model.exportSettings.quality, range: 0.3...1, onEnd: { model.commit() })
             }
-            Picker("Max size", selection: Binding(get: { model.exportSettings.maxLongSide ?? 0 }, set: { model.exportSettings.maxLongSide = $0 == 0 ? nil : $0 })) {
-                Text("Original").tag(0); Text("4096").tag(4096); Text("2048").tag(2048); Text("1080").tag(1080)
-            }.pickerStyle(.segmented).padding(.horizontal)
-            HStack {
-                Text("Print").font(.caption)
-                Button("10×15 cm") { model.applyPrintSize(width: 10, height: 15, unit: .cm, dpi: 300) }.buttonStyle(LumiButtonStyle())
-                Button("A4") { model.applyPrintSize(width: 210, height: 297, unit: .mm, dpi: 300) }.buttonStyle(LumiButtonStyle())
-                Button("Off") { model.clearPrintSize() }.buttonStyle(LumiButtonStyle())
+            LumiSegmented(items: [(0, LocalizedStringKey("Original")), (4096, LocalizedStringKey("4096")), (2048, LocalizedStringKey("2048")), (1080, LocalizedStringKey("1080"))], selection: Binding(get: { model.exportSettings.maxLongSide ?? 0 }, set: { model.exportSettings.maxLongSide = $0 == 0 ? nil : $0 }), height: 40)
+            HStack(spacing: 8) {
+                Text("Print").font(LumiFont.caption())
+                LumiChip(title: "10×15 cm") { model.applyPrintSize(width: 10, height: 15, unit: .cm, dpi: 300) }
+                LumiChip(title: "A4") { model.applyPrintSize(width: 210, height: 297, unit: .mm, dpi: 300) }
+                LumiChip(title: "Off") { model.clearPrintSize() }
             }
             if let s = model.exportPixelSize, let b = model.estimatedBytes {
-                Text("\(s.w) × \(s.h) px · about \(ByteCountFormatter.string(fromByteCount: Int64(b), countStyle: .file))").font(.caption).foregroundStyle(.secondary)
+                Text("\(s.w) × \(s.h) px · about \(ByteCountFormatter.string(fromByteCount: Int64(b), countStyle: .file))").font(.footnote).foregroundStyle(LumiColor.textSecondary)
             }
         }
     }
@@ -918,12 +909,10 @@ struct LiquifyPanel: View {
     @Bindable var model: EditorModel
     var body: some View {
         VStack(spacing: 8) {
-            Picker("Brush", selection: Binding(get: { model.warpBrush.kind }, set: { model.warpBrush.kind = $0 })) {
-                Text("Slim").tag(BrushStroke.Kind.push); Text("Zoom in").tag(BrushStroke.Kind.bloat); Text("Zoom out").tag(BrushStroke.Kind.pinch)
-            }.pickerStyle(.segmented).padding(.horizontal)
+            LumiSegmented(items: [(BrushStroke.Kind.push, LocalizedStringKey("Push")), (BrushStroke.Kind.pinch, LocalizedStringKey("Slim")), (BrushStroke.Kind.bloat, LocalizedStringKey("Fuller"))], selection: Binding(get: { model.warpBrush.kind }, set: { model.warpBrush.kind = $0 }), height: 44)
             LumiSliderRow(title: "Size", value: Binding(get: { model.warpBrush.size }, set: { model.warpBrush.size = $0 }), range: 0.03...0.3, onEnd: { model.commit() })
             LumiSliderRow(title: "Strength", value: Binding(get: { model.warpBrush.strength }, set: { model.warpBrush.strength = $0 }), range: 0.1...1, onEnd: { model.commit() })
-            Text("Drag on the photo. Undo steps back one drag.").font(.caption).foregroundStyle(.secondary)
+            Text("Drag on the photo. Undo steps back one drag.").font(.footnote).foregroundStyle(LumiColor.textSecondary)
         }
     }
 }
@@ -962,26 +951,26 @@ struct MarkPanel: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            HStack {
-                TextField("Your mark", text: $text).textFieldStyle(.roundedBorder)
-                Button("Apply") { model.edit { $0.watermark = text.isEmpty ? nil : current } }.buttonStyle(LumiButtonStyle(prominent: true))
-                Button("Save", systemImage: "star") { if !text.isEmpty { box.save(current) } }.labelStyle(.iconOnly).buttonStyle(LumiButtonStyle())
-                Button("Off") { model.edit { $0.watermark = nil } }.buttonStyle(LumiButtonStyle())
-            }.padding(.horizontal)
-            HStack {
-                ForEach(TimeStampStyle.allCases, id: \.self) { st in
-                    Button(st.rawValue.capitalized) { text = WatermarkMath.timeStamp(.now, style: st) }.buttonStyle(LumiButtonStyle())
+            HStack(spacing: 8) {
+                TextField("Your mark", text: $text).lumiField()
+                LumiIconButton(symbol: "checkmark", label: "Apply mark", dark: true) { model.edit { $0.watermark = text.isEmpty ? nil : current } }
+                LumiIconButton(symbol: "star", label: "Save mark") { if !text.isEmpty { box.save(current) } }
+                LumiIconButton(symbol: "xmark", label: "Remove mark") { model.edit { $0.watermark = nil } }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(TimeStampStyle.allCases, id: \.self) { st in LumiChip(title: LocalizedStringKey(st.rawValue.capitalized), symbol: "calendar") { text = WatermarkMath.timeStamp(.now, style: st) } }
+                    LumiChip(title: "Tiled", selected: tiled) { tiled.toggle() }
                 }
-                Toggle("Tiled", isOn: $tiled).fixedSize()
-            }.padding(.horizontal)
+            }
             LumiSliderRow(title: "Opacity", value: $opacity, range: 0.1...1, onEnd: { model.commit() })
             LumiSliderRow(title: "Size", value: $size, range: 0.03...0.2, onEnd: { model.commit() })
             if !box.library.items.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(box.library.items) { w in
-                            Button(w.name) { if case .text(let t) = w.kind { text = t }; tiled = w.isTiled; opacity = w.opacity; size = w.size; model.edit { $0.watermark = w } }
-                                .buttonStyle(LumiButtonStyle()).contextMenu { Button("Delete", role: .destructive) { box.delete(w.id) } }
+                            LumiChip(title: LocalizedStringKey(w.name)) { if case .text(let t) = w.kind { text = t }; tiled = w.isTiled; opacity = w.opacity; size = w.size; model.edit { $0.watermark = w } }
+                                .contextMenu { Button("Delete", role: .destructive) { box.delete(w.id) } }
                         }
                     }.padding(.horizontal)
                 }
@@ -1018,16 +1007,11 @@ struct MosaicPanel: View {
     @Bindable var model: EditorModel
     var body: some View {
         VStack(spacing: 8) {
-            Picker("Style", selection: Binding(get: { model.draft.mosaic.style }, set: { v in model.edit { var m = $0.mosaic; m.style = v; $0.mosaic = m } })) {
-                Text("Pixel").tag(MosaicOps.Style.pixel); Text("Blur").tag(MosaicOps.Style.blur)
-            }.pickerStyle(.segmented).padding(.horizontal)
+            LumiSegmented(items: [(MosaicOps.Style.pixel, LocalizedStringKey("Pixel")), (MosaicOps.Style.blur, LocalizedStringKey("Blur"))], selection: Binding(get: { model.draft.mosaic.style }, set: { v in model.edit { var m = $0.mosaic; m.style = v; $0.mosaic = m } }), height: 40)
             LumiSliderRow(title: "Strength", value: Binding(get: { model.draft.mosaic.block }, set: { model.draft.mosaic.block = $0 }), range: 0.005...0.08, onEnd: { model.commit() })
-            HStack {
-                Toggle("Faces", isOn: Binding(get: { model.draft.mosaic.coverFaces }, set: { v in model.edit { var m = $0.mosaic; m.coverFaces = v; $0.mosaic = m } })).fixedSize()
-                Toggle("Chat", isOn: Binding(get: { model.draft.mosaic.chatMode }, set: { v in model.edit { var m = $0.mosaic; m.chatMode = v; $0.mosaic = m } })).fixedSize()
-                Button("Clear") { model.edit { $0.mosaic = MosaicConfig() } }.buttonStyle(LumiButtonStyle())
-            }
-            Text("Drag on the photo to cover an area by hand.").font(.caption).foregroundStyle(.secondary)
+            LumiToggleRow(title: "Cover faces", subtitle: nil, isOn: Binding(get: { model.draft.mosaic.coverFaces }, set: { v in model.edit { var m = $0.mosaic; m.coverFaces = v; $0.mosaic = m } }))
+            LumiToggleRow(title: "Chat screenshot", subtitle: "Covers names and message text", isOn: Binding(get: { model.draft.mosaic.chatMode }, set: { v in model.edit { var m = $0.mosaic; m.chatMode = v; $0.mosaic = m } }))
+            HStack { Text("Drag on the photo to cover an area by hand.").font(.footnote).foregroundStyle(LumiColor.textSecondary); Spacer(); LumiChip(title: "Clear") { model.edit { $0.mosaic = MosaicConfig() } } }
         }
     }
 }
@@ -1113,7 +1097,7 @@ struct HairPanel: View {
                 LumiToggleRow(title: "Keep background straight", subtitle: nil, isOn: .constant(true)).disabled(true).opacity(0.6)
             case .brush:
                 LumiToggleRow(title: "Brush the hair area", subtitle: "Add what was missed, erase what is not hair, fill thin spots", isOn: $model.hairBrushActive)
-                LumiSegmented(items: [(HairBrushMode.add, "Add"), (HairBrushMode.erase, "Erase"), (HairBrushMode.fill, "Fill")], selection: $model.hairBrushMode, height: 40)
+                LumiSegmented(items: [(HairBrushMode.add, LocalizedStringKey("Add")), (HairBrushMode.erase, LocalizedStringKey("Erase")), (HairBrushMode.fill, LocalizedStringKey("Fill"))], selection: $model.hairBrushMode, height: 40)
                 if model.draft.hair.add != nil || model.draft.hair.remove != nil { LumiChip(title: "Reset brush edits", symbol: "arrow.counterclockwise") { model.edit { var h = $0.hair; h.add = nil; h.remove = nil; h.fill = nil; $0.hair = h }; model.refreshHairOverlay() } }
             }
         }
@@ -1181,11 +1165,11 @@ struct CleanPanel: View {
     @Bindable var model: EditorModel
     var body: some View {
         VStack(spacing: 4) {
-            Text("Paint over what to hide. It is covered with the area at the offset.").font(.caption).foregroundStyle(.secondary)
+            Text("Paint over what to hide. It is covered with the area at the offset.").font(.footnote).foregroundStyle(LumiColor.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
             slider("Source ←→", \.offsetX, -0.5...0.5)
             slider("Source ↑↓", \.offsetY, -0.5...0.5)
             slider("Noise reduction", \.denoise, 0...1)
-            Button("Clear clone") { model.edit { var c = $0.clean; c.cloneMask = nil; $0.clean = c } }.buttonStyle(LumiButtonStyle())
+            HStack { LumiChip(title: "Clear clone", symbol: "xmark") { model.edit { var c = $0.clean; c.cloneMask = nil; $0.clean = c } }; Spacer() }
         }
     }
     private func slider(_ title: String, _ path: WritableKeyPath<CleanConfig, Double>, _ range: ClosedRange<Double>) -> some View {

@@ -48,7 +48,7 @@ struct RemoverPanel: View {
 
     private func brush(_ r: RemoverModel) -> some View {
         VStack(spacing: 10) {
-            LumiSegmented(items: [(RemoverModel.Mode.brush, "Paint"), (RemoverModel.Mode.box, "Box")], selection: Bindable(r).mode, height: 38)
+            LumiSegmented(items: [(RemoverModel.Mode.brush, LocalizedStringKey("Paint")), (RemoverModel.Mode.box, LocalizedStringKey("Box"))], selection: Bindable(r).mode, height: 38)
             LumiSliderRow(title: "Size", value: Bindable(r).brushSize, range: 0.01...0.15, defaultValue: 0.04, onEnd: {}).disabled(r.mode == .box).opacity(r.mode == .box ? 0.5 : 1)
             removeBar(r)
         }
