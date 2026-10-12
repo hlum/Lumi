@@ -24,3 +24,18 @@ if [ ! -d SIGGraph17Colorizer.mlpackage ]; then
   rm -f sig17.zip
   rm -rf __MACOSX
 fi
+
+if [ ! -d FaceParsing.mlpackage ]; then
+  base=https://huggingface.co/mlboydaisuke/Face-Parsing-CoreML/resolve/main/FaceParsing.mlpackage
+  mkdir -p FaceParsing.mlpackage/Data/com.apple.CoreML
+  curl -fsSL "$base/Manifest.json" -o FaceParsing.mlpackage/Manifest.json
+  curl -fsSL "$base/Data/com.apple.CoreML/model.mlmodel" -o FaceParsing.mlpackage/Data/com.apple.CoreML/model.mlmodel
+fi
+
+if [ ! -d BiRefNetLite.mlpackage ]; then
+  base=https://huggingface.co/metaclass/birefnet-lite-coreml/resolve/main/fp16compute-fp32io/r1/BiRefNetLite-1024-FP16Compute-FP32IO.mlpackage
+  mkdir -p BiRefNetLite.mlpackage/Data/com.apple.CoreML/weights
+  curl -fsSL "$base/Manifest.json" -o BiRefNetLite.mlpackage/Manifest.json
+  curl -fsSL "$base/Data/com.apple.CoreML/model.mlmodel" -o BiRefNetLite.mlpackage/Data/com.apple.CoreML/model.mlmodel
+  curl -fsSL "$base/Data/com.apple.CoreML/weights/weight.bin" -o BiRefNetLite.mlpackage/Data/com.apple.CoreML/weights/weight.bin
+fi

@@ -373,5 +373,35 @@
     "modifiedNote": null,
     "dateAdded": "2026-10-12",
     "selfMade": true
+  },
+  {
+    "files": [
+      "Models/FaceParsing.mlpackage"
+    ],
+    "title": "Face parsing (BiSeNet, Core ML conversion)",
+    "author": "zllrunning (face-parsing.PyTorch); Core ML conversion by john-rocky (mlboydaisuke/Face-Parsing-CoreML)",
+    "sourceURL": "https://huggingface.co/mlboydaisuke/Face-Parsing-CoreML",
+    "license": "MIT",
+    "licenseURL": "https://opensource.org/license/mit",
+    "attribution": "BiSeNet face parsing trained on CelebAMask-HQ, MIT License. Core ML conversion by john-rocky.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
+  },
+  {
+    "files": [
+      "Models/BiRefNetLite.mlpackage"
+    ],
+    "title": "BiRefNet Lite (Core ML conversion)",
+    "author": "Peng Zheng et al. (ZhengPeng7/BiRefNet); Core ML conversion by metaclass (miracle2k/birefnet-lite-coreml)",
+    "sourceURL": "https://huggingface.co/metaclass/birefnet-lite-coreml",
+    "license": "MIT",
+    "licenseURL": "https://opensource.org/license/mit",
+    "attribution": "BiRefNet: Bilateral Reference for High-Resolution Dichotomous Image Segmentation, MIT License. Lite variant converted to Core ML by metaclass.",
+    "modified": false,
+    "modifiedNote": null,
+    "dateAdded": "2026-10-12",
+    "selfMade": false
   }
 ]

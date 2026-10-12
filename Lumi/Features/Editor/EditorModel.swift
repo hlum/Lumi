@@ -93,13 +93,16 @@ final class EditorModel {
         if cropEditing { live.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1) }
         // the view reads this several times per update: render once per distinct edit
         if let c = previewCache, c.doc == live, c.proxy == proxy.extent { return c.image }
-        if live.needsSlowPreview {
-            // the same render the export does, just off the main thread and after the slider has settled
+        // models never run on the main thread: a cache miss is noted and the edit is drawn in the background with the same pipeline as the export
+        let services = Renderer.services
+        services.clearMissed(); services.deferMissesOnMain = true
+        let image = live.needsSlowPreview ? Renderer.render(proxy, document: live.withoutSlowOps) : Renderer.render(proxy, document: live)
+        services.deferMissesOnMain = false
+        if live.needsSlowPreview || services.missedOnMain {
             if slowDoc != live { scheduleSlowPreview(live, proxy: proxy) }
-            return slowImage ?? Renderer.render(proxy, document: live.withoutSlowOps)
+            return live.needsSlowPreview ? (slowImage ?? image) : image
         }
         if slowDoc != nil { slowDoc = nil; slowTask?.cancel(); Task { self.isRendering = false } }
-        let image = Renderer.render(proxy, document: live)
         previewCache = (live, proxy.extent, image)
         return image
     }

@@ -36,12 +36,18 @@ enum Renderer {
         private(set) var faceCacheKeyCount = 0
         fileprivate func remember(faces: [FaceInfo], key: String) { lock.withLock { _faceCache = (key, faces); faceCacheKeyCount += 1 } }
         private var cache: [String: CIImage] = [:]
+        /// While the main thread draws a preview, a cache miss is skipped (and noted) instead of running a model there; the editor then renders the edit in the background.
+        nonisolated(unsafe) var deferMissesOnMain = false
+        private var _missed = false
+        var missedOnMain: Bool { lock.withLock { _missed } }
+        func clearMissed() { lock.withLock { _missed = false } }
         private(set) var inpaintCalls = 0
         private(set) var keysSeen: [String] = []
         init(inpainter: Inpainting? = nil) { self.inpainter = inpainter }
         func cached(_ key: String, _ make: () throws -> CIImage?) rethrows -> CIImage? {
             let hit: CIImage? = lock.withLock { keysSeen.append(key); return cache[key] }
             if let hit { return hit }
+            if deferMissesOnMain, Thread.isMainThread { lock.withLock { _missed = true }; return nil }
             guard let v = try make() else { return nil }
             lock.withLock {
                 if cache.count > 8 { cache.removeAll() }

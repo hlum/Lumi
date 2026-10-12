@@ -49,6 +49,9 @@ struct ModelEntry: Codable, Equatable, Identifiable {
     var io: [String: String]              // role -> the model's own feature name
     var side: Int?
     var scale: Int?
+    var classIndex: Int?                  // for class-map outputs: the value that means "this is it" (hair = 17 in face parsing)
+    var normalize: String?                // "imagenet": model takes a normalised float array instead of an image
+    var units: String?                    // "cpuAndGPU" when the model was converted for the GPU only
     var bundled = false
 
     /// Roles the slot needs that the entry does not map.
@@ -56,6 +59,8 @@ struct ModelEntry: Codable, Equatable, Identifiable {
 
     static let bundledDefaults: [ModelEntry] = [
         ModelEntry(id: "lama", slot: .inpaint, title: "LaMa", version: "1", author: "Suvorov et al.; Core ML by john-rocky", license: "Apache-2.0", source: "huggingface.co/mlboydaisuke/LaMa-CoreML", file: "LaMa.mlmodelc", io: ["image": "image", "mask": "mask", "output": "output"], side: 800, bundled: true),
+        ModelEntry(id: "face-parsing", slot: .hairSegmentation, title: "Face parsing (BiSeNet)", author: "zllrunning; Core ML by john-rocky", license: "MIT", source: "huggingface.co/mlboydaisuke/Face-Parsing-CoreML", file: "FaceParsing.mlmodelc", io: ["input": "input", "output": "argmax_out"], side: 512, classIndex: 17, units: "cpuOnly", bundled: true),
+        ModelEntry(id: "birefnet-lite", slot: .personMatting, title: "BiRefNet Lite", author: "Peng Zheng et al.; Core ML by metaclass", license: "MIT", source: "huggingface.co/metaclass/birefnet-lite-coreml", file: "BiRefNetLite.mlmodelc", io: ["input": "image", "output": "mask_logits"], side: 1024, normalize: "imagenet", units: "cpuOnly", bundled: true),
         ModelEntry(id: "realesrgan-x4", slot: .upscale, title: "Real-ESRGAN x4", author: "Xintao Wang et al.", license: "BSD-3-Clause", source: "huggingface.co/mlboydaisuke/Real-ESRGAN-x4-CoreML", file: "RealESRGAN_x4.mlmodelc", io: ["input": "input", "output": "activation_out"], side: 512, scale: 4, bundled: true),
         ModelEntry(id: "siggraph17", slot: .colorize, title: "SIGGRAPH 2017 colorizer", author: "Zhang et al.", license: "BSD-2-Clause", source: "huggingface.co/c2p-cmd/bw_colorizer_coreml", file: "SIGGraph17Colorizer.mlmodelc", io: ["input": "input1", "output": "var_518"], side: 512, bundled: true),
     ]
@@ -117,11 +122,20 @@ final class ModelStore {
 
     func isAvailable(_ slot: ModelSlot) -> Bool { active(slot) != nil }
 
-    /// Loads the slot's active model.
-    func load(_ slot: ModelSlot, computeUnits: MLComputeUnits = .all) throws -> (model: MLModel, entry: ModelEntry) {
+    private var loaded: [ModelSlot: (id: String, revision: Int, model: MLModel)] = [:]
+
+    /// Loads the slot's active model. Loading a big model takes seconds, so it is kept until a swap changes `revision`.
+    func load(_ slot: ModelSlot, computeUnits: MLComputeUnits? = nil) throws -> (model: MLModel, entry: ModelEntry) {
         guard let e = active(slot), let u = url(for: e) else { throw ModelStoreError.notFound(slot.rawValue) }
-        let cfg = MLModelConfiguration(); cfg.computeUnits = computeUnits
-        return (try MLModel(contentsOf: u, configuration: cfg), e)
+        let units = computeUnits ?? (e.units == "cpuAndGPU" ? .cpuAndGPU : e.units == "cpuOnly" ? .cpuOnly : .all)
+        lock.lock()
+        if computeUnits == nil, let c = loaded[slot], c.id == e.id, c.revision == revision { lock.unlock(); return (c.model, e) }
+        let rev = revision
+        lock.unlock()
+        let cfg = MLModelConfiguration(); cfg.computeUnits = units
+        let m = try MLModel(contentsOf: u, configuration: cfg)
+        if computeUnits == nil { lock.lock(); loaded[slot] = (e.id, rev, m); lock.unlock() }
+        return (m, e)
     }
 
     // MARK: changes

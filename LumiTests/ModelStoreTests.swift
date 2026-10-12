@@ -19,9 +19,9 @@ struct ModelStoreTests {
         return e
     }
 
-    @Test func defaultsDescribeTheThreeBundledModels() {
+    @Test func defaultsDescribeTheBundledModels() {
         let d = ModelEntry.bundledDefaults
-        #expect(Set(d.map(\.slot)) == [.inpaint, .upscale, .colorize])
+        #expect(Set(d.map(\.slot)) == [.inpaint, .upscale, .colorize, .hairSegmentation, .personMatting])
         for e in d { #expect(e.bundled && e.missingRoles.isEmpty && e.file.hasSuffix(".mlmodelc"), "\(e.id)") }
         #expect(d.first { $0.slot == .inpaint }?.side == 800 && d.first { $0.slot == .upscale }?.scale == 4)
     }

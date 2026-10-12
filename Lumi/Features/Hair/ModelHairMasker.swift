@@ -23,35 +23,79 @@ enum MaskDecode {
     }
 }
 
-/// Hair mask from a Core ML segmentation model installed in the `hairSegmentation` slot (see docs/models.md).
+/// Reads a model's output array as a mask plane at its own size, for the shapes segmentation models use.
+enum MaskModelOutput {
+    /// Class maps (`classIndex` set) become 0/255 where the class matches; probability or logit planes are squashed to 0...255.
+    static func plane(_ arr: MLMultiArray, channel: Int = 0, classIndex: Int?) -> (bytes: [UInt8], width: Int, height: Int)? {
+        let shape = arr.shape.map(\.intValue)
+        guard let p = MaskDecode.extract(floats(arr), shape: shape, channel: channel) else { return nil }
+        if let classIndex { return (p.plane.map { Int($0.rounded()) == classIndex ? 255 : 0 }, p.width, p.height) }
+        return (MaskDecode.plane(p.plane), p.width, p.height)
+    }
+
+    static func floats(_ arr: MLMultiArray) -> [Float] {
+        let n = arr.count
+        switch arr.dataType {
+        case .float32: return Array(UnsafeBufferPointer(start: arr.dataPointer.assumingMemoryBound(to: Float.self), count: n))
+        case .float16: return Array(UnsafeBufferPointer(start: arr.dataPointer.assumingMemoryBound(to: Float16.self), count: n)).map(Float.init)
+        default: return (0..<n).map { arr[$0].floatValue }
+        }
+    }
+
+    static func image(_ bytes: [UInt8], width: Int, height: Int) -> CIImage? {
+        guard let provider = CGDataProvider(data: Data(bytes) as CFData),
+              let cg = CGImage(width: width, height: height, bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue), provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { return nil }
+        return CIImage(cgImage: cg)
+    }
+}
+
+/// Hair mask from the Core ML model in the `hairSegmentation` slot (face parsing by default; see docs/models.md).
+/// The model works on a square window, so each face gets its own window around the head: far more pixels on the hair than one pass over the whole photo.
 struct ModelHairMasker: HairMasking {
     var store: ModelStore = .shared
     var channel = 0
+    var faces: FaceFinding?
+
+    /// Square window (pixels, y-up like Core Image) around a face box that takes in the hair: a little above centre.
+    static func window(forFace box: CGRect, in extent: CGRect) -> CGRect {
+        let w = box.width * extent.width, h = box.height * extent.height
+        let side = max(w, h) * 2.3
+        let cx = extent.minX + box.midX * extent.width, cy = extent.minY + box.midY * extent.height + side * 0.1
+        return CGRect(x: cx - side / 2, y: cy - side / 2, width: side, height: side)
+    }
 
     func hairMasks(in image: CIImage) throws -> [CIImage] {
         let (model, entry) = try store.load(.hairSegmentation)
-        let side = entry.side ?? 512
         let e = image.extent
-        let ctx = CIContext()
+        let found = (try? (faces ?? Renderer.services.faceFinder)?.faceBoxes(in: image)) ?? []
+        let windows = found.isEmpty ? [CGRect(x: e.midX - max(e.width, e.height) / 2, y: e.midY - max(e.width, e.height) / 2, width: max(e.width, e.height), height: max(e.width, e.height))]
+                                    : found.map { Self.window(forFace: $0, in: e) }
+        var total = CIImage(color: .black).cropped(to: e)
+        for w in windows {
+            guard let part = try mask(in: image, window: w, model: model, entry: entry) else { continue }
+            total = part.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: total]).cropped(to: e)
+        }
+        return [total]
+    }
+
+    private func mask(in image: CIImage, window: CGRect, model: MLModel, entry: ModelEntry) throws -> CIImage? {
+        let side = entry.side ?? 512
         var pb: CVPixelBuffer?
         guard CVPixelBufferCreate(nil, side, side, kCVPixelFormatType_32BGRA, [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary, &pb) == kCVReturnSuccess, let pb else { throw InpaintError.bufferFailed }
-        let scaled = image.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY)).transformed(by: CGAffineTransform(scaleX: CGFloat(side) / e.width, y: CGFloat(side) / e.height))
-        ctx.render(scaled, to: pb, bounds: CGRect(x: 0, y: 0, width: side, height: side), colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
+        let crop = image.clampedToExtent().cropped(to: window).transformed(by: CGAffineTransform(translationX: -window.minX, y: -window.minY)).transformed(by: CGAffineTransform(scaleX: CGFloat(side) / window.width, y: CGFloat(side) / window.height))
+        CIContext().render(crop, to: pb, bounds: CGRect(x: 0, y: 0, width: side, height: side), colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
         let out = try model.prediction(from: MLDictionaryFeatureProvider(dictionary: [entry.io["input"] ?? "input": MLFeatureValue(pixelBuffer: pb)]))
         guard let f = out.featureValue(for: entry.io["output"] ?? "output") else { throw InpaintError.predictionFailed }
         let small: CIImage
         if let buf = f.imageBufferValue {
             small = CIImage(cvPixelBuffer: buf).applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: 1, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 1, y: 0, z: 0, w: 0), "inputBVector": CIVector(x: 1, y: 0, z: 0, w: 0)])
         } else if let arr = f.multiArrayValue {
-            let flat = (0..<arr.count).map { arr[$0].floatValue }
-            guard let p = MaskDecode.extract(flat, shape: arr.shape.map(\.intValue), channel: channel) else { throw InpaintError.predictionFailed }
-            let bytes = MaskDecode.plane(p.plane)
-            guard let provider = CGDataProvider(data: Data(bytes) as CFData),
-                  let cg = CGImage(width: p.width, height: p.height, bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: p.width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue), provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { throw InpaintError.predictionFailed }
-            small = CIImage(cgImage: cg)
+            guard let p = MaskModelOutput.plane(arr, channel: channel, classIndex: entry.classIndex), let img = MaskModelOutput.image(p.bytes, width: p.width, height: p.height) else { throw InpaintError.predictionFailed }
+            small = img
         } else { throw InpaintError.predictionFailed }
-        let mask = small.transformed(by: CGAffineTransform(scaleX: e.width / small.extent.width, y: e.height / small.extent.height)).transformed(by: CGAffineTransform(translationX: e.minX, y: e.minY)).cropped(to: e)
-        return [mask]
+        // soften the hard class edge a little before scaling it to the window
+        let soft = small.clampedToExtent().applyingGaussianBlur(sigma: entry.classIndex == nil ? 0 : 1.2).cropped(to: small.extent)
+        return soft.transformed(by: CGAffineTransform(scaleX: window.width / small.extent.width, y: window.height / small.extent.height)).transformed(by: CGAffineTransform(translationX: window.minX, y: window.minY)).cropped(to: window.intersection(image.extent))
     }
 }
 

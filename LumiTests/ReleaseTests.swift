@@ -33,12 +33,12 @@ struct ReleaseTests {
         #expect(Credits.problems(in: entries).isEmpty)
         // every model that ships is credited
         let files = Set(entries.flatMap(\.files))
-        for m in ["Models/LaMa.mlpackage", "Models/RealESRGAN_x4.mlpackage", "Models/SIGGraph17Colorizer.mlpackage"] { #expect(files.contains(m), "\(m)") }
+        for m in ["Models/LaMa.mlpackage", "Models/RealESRGAN_x4.mlpackage", "Models/SIGGraph17Colorizer.mlpackage", "Models/FaceParsing.mlpackage", "Models/BiRefNetLite.mlpackage"] { #expect(files.contains(m), "\(m)") }
     }
 
     @Test func modelsReferencedByCreditsExistInTheBundleOrAreFetched() {
         // the three models are fetched by scripts/fetch_models.sh; when they're present they must load
-        for name in ["LaMa", "RealESRGAN_x4", "SIGGraph17Colorizer"] {
+        for name in ["LaMa", "RealESRGAN_x4", "SIGGraph17Colorizer", "FaceParsing", "BiRefNetLite"] {
             if let url = Bundle.main.url(forResource: name, withExtension: "mlmodelc") { #expect(FileManager.default.fileExists(atPath: url.path)) }
         }
     }
