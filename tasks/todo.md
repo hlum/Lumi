@@ -122,7 +122,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 
 **Phase 10: Live Photos**
 - [ ] T66 Live Photo editor
-- [ ] T67 Live overlays and conversion
+- [~] T67 Live overlays and conversion
 - [ ] T68 Live collage and batch
 - [ ] ⏸ Checkpoint 10
 
@@ -158,7 +158,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 **Phase 14: App shell, polish, release**
 - [~] T89 Home, Tools, search, tutorials
 - [~] T90 Settings and attributions
-- [ ] T91 Widgets, Control, Shortcuts
+- [~] T91 Widgets, Control, Shortcuts
 - [~] T92 Long jobs and recent tasks
 - [~] T93 Localization
 - [ ] T94 Performance, memory, accessibility

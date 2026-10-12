@@ -15,10 +15,11 @@ enum RootTab: String, CaseIterable, Identifiable {
 }
 
 struct RootTabView: View {
+    @State private var route = AppRoute.shared
     var body: some View {
-        TabView {
+        TabView(selection: $route.tab) {
             ForEach(RootTab.allCases) { tab in
-                Tab(tab.rawValue, systemImage: tab.symbol) {
+                Tab(tab.rawValue, systemImage: tab.symbol, value: tab) {
                     NavigationStack {
                         if tab == .home { HomeView() }
                         else if tab == .camera { CameraView() }

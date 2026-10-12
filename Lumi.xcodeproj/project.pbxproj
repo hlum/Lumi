@@ -51,6 +51,7 @@
 		2B428336931DE42B36FE7E1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE509B7E09EAD4881D427FE /* Assets.xcassets */; };
 		2DCC9D0ACAE306EFA4366917 /* Upscaler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */; };
 		3000A029E09623068E131F57 /* CollageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */; };
+		303459E0FE7B21A3D70A2609 /* LiveOverlays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C29CD89E5EA747EE44F2895 /* LiveOverlays.swift */; };
 		305862DC81592F78F94CA527 /* StickerLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68F615D6BB3D71E94B3D34A /* StickerLibrary.swift */; };
 		30D91C257C34D1091A684B33 /* MeshWarpRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B53042909EF9D28ADB9E88 /* MeshWarpRendererTests.swift */; };
 		31DB8323406C1443954751F6 /* BatchRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5640ED3C828F66CC06F9C3 /* BatchRunner.swift */; };
@@ -140,6 +141,7 @@
 		96E0918EA8AB7BDE14ADA24F /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7680359B152AF9B99D15073 /* CameraController.swift */; };
 		9708CF64B6113135C9A44DCA /* id-specs.json in Resources */ = {isa = PBXBuildFile; fileRef = 88772FDC0AE6F2EB3C080BAA /* id-specs.json */; };
 		97BCEDBB2289EFD5120897F8 /* fixture.json in Resources */ = {isa = PBXBuildFile; fileRef = 5E78D5B610E53FA8AD5383B2 /* fixture.json */; };
+		97C45F5728A1CB7B074D5A4B /* AppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54685C22FF7DC6494AC7D235 /* AppShortcuts.swift */; };
 		9821D502F3EB124C0C60417D /* GeometryOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE13258B4F65203F283ABBC /* GeometryOps.swift */; };
 		9948E6D438301B2FEC3B02A8 /* JobQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758E2EDB9B3AA8DA13668ABB /* JobQueueTests.swift */; };
 		99A436F6C64A32889BCDB426 /* BodyReshapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721EBCF30A38FD687AAADCEF /* BodyReshapeTests.swift */; };
@@ -171,6 +173,7 @@
 		BF7F8CD029F0EBD1795A3789 /* UndoStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37799625D155A95BB0A1A3D5 /* UndoStackTests.swift */; };
 		C1419303283E45506C8629FB /* PersonTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4411F910665922CEBCCE048 /* PersonTarget.swift */; };
 		C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338C1ECF08D0026F2F0775CB /* ExpandTests.swift */; };
+		C1EE620D12DF6D59CC2C3A0B /* AppRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B7FCF8967B17F90CFDFB93 /* AppRouteTests.swift */; };
 		C28D4F3905F5DE49C2942375 /* WatermarkRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4268CE74382D6CF44D34E /* WatermarkRenderer.swift */; };
 		C346B9FF37A601AC6955D925 /* WallpaperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A9FA629EDEB66B20C2D76D /* WallpaperView.swift */; };
 		C563DFC87E175D83C1337861 /* AutoStraighten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0C564B9C71FA8726FCBA98 /* AutoStraighten.swift */; };
@@ -218,8 +221,10 @@
 		F67AD6F02B9512BA43801A9B /* Content in Resources */ = {isa = PBXBuildFile; fileRef = 3E077721CC782EB59A850370 /* Content */; };
 		F7840F7A78F842A9518A303C /* MosaicConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */; };
 		FA16BE874A77EF03C16C62E2 /* CustomStickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2354F623C6B2A8255A9876AD /* CustomStickers.swift */; };
+		FD8882E0769ED7939AFDEEFB /* LiveConvertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31433AC97ACCC1BCFFD76BC9 /* LiveConvertTests.swift */; };
 		FDB310141084436A06A14F65 /* TextStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E9E64080230EEA3F3B18FE /* TextStyleTests.swift */; };
 		FDEA484ECA88EC8844DB37AC /* MaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA64D5414C71B52DE53B625 /* MaskStore.swift */; };
+		FE68646694ED7AE2AD506123 /* LiveConvert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59230821C5CAAE1A6DCE7C8 /* LiveConvert.swift */; };
 		FFA3FBFD29635B07F0D1081C /* WatermarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F815AFAF590676D5E14C0518 /* WatermarkTests.swift */; };
 		FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285DE6546B441D0BEC50F540 /* LayoutTests.swift */; };
 /* End PBXBuildFile section */
@@ -247,6 +252,7 @@
 		13A63C89407FE7AD33C7ED2A /* Smoothing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Smoothing.swift; sourceTree = "<group>"; };
 		14C2A8865BAA7EB3472CECAA /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
 		14C8B0CC494B2360A9091052 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		15B7FCF8967B17F90CFDFB93 /* AppRouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouteTests.swift; sourceTree = "<group>"; };
 		15C7C110D8246CE6F822D022 /* JobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrushMaterials.swift; sourceTree = "<group>"; };
 		16E38351FDAF036F93AFF551 /* SkinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinTests.swift; sourceTree = "<group>"; };
@@ -264,11 +270,13 @@
 		285DE6546B441D0BEC50F540 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
 		29DD2F4D0FA68157AA975166 /* OverlapFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapFinder.swift; sourceTree = "<group>"; };
 		2B54BF1BE2AE588D43004916 /* AutoBeauty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoBeauty.swift; sourceTree = "<group>"; };
+		2C29CD89E5EA747EE44F2895 /* LiveOverlays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveOverlays.swift; sourceTree = "<group>"; };
 		2D3E37A0402B6B7066566B9E /* CustomStickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomStickerTests.swift; sourceTree = "<group>"; };
 		2D4F40D958E8AEADCBA1DCC8 /* FaceRetouch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRetouch.swift; sourceTree = "<group>"; };
 		2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTargetTests.swift; sourceTree = "<group>"; };
 		2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStore.swift; sourceTree = "<group>"; };
 		3037684EC9790617FB2CFC8A /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
+		31433AC97ACCC1BCFFD76BC9 /* LiveConvertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveConvertTests.swift; sourceTree = "<group>"; };
 		336D9D25B8DC482C4BCE4290 /* EyeMakeup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeMakeup.swift; sourceTree = "<group>"; };
 		338C1ECF08D0026F2F0775CB /* ExpandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandTests.swift; sourceTree = "<group>"; };
 		34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicWatermarkRenderTests.swift; sourceTree = "<group>"; };
@@ -301,6 +309,7 @@
 		4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarp.swift; sourceTree = "<group>"; };
 		4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTransfer.swift; sourceTree = "<group>"; };
 		4FFF9DBEC384E6F9CE564684 /* BatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchModel.swift; sourceTree = "<group>"; };
+		54685C22FF7DC6494AC7D235 /* AppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShortcuts.swift; sourceTree = "<group>"; };
 		54802D0010B339E8A4721CF8 /* MaterialCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialCatalog.swift; sourceTree = "<group>"; };
 		560797701B1E028267073F3C /* TemporalBlend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporalBlend.swift; sourceTree = "<group>"; };
 		56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageView.swift; sourceTree = "<group>"; };
@@ -440,6 +449,7 @@
 		F3753A050A36D6AA1F5FF2D7 /* LayoutModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutModel.swift; sourceTree = "<group>"; };
 		F3FEE7607257A6BD77C4A8AD /* InpainterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InpainterTests.swift; sourceTree = "<group>"; };
 		F5107722F421BA333413EB76 /* IDSpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDSpecTests.swift; sourceTree = "<group>"; };
+		F59230821C5CAAE1A6DCE7C8 /* LiveConvert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveConvert.swift; sourceTree = "<group>"; };
 		F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upscaler.swift; sourceTree = "<group>"; };
 		F63424F170CCB1684521FEDA /* VideoExtrasTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoExtrasTests.swift; sourceTree = "<group>"; };
 		F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDocumentTests.swift; sourceTree = "<group>"; };
@@ -699,6 +709,7 @@
 		8AF4B291295C59BDECDE9C9C /* App */ = {
 			isa = PBXGroup;
 			children = (
+				54685C22FF7DC6494AC7D235 /* AppShortcuts.swift */,
 				97E2F88951C047018D76E36B /* Info.plist */,
 				36FF2A7E17B8FA13B5EA89A6 /* LumiApp.swift */,
 				C774554353642B4CCB68C0E1 /* RootTabView.swift */,
@@ -857,6 +868,15 @@
 			path = Render;
 			sourceTree = "<group>";
 		};
+		C438F05B486E69AA7DF5ECCB /* Live */ = {
+			isa = PBXGroup;
+			children = (
+				F59230821C5CAAE1A6DCE7C8 /* LiveConvert.swift */,
+				2C29CD89E5EA747EE44F2895 /* LiveOverlays.swift */,
+			);
+			path = Live;
+			sourceTree = "<group>";
+		};
 		C50C7A90D2F69D7DE58A038F /* Quality */ = {
 			isa = PBXGroup;
 			children = (
@@ -870,6 +890,7 @@
 			children = (
 				00CB54734EA84D000EC73612 /* AdjustOpsTests.swift */,
 				F2BAD77E9D8068EBDBB15F8A /* AnalysisTests.swift */,
+				15B7FCF8967B17F90CFDFB93 /* AppRouteTests.swift */,
 				97C77900A5EA72B04A78ECEE /* AudioTrackTests.swift */,
 				4BF97E50C1DAAC31F45CC303 /* AutoMosaicTests.swift */,
 				E457AF41C440227957E07867 /* AutoRemoveTests.swift */,
@@ -910,6 +931,7 @@
 				4ACA4FD8528C53B16655AF54 /* KeyframeTests.swift */,
 				0B63F36950C679A1C4FC7975 /* LayerTests.swift */,
 				285DE6546B441D0BEC50F540 /* LayoutTests.swift */,
+				31433AC97ACCC1BCFFD76BC9 /* LiveConvertTests.swift */,
 				C27AF610CC6461065AED466A /* LocalizationTests.swift */,
 				4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */,
 				ADBE340D78C4F6456AA07B3C /* MakeupLooksTests.swift */,
@@ -1027,6 +1049,7 @@
 				BF7A70EDF3E5B9E02FD5A77D /* Hair */,
 				465A74471EBE1819EF6D5250 /* Home */,
 				1965C44526CC9AC17A759792 /* IDPhoto */,
+				C438F05B486E69AA7DF5ECCB /* Live */,
 				F4D857B75F093BC0E3C9B4CC /* Makeup */,
 				E4DFC5A94DA787F62BC5193C /* Materials */,
 				50A47421F346797698007488 /* Mosaic */,
@@ -1206,6 +1229,7 @@
 				22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */,
 				3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */,
 				11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */,
+				97C45F5728A1CB7B074D5A4B /* AppShortcuts.swift in Sources */,
 				6D13D92D91C2016F60887620 /* AudioTrackModel.swift in Sources */,
 				A3A928882F4F01F997BE2971 /* AutoBeauty.swift in Sources */,
 				CEFB67261AB35CDDD936C623 /* AutoMosaic.swift in Sources */,
@@ -1265,6 +1289,8 @@
 				3519E3F6D325CA5970B3DA53 /* Layer.swift in Sources */,
 				A410B883767CB10E1F9A3ACE /* LayerRenderer.swift in Sources */,
 				84246047A286D716C1077A36 /* LayoutModel.swift in Sources */,
+				FE68646694ED7AE2AD506123 /* LiveConvert.swift in Sources */,
+				303459E0FE7B21A3D70A2609 /* LiveOverlays.swift in Sources */,
 				01500DBC9F403E7D92B02912 /* LumiApp.swift in Sources */,
 				4F5BE7B6D8552909CE7DEF4B /* MakeupLooks.swift in Sources */,
 				99D653B8C904143C21F97409 /* MakeupRenderer.swift in Sources */,
@@ -1335,6 +1361,7 @@
 			files = (
 				47F67848F1442525E09DEAB6 /* AdjustOpsTests.swift in Sources */,
 				B0CFAECF0BBE0A7EEFE9038D /* AnalysisTests.swift in Sources */,
+				C1EE620D12DF6D59CC2C3A0B /* AppRouteTests.swift in Sources */,
 				58152B2022BEA27657019F9A /* AudioTrackTests.swift in Sources */,
 				039F18F5B28D0A44917FD62C /* AutoMosaicTests.swift in Sources */,
 				F5B9B4E42B12238904D5FA17 /* AutoRemoveTests.swift in Sources */,
@@ -1376,6 +1403,7 @@
 				AE7380328C936A4527FD94AB /* LUTTests.swift in Sources */,
 				B99B08640B1E2407CB560C15 /* LayerTests.swift in Sources */,
 				FFB55B20772653D05A931F5B /* LayoutTests.swift in Sources */,
+				FD8882E0769ED7939AFDEEFB /* LiveConvertTests.swift in Sources */,
 				CB42CE4AD60C00CD1A948136 /* LocalizationTests.swift in Sources */,
 				943E8A0C2D6F86A8AEF6DE31 /* MakeupLooksTests.swift in Sources */,
 				E8E092FF72FAE33A15E26EA1 /* MakeupPlacementTests.swift in Sources */,
