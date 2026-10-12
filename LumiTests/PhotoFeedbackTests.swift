@@ -127,3 +127,13 @@ struct PhotoFeedbackTests {
         #expect(!changed.isEmpty && abs(centre - 40) < 15, "changed rows centre at CI y \(centre) (expected near 40)")
     }
 }
+
+/// Vision's joint names are anatomical; the reshape rules must get every joint they ask for.
+struct BodyJointNameTests {
+    @Test func everyJointTheRulesUseComesOutOfVision() {
+        let given = Set(VisionBodyFinder.names.values)
+        for n in ["left_hip_1_joint", "right_hip_1_joint", "left_knee_1_joint", "right_knee_1_joint", "left_ankle_1_joint", "right_ankle_1_joint",
+                  "left_elbow_1_joint", "right_elbow_1_joint", "left_shoulder_1_joint", "right_shoulder_1_joint", "neck_1_joint"] { #expect(given.contains(n), "\(n)") }
+        #expect(VisionBodyFinder.names[.leftHip] == "left_hip_1_joint" && VisionBodyFinder.names[.leftKnee] == "left_knee_1_joint")
+    }
+}

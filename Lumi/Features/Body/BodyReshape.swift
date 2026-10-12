@@ -82,12 +82,12 @@ enum BodyReshape {
         if p.waist != 0, let ls, let rs, let lh, let rh {
             let w = lerp(mid(ls, rs)!, mid(lh, rh)!, 0.6)
             let (l, r) = edges(y: Double(w.y), joint: lerp(ls, lh, 0.6), lerp(rs, rh, 0.6), grow: 1.5)
-            squeeze(l, r, amount: p.waist, radius: Float(dist(ls, lh)) * 0.5, out: &out, reach: 0.12)
+            squeeze(l, r, amount: p.waist, radius: Float(dist(ls, lh)) * 0.5, out: &out, reach: 0.025)
         }
         // Hips: squeeze (positive slims) at the hip outline.
         if p.hips != 0, let lh, let rh {
             let (l, r) = edges(y: Double(mid(lh, rh)!.y) + Double(dist(lh, rh)) * 0.2, joint: lh, rh, grow: 1.9)
-            squeeze(l, r, amount: p.hips, radius: Float(abs(rh.x - lh.x)) * 1.1, out: &out, reach: 0.12)
+            squeeze(l, r, amount: p.hips, radius: Float(abs(rh.x - lh.x)) * 1.1, out: &out, reach: 0.025)
         }
         // Shoulders: positive widens, so push outward (negative squeeze).
         if p.shoulder != 0, let ls, let rs {

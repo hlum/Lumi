@@ -22,12 +22,24 @@ struct BodyRetouch: Codable, Equatable {
 protocol BodyFinding { func poses(in image: CIImage) throws -> [[String: CGPoint]] }
 
 struct VisionBodyFinder: BodyFinding {
+    /// Vision's raw names are anatomical ("left_upLeg_joint" is the hip, "left_leg_joint" the knee, "left_foot_joint" the ankle,
+    /// "left_forearm_joint" the elbow); the reshape rules use the plain names below.
+    static let names: [VNHumanBodyPoseObservation.JointName: String] = [
+        .neck: "neck_1_joint", .root: "root",
+        .leftShoulder: "left_shoulder_1_joint", .rightShoulder: "right_shoulder_1_joint",
+        .leftElbow: "left_elbow_1_joint", .rightElbow: "right_elbow_1_joint",
+        .leftWrist: "left_wrist_1_joint", .rightWrist: "right_wrist_1_joint",
+        .leftHip: "left_hip_1_joint", .rightHip: "right_hip_1_joint",
+        .leftKnee: "left_knee_1_joint", .rightKnee: "right_knee_1_joint",
+        .leftAnkle: "left_ankle_1_joint", .rightAnkle: "right_ankle_1_joint",
+    ]
+
     func poses(in image: CIImage) throws -> [[String: CGPoint]] {
         let req = VNDetectHumanBodyPoseRequest()
         try VNImageRequestHandler(ciImage: image).perform([req])
         return (req.results ?? []).map { obs in
             var out: [String: CGPoint] = [:]
-            for (name, p) in (try? obs.recognizedPoints(.all)) ?? [:] where p.confidence > 0.3 { out[name.rawValue.rawValue] = p.location }
+            for (name, p) in (try? obs.recognizedPoints(.all)) ?? [:] where p.confidence > 0.3 { out[Self.names[name] ?? name.rawValue.rawValue] = p.location }
             return out
         }
     }
