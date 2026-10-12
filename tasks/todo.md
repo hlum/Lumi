@@ -137,7 +137,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T76 Video retouch
 - [~] T77 Video quality
 - [ ] T78 Video and Live erase
-- [ ] T79 Video extras
+- [~] T79 Video extras
 - [ ] ⏸ Checkpoint 11
 
 **Phase 12: On-device AI**
