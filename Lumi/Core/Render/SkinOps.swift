@@ -33,13 +33,13 @@ enum SkinOps {
         var out = image
 
         if p.smooth > 0 {
+            // blur in display (gamma) space and mix both ways, so light and dark pores level out without the skin getting brighter
             let s = min(max(p.smooth, 0), 1), keep = min(max(p.texture, 0), 1)
-            let blur = CIFilter.gaussianBlur(); blur.inputImage = image.clampedToExtent(); blur.radius = Float(2 + 14 * s) * Float(min(e.width, e.height) / 1000 + 0.2)
-            let blurred = (blur.outputImage ?? image).cropped(to: e)
-            // add back a share of the detail (image - blurred) so skin stays real
-            let detail = CIFilter.subtractBlendMode(); detail.inputImage = image; detail.backgroundImage = blurred
-            let smoothed = blended(blurred, over: image, amount: s)
-            out = keep > 0 ? addDetail(smoothed, detail: detail.outputImage, amount: keep * 0.5) : smoothed
+            let radius = Double(2 + 14 * s) * Double(min(e.width, e.height) / 1000 + 0.2)
+            out = AdjustOps.gamma(image) { g in
+                let blurred = g.clampedToExtent().applyingGaussianBlur(sigma: radius).cropped(to: e)
+                return blended(blurred, over: g, amount: s * (1 - 0.5 * keep))
+            }
         }
         if p.even > 0 {
             // take colour from a wide average and light from the photo: blotches level out, shading stays
@@ -83,11 +83,5 @@ enum SkinOps {
     private static func blended(_ top: CIImage, over bottom: CIImage, amount: Double) -> CIImage {
         let f = CIFilter.dissolveTransition(); f.inputImage = bottom; f.targetImage = top; f.time = Float(amount)
         return (f.outputImage ?? top).cropped(to: bottom.extent)
-    }
-
-    private static func addDetail(_ base: CIImage, detail: CIImage?, amount: Double) -> CIImage {
-        guard let detail else { return base }
-        let scaled = detail.applyingFilter("CIColorMatrix", parameters: ["inputRVector": CIVector(x: amount, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: amount, z: 0, w: 0), "inputBVector": CIVector(x: 0, y: 0, z: amount, w: 0)])
-        return scaled.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: base]).cropped(to: base.extent)
     }
 }

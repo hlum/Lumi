@@ -81,7 +81,7 @@ enum FaceRetouchRender {
                 (FaceReshape.strokes(for: face, params: r.reshape) + FeatureRules.strokes(for: face, r.shape) + RatioRules.strokes(for: face, r.ratio)).compactMap { ProtectionZones.clip($0, zones) }.forEach { warp.add($0) }
             }
             browWarp.forEach { warp.add($0) }
-            out = MeshWarpRenderer.apply(warp.field, to: out)
+            out = MeshWarpRenderer.apply(warp.field(aspect: Float(out.extent.width / max(out.extent.height, 1))), to: out)
         }
         return out
     }

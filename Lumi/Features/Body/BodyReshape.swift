@@ -51,14 +51,16 @@ enum BodyReshape {
     private static func lerp(_ a: CGPoint, _ b: CGPoint, _ t: CGFloat) -> CGPoint { CGPoint(x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t) }
     private static func dist(_ a: CGPoint, _ b: CGPoint) -> CGFloat { hypot(a.x - b.x, a.y - b.y) }
 
-    /// Pushes the two sides of a body part toward its center line.
-    private static func squeeze(_ left: CGPoint, _ right: CGPoint, amount: Double, radius: Float, out: inout [BrushStroke], reach: Double = 0.06) {
-        let width = Float(abs(right.x - left.x))
-        out.append(BrushStroke(kind: .push, x: Float(left.x), y: Float(left.y), radius: radius, strength: 1, dirX: Float(amount) * width * Float(reach) * 4, dirY: 0))
-        out.append(BrushStroke(kind: .push, x: Float(right.x), y: Float(right.y), radius: radius, strength: 1, dirX: -Float(amount) * width * Float(reach) * 4, dirY: 0))
+    /// Pushes the two edges of a body part toward its center line. `a` and `b` are the edges, in any order (Vision's "left" is the subject's left, which is usually the image's right).
+    private static func squeeze(_ a: CGPoint, _ b: CGPoint, amount: Double, radius: Float, out: inout [BrushStroke], reach: Double = 0.06) {
+        let (l, r) = a.x <= b.x ? (a, b) : (b, a)
+        let push = Float(amount) * Float(r.x - l.x) * Float(reach) * 4
+        out.append(BrushStroke(kind: .push, x: Float(l.x), y: Float(l.y), radius: radius, strength: 1, dirX: push, dirY: 0))
+        out.append(BrushStroke(kind: .push, x: Float(r.x), y: Float(r.y), radius: radius, strength: 1, dirX: -push, dirY: 0))
     }
 
-    static func strokes(pose raw: [String: CGPoint], params raw2: BodyReshapeParams) -> [BrushStroke] {
+    /// `silhouette` gives the body's left and right edge (image-normalized x) at a height (y-down) when the person mask can tell; otherwise the edges are estimated from the joints.
+    static func strokes(pose raw: [String: CGPoint], params raw2: BodyReshapeParams, silhouette: ((Double) -> (Double, Double)?)? = nil) -> [BrushStroke] {
         var p = raw2; p.clamp()
         guard !p.isIdentity else { return [] }
         let j = joints(raw)
@@ -66,15 +68,26 @@ enum BodyReshape {
         let ls = j["left_shoulder_1_joint"], rs = j["right_shoulder_1_joint"], lh = j["left_hip_1_joint"], rh = j["right_hip_1_joint"]
         let lk = j["left_knee_1_joint"], rk = j["right_knee_1_joint"], la = j["left_ankle_1_joint"], ra = j["right_ankle_1_joint"]
         let le = j["left_elbow_1_joint"], re = j["right_elbow_1_joint"], neck = j["neck_1_joint"]
+        // which way is "toward the middle" is decided by where each limb sits in the picture, not by Vision's left/right naming
+        let midX = [ls, rs, lh, rh].compactMap { $0?.x }.reduce(0, +) / CGFloat(max([ls, rs, lh, rh].compactMap { $0 }.count, 1))
+        func inward(_ pt: CGPoint) -> Double { pt.x < midX ? 1 : -1 }
 
-        // Waist: between shoulders and hips, 60% of the way down; squeeze the torso edges.
-        if p.waist != 0, let ls, let rs, let lh, let rh {
-            let l = lerp(ls, lh, 0.6), r = lerp(rs, rh, 0.6)
-            squeeze(l, r, amount: p.waist, radius: Float(dist(ls, lh)) * 0.6, out: &out)
+        // Torso edges at a height: from the mask when there is one, else the joints widened to the body outline.
+        func edges(y: Double, joint l: CGPoint, _ r: CGPoint, grow: Double) -> (CGPoint, CGPoint) {
+            if let e = silhouette?(y), e.1 - e.0 > 0.02 { return (CGPoint(x: e.0, y: y), CGPoint(x: e.1, y: y)) }
+            let mx = (l.x + r.x) / 2, half = abs(l.x - r.x) / 2 * grow
+            return (CGPoint(x: mx - half, y: y), CGPoint(x: mx + half, y: y))
         }
-        // Hips: squeeze (positive slims) at hip joints.
+        // Waist: 60% of the way from shoulders to hips; squeeze the torso edges.
+        if p.waist != 0, let ls, let rs, let lh, let rh {
+            let w = lerp(mid(ls, rs)!, mid(lh, rh)!, 0.6)
+            let (l, r) = edges(y: Double(w.y), joint: lerp(ls, lh, 0.6), lerp(rs, rh, 0.6), grow: 1.5)
+            squeeze(l, r, amount: p.waist, radius: Float(dist(ls, lh)) * 0.5, out: &out, reach: 0.12)
+        }
+        // Hips: squeeze (positive slims) at the hip outline.
         if p.hips != 0, let lh, let rh {
-            squeeze(lh, rh, amount: p.hips, radius: Float(abs(rh.x - lh.x)) * 0.9, out: &out)
+            let (l, r) = edges(y: Double(mid(lh, rh)!.y) + Double(dist(lh, rh)) * 0.2, joint: lh, rh, grow: 1.9)
+            squeeze(l, r, amount: p.hips, radius: Float(abs(rh.x - lh.x)) * 1.1, out: &out, reach: 0.12)
         }
         // Shoulders: positive widens, so push outward (negative squeeze).
         if p.shoulder != 0, let ls, let rs {
@@ -82,8 +95,9 @@ enum BodyReshape {
         }
         // Legs: slim squeezes each leg toward its own axis (hip-ankle line); length stretches the thigh region downward.
         if p.legSlim != 0 {
-            for (hip, knee, ankle, side) in [(lh, lk, la, 1.0), (rh, rk, ra, -1.0)] {
+            for (hip, knee, ankle) in [(lh, lk, la), (rh, rk, ra)] {
                 guard let hip, let knee, let ankle else { continue }
+                let side = inward(hip)
                 let thigh = lerp(hip, knee, 0.5), shin = lerp(knee, ankle, 0.5)
                 let legW = Float(dist(hip, knee)) * 0.35
                 for c in [thigh, shin] {
@@ -103,8 +117,8 @@ enum BodyReshape {
             let c = lerp(top, bottom, 0.5), w = Float(dist(top, bottom)) * 0.3
             out.append(BrushStroke(kind: .push, x: Float(c.x - side * Double(w) * 0.5), y: Float(c.y), radius: w * 1.4, strength: 1, dirX: Float(side * amount) * w * 0.4, dirY: 0))
         }
-        if p.thighs != 0 { slimSegment(lh, lk, side: 1, amount: p.thighs); slimSegment(rh, rk, side: -1, amount: p.thighs) }
-        if p.calves != 0 { slimSegment(lk, la, side: 1, amount: p.calves); slimSegment(rk, ra, side: -1, amount: p.calves) }
+        if p.thighs != 0 { slimSegment(lh, lk, side: lh.map(inward) ?? 1, amount: p.thighs); slimSegment(rh, rk, side: rh.map(inward) ?? -1, amount: p.thighs) }
+        if p.calves != 0 { slimSegment(lk, la, side: lk.map(inward) ?? 1, amount: p.calves); slimSegment(rk, ra, side: rk.map(inward) ?? -1, amount: p.calves) }
         // Straighten: nudge each knee toward the line between its hip and ankle.
         if p.legStraighten != 0 {
             for (hip, knee, ankle) in [(lh, lk, la), (rh, rk, ra)] {
@@ -115,8 +129,9 @@ enum BodyReshape {
         }
         // Arms: squeeze each arm at the elbow toward the torso side.
         if p.armSlim != 0 {
-            for (shoulder, elbow, side) in [(ls, le, -1.0), (rs, re, 1.0)] {
+            for (shoulder, elbow) in [(ls, le), (rs, re)] {
                 guard let shoulder, let elbow else { continue }
+                let side = -inward(shoulder)
                 let c = lerp(shoulder, elbow, 0.5), w = Float(dist(shoulder, elbow)) * 0.3
                 out.append(BrushStroke(kind: .push, x: Float(c.x + side * Double(w) * 0.5), y: Float(c.y), radius: w * 1.6, strength: 1, dirX: Float(-side * p.armSlim) * w * 0.4, dirY: 0))
             }
@@ -129,7 +144,7 @@ enum BodyReshape {
         return out
     }
 
-    static func strokes(poses: [[String: CGPoint]], params: BodyReshapeParams) -> [BrushStroke] {
-        poses.flatMap { strokes(pose: $0, params: params) }
+    static func strokes(poses: [[String: CGPoint]], params: BodyReshapeParams, silhouette: ((Double) -> (Double, Double)?)? = nil) -> [BrushStroke] {
+        poses.flatMap { strokes(pose: $0, params: params, silhouette: silhouette) }
     }
 }

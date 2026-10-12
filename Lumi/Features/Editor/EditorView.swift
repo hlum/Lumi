@@ -57,6 +57,8 @@ struct EditorView: View {
     @State private var model = EditorModel()
     @State private var item: PhotosPickerItem?
     @State private var loadFailed = false
+    @State private var zoom: CGFloat = 1
+    @State private var zoomPan: CGSize = .zero
     @State private var tool: EditorTool?
     @State private var category = EditorCategory.edit
     @State private var snapshot: EditDocument?          // the document when the open tool began, for Cancel
@@ -134,15 +136,26 @@ struct EditorView: View {
     }
 
     private var photo: some View {
-        let size = model.preview?.extent.size ?? CGSize(width: 1, height: 1)
-        return MetalPreviewView(image: model.preview)
+        let image = model.preview
+        let size = image?.extent.size ?? CGSize(width: 1, height: 1)
+        return MetalPreviewView(image: image)
             .aspectRatio(max(size.width, 1) / max(size.height, 1), contentMode: .fit)
             .overlay { toolOverlay(previewSize: size) }
+            .scaleEffect(zoom).offset(zoomPan)
+            .background(ZoomBridge(zoom: $zoom, pan: $zoomPan))
             .overlay(alignment: .bottomTrailing) {
                 Label("Compare", systemImage: "eye").font(.system(size: 14, weight: .bold, design: .rounded))
                     .padding(.horizontal, 14).frame(height: 36).background(Capsule().fill(.white.opacity(0.9))).foregroundStyle(.black).padding(12)
                     .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
                     .accessibilityLabel("Hold to compare with original")
+            }
+            .overlay(alignment: .topTrailing) {
+                if zoom > 1.01 {
+                    Button { withAnimation(.snappy) { zoom = 1; zoomPan = .zero } } label: {
+                        Text("\(zoom, format: .number.precision(.fractionLength(1)))×").font(.system(size: 14, weight: .bold, design: .rounded))
+                            .padding(.horizontal, 12).frame(height: 32).background(Capsule().fill(.black.opacity(0.55))).foregroundStyle(.white)
+                    }.padding(12).accessibilityLabel("Reset zoom")
+                }
             }
             .clipShape(RoundedRectangle(cornerRadius: LumiShape.photo, style: .continuous))
             .padding(.horizontal, LumiShape.margin)

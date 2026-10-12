@@ -45,12 +45,13 @@ struct DisplacementField: Codable, Equatable {
         return (lerp(dx), lerp(dy))
     }
 
-    mutating func apply(_ s: BrushStroke) {
+    /// `aspect` is image width / height: brush circles stay circles on the photo instead of stretching with it.
+    mutating func apply(_ s: BrushStroke, aspect: Float = 1) {
         guard s.radius > 0 else { return }
         for j in 0..<rows { for i in 0..<cols {
             let px = Float(i) / Float(cols - 1), py = Float(j) / Float(rows - 1)
             let vx = px - s.x, vy = py - s.y
-            let d = (vx * vx + vy * vy).squareRoot() / s.radius
+            let d = (vx * vx + (vy / aspect) * (vy / aspect)).squareRoot() / s.radius
             guard d < 1 else { continue }
             let w = s.strength * (1 - d) * (1 - d) * (1 + 2 * d)  // smoothstep falloff
             let k = j * cols + i
@@ -78,7 +79,7 @@ struct WarpEdit: Codable, Equatable {
     private(set) var strokes: [BrushStroke] = []
     private var undone: [BrushStroke] = []
 
-    init(cols: Int = 33, rows: Int = 33) { self.cols = cols; self.rows = rows }
+    init(cols: Int = 97, rows: Int = 97) { self.cols = cols; self.rows = rows }
 
     var canUndo: Bool { !strokes.isEmpty }
     var canRedo: Bool { !undone.isEmpty }
@@ -87,9 +88,11 @@ struct WarpEdit: Codable, Equatable {
     mutating func undo() { if let s = strokes.popLast() { undone.append(s) } }
     mutating func redo() { if let s = undone.popLast() { strokes.append(s) } }
 
-    var field: DisplacementField {
+    var field: DisplacementField { field(aspect: 1) }
+
+    func field(aspect: Float) -> DisplacementField {
         var f = DisplacementField(cols: cols, rows: rows)
-        strokes.forEach { f.apply($0) }
+        strokes.forEach { f.apply($0, aspect: aspect) }
         return f
     }
 }

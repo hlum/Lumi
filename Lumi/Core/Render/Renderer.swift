@@ -45,6 +45,8 @@ enum Renderer {
         }
     }
     nonisolated(unsafe) static var services = Services()
+    /// True while the editor draws a live preview: heavy models give way to quick stand-ins so sliders stay smooth. Exports leave it off.
+    nonisolated(unsafe) static var interactive = false
 
     static func render(_ frame: CIImage, document: EditDocument) -> CIImage {
         var img = frame
@@ -55,7 +57,7 @@ enum Renderer {
             case .crop(let c): img = GeometryOps.apply(c, to: img)
             case .adjust(let a): img = AdjustOps.apply(a, to: img)
             case .curve(let c): img = AdjustOps.apply(c, to: img)
-            case .warp(let w): img = MeshWarpRenderer.apply(w.field, to: img)
+            case .warp(let w): img = MeshWarpRenderer.apply(w.field(aspect: Float(img.extent.width / max(img.extent.height, 1))), to: img)
             case .layers(let l): img = layered(l, over: img, prefix: Array(document.operations[0..<i]))
             case .remove(let masks): img = removed(masks, from: img, prefix: Array(document.operations[0...i]))
             case .filter(let id, let t): beforeFilter = img; img = FilterLibrary.shared.lut(id)?.apply(to: img, intensity: t) ?? img
@@ -176,7 +178,7 @@ enum Renderer {
         if let c = services.bodyCache, c.key == key { poses = c.poses } else { poses = (try? finder.poses(in: image)) ?? []; services.bodyCache = (key, poses) }
         var mask: CIImage?
         if b.protectBackground, let masker = services.subjectMasker { mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil }
-        return BodyRetouchRender.apply(b, to: image, poses: poses, personMask: mask, inpainter: services.inpainter)
+        return BodyRetouchRender.apply(b, to: image, poses: poses, personMask: mask, inpainter: interactive ? QuickFill() : services.inpainter)
     }
 
     static func hairRetouched(_ h: HairRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {
@@ -190,7 +192,7 @@ enum Renderer {
             let fk = "faces|" + cacheKey(image, prefix)
             if let c = services.faceCache, c.key == fk { faces = c.faces } else { faces = (try? finder.faces(in: image)) ?? []; services.remember(faces: faces, key: fk) }
         }
-        return HairRetouchRender.apply(h, to: image, hairMasks: first.flatMap { $0 }.map { [$0] } ?? [], faces: faces, inpainter: services.inpainter)
+        return HairRetouchRender.apply(h, to: image, hairMasks: first.flatMap { $0 }.map { [$0] } ?? [], faces: faces, inpainter: interactive ? QuickFill() : services.inpainter)
     }
 
     static func cacheKey(_ image: CIImage, _ prefix: [EditOperation]) -> String {

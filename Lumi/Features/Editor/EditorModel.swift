@@ -91,8 +91,14 @@ final class EditorModel {
         // upscaling is an export-time step: running a 4x model on the preview proxy would be slow and show no more than the screen can
         var live = draft; live.upscale = nil
         if cropEditing { live.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1) }
-        return Renderer.render(proxy, document: live)
+        // the view reads this several times per update: render once per distinct edit
+        if let c = previewCache, c.doc == live, c.proxy == proxy.extent { return c.image }
+        Renderer.interactive = true; defer { Renderer.interactive = false }
+        let image = Renderer.render(proxy, document: live)
+        previewCache = (live, proxy.extent, image)
+        return image
     }
+    @ObservationIgnored private var previewCache: (doc: EditDocument, proxy: CGRect, image: CIImage)?
 
     func load(data: Data) throws {
         guard let img = CIImage(data: data, options: [.applyOrientationProperty: true]) else { throw EditorError.undecodable }

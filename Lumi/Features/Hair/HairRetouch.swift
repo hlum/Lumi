@@ -93,7 +93,8 @@ enum HairRetouchRender {
         if h.volume != 0 || h.hairline != 0 {
             var warp = WarpEdit()
             HairShapeRules.strokes(faces: faces, volume: h.volume, hairline: h.hairline).forEach { warp.add($0) }
-            if !warp.field.isIdentity { out = MeshWarpRenderer.apply(warp.field, to: out) }
+            let f = warp.field(aspect: Float(out.extent.width / max(out.extent.height, 1)))
+            if !f.isIdentity { out = MeshWarpRenderer.apply(f, to: out) }
         }
         return out
     }

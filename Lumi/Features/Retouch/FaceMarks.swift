@@ -5,6 +5,8 @@ import SwiftUI
 enum FaceMark: Hashable {
     /// Shapes the outline can describe by a line. Colour-type edits never get one.
     var isOutlineOnly: Bool { switch self { case .blush, .contour, .highlight, .hair, .skin, .underEye, .teeth, .lips: false; default: true } }
+    /// Only large shapes are outlined: eyes, brows, nose and mouth are too small to read as a line.
+    var isDrawn: Bool { switch self { case .face, .jaw, .chin, .faceWidth, .lift, .cheeks: true; default: false } }
 
     case face, skin, jaw, chin, faceWidth, lift, eyes, brows, nose, mouth, lips, teeth, cheeks, blush, contour, highlight, underEye
     case hair            // drawn from the hair mask, not from landmarks
