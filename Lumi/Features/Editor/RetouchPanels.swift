@@ -409,7 +409,17 @@ struct EyeMakeupPanel: View {
                     model.edit { var f = $0.face; apply(&f) { $0.shadowColor = c; if $0.shadow == 0 { $0.shadow = 0.5 } }; $0.face = f }
                 }
                 eyeSlider("Amount", \.shadow)
-            case .liner: eyeSlider("Liner", \.liner)
+            case .liner:
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(LinerStyle.allCases, id: \.self) { st in
+                            LumiChip(title: LocalizedStringKey(Self.title(st)), selected: (side == .right ? model.draft.face.eyes.right.linerStyle : model.draft.face.eyes.left.linerStyle) == st) {
+                                model.edit { var f = $0.face; apply(&f) { $0.linerStyle = st; if $0.liner == 0 { $0.liner = 0.6 } }; $0.face = f }
+                            }
+                        }
+                    }
+                }
+                eyeSlider("Liner", \.liner)
             case .lashes: eyeSlider("Lashes", \.lashes)
             case .brows:
                 HStack(spacing: 8) { ForEach(EyeMakeup.BrowShape.allCases, id: \.self) { s in LumiChip(title: LocalizedStringKey(s.rawValue.capitalized), selected: model.draft.face.eyes.browShape == s) { model.edit { var f = $0.face; f.eyes.browShape = s; $0.face = f } } } }
@@ -418,6 +428,10 @@ struct EyeMakeupPanel: View {
                 LumiSliderRow(title: "Height", value: Binding(get: { model.draft.face.eyes.browHeight }, set: { model.draft.face.eyes.browHeight = $0 }), range: -1...1, onEnd: { model.commit() })
             }
         }
+    }
+
+    static func title(_ s: LinerStyle) -> String {
+        switch s { case .thin: "Thin"; case .wing: "Wing"; case .catEye: "Cat eye"; case .smudged: "Smudged"; case .double: "Double" }
     }
 
     private func apply(_ f: inout FaceRetouch, _ change: (inout EyeSide) -> Void) {

@@ -58,7 +58,7 @@ struct EyeMakeupTests {
         var m = EyeMakeup(); m.left.liner = 1
         let out = EyeMakeupRenderer.apply(m, to: Self.photo(), face: Self.face())
         #expect(Self.lum(out, mid) < Self.lum(Self.photo(), mid) - 150)
-        let thin = try #require(EyeMakeupRenderer.linerMask(eye, size: Self.size, thickness: 0.1, wing: false)), thick = try #require(EyeMakeupRenderer.linerMask(eye, size: Self.size, thickness: 1, wing: false))
+        let thin = try #require(EyeMakeupRenderer.linerMask(eye, size: Self.size, thickness: 0.1, style: .thin, outerRight: false)), thick = try #require(EyeMakeupRenderer.linerMask(eye, size: Self.size, thickness: 1, style: .thin, outerRight: false))
         func area(_ i: CIImage) -> Int { var px = [UInt8](repeating: 0, count: 400 * 400); CIContext().render(i, toBitmap: &px, rowBytes: 400, bounds: i.extent, format: .L8, colorSpace: nil); return px.filter { $0 > 128 }.count }
         #expect(area(thick) > area(thin))
         var l = EyeMakeup(); l.left.lashes = 1
@@ -97,5 +97,47 @@ struct EyeMakeupTests {
     @Test func missingLandmarksAreSafe() {
         var m = EyeMakeup(); m.setBoth { $0.shadow = 1; $0.liner = 1; $0.lashes = 1 }; m.browOpacity = 1
         #expect(EyeMakeupRenderer.apply(m, to: Self.photo(), face: FaceInfo(box: CGRect(x: 0.2, y: 0.2, width: 0.5, height: 0.5), landmarks: [:])).extent == Self.photo().extent)
+    }
+}
+
+
+struct LinerStyleTests {
+    private let size = EyeMakeupTests.size
+    private func pixels(_ i: CIImage) -> [UInt8] { var px = [UInt8](repeating: 0, count: 400 * 400); CIContext().render(i, toBitmap: &px, rowBytes: 400, bounds: i.extent, format: .L8, colorSpace: nil); return px }
+    private func area(_ i: CIImage) -> Int { pixels(i).filter { $0 > 128 }.count }
+    /// Right-most column of the drawn line.
+    private func maxX(_ i: CIImage) -> Int { let p = pixels(i); return (0..<400).last { x in (0..<400).contains { p[$0 * 400 + x] > 128 } } ?? 0 }
+    private func minX(_ i: CIImage) -> Int { let p = pixels(i); return (0..<400).first { x in (0..<400).contains { p[$0 * 400 + x] > 128 } } ?? 399 }
+    private let leftEye = FaceReshape.points(EyeMakeupTests.face(), "leftEye"), rightEye = FaceReshape.points(EyeMakeupTests.face(), "rightEye")
+
+    @Test func everyStyleDrawsALine() throws {
+        for st in LinerStyle.allCases { #expect(area(try #require(EyeMakeupRenderer.linerMask(rightEye, size: size, thickness: 0.6, style: st, outerRight: true))) > 20, "\(st)") }
+    }
+
+    @Test func wingsGoOutwardOnBothEyes() throws {
+        let plainR = try #require(EyeMakeupRenderer.linerMask(rightEye, size: size, thickness: 0.6, style: .thin, outerRight: true))
+        let wingR = try #require(EyeMakeupRenderer.linerMask(rightEye, size: size, thickness: 0.6, style: .wing, outerRight: true))
+        let catR = try #require(EyeMakeupRenderer.linerMask(rightEye, size: size, thickness: 0.6, style: .catEye, outerRight: true))
+        #expect(maxX(wingR) > maxX(plainR) + 3 && maxX(catR) > maxX(wingR))
+        let plainL = try #require(EyeMakeupRenderer.linerMask(leftEye, size: size, thickness: 0.6, style: .thin, outerRight: false))
+        let wingL = try #require(EyeMakeupRenderer.linerMask(leftEye, size: size, thickness: 0.6, style: .wing, outerRight: false))
+        #expect(minX(wingL) < minX(plainL) - 3)                                   // the left eye's wing points left, not right
+        #expect(maxX(wingL) <= maxX(plainL) + 2)
+    }
+
+    @Test func doubleHasMoreInkAndSmudgedIsSofter() throws {
+        let thin = try #require(EyeMakeupRenderer.linerMask(rightEye, size: size, thickness: 0.6, style: .thin, outerRight: true))
+        let dbl = try #require(EyeMakeupRenderer.linerMask(rightEye, size: size, thickness: 0.6, style: .double, outerRight: true))
+        #expect(area(dbl) > area(thin))
+        let smudge = try #require(EyeMakeupRenderer.linerMask(rightEye, size: size, thickness: 0.6, style: .smudged, outerRight: true))
+        let hard = pixels(thin).filter { $0 > 250 }.count, soft = pixels(smudge).filter { $0 > 250 }.count
+        #expect(hard > soft)                                                       // blurred: fewer fully solid pixels
+    }
+
+    @Test func stylesSurviveSavingAndOldDraftsOpen() throws {
+        var side = EyeSide(); side.liner = 0.5; side.linerStyle = .catEye
+        #expect(try JSONDecoder().decode(EyeSide.self, from: JSONEncoder().encode(side)) == side)
+        let old = try JSONDecoder().decode(EyeSide.self, from: Data(#"{"shadow":0.3,"liner":0.2,"lashes":0}"#.utf8))
+        #expect(old.shadow == 0.3 && old.linerStyle == .thin)
     }
 }
