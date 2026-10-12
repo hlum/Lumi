@@ -52,6 +52,7 @@ struct ToolsView: View {
         case "wallpaper": WallpaperView()
         case "materials": MaterialsView()
         case "batch-cutout": BatchCutoutView()
+        case "ai-create": AICreateView()
         default: EditorView(startTool: Self.editorTool(for: t.id))
         }
     }

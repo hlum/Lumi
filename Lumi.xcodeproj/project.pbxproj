@@ -208,6 +208,7 @@
 		C1EE620D12DF6D59CC2C3A0B /* AppRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B7FCF8967B17F90CFDFB93 /* AppRouteTests.swift */; };
 		C28D4F3905F5DE49C2942375 /* WatermarkRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4268CE74382D6CF44D34E /* WatermarkRenderer.swift */; };
 		C346B9FF37A601AC6955D925 /* WallpaperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A9FA629EDEB66B20C2D76D /* WallpaperView.swift */; };
+		C45A349B2385AD48C8A71C10 /* AICreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B69F26B44AD6E9886AD0A9 /* AICreateView.swift */; };
 		C529795E6B4B2DBFC7377C42 /* ReplaceTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2DB6B48D6DC5A15579B4CF /* ReplaceTextTests.swift */; };
 		C563DFC87E175D83C1337861 /* AutoStraighten.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0C564B9C71FA8726FCBA98 /* AutoStraighten.swift */; };
 		C768188FF5296675939805E8 /* FreeformCollageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A31E22A18FA67291307138 /* FreeformCollageTests.swift */; };
@@ -464,6 +465,7 @@
 		A32D907B200F01A399C6B4A8 /* ToolCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolCatalogTests.swift; sourceTree = "<group>"; };
 		A3A06A9B282B68CB75FB7362 /* MoreToolViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreToolViews.swift; sourceTree = "<group>"; };
 		A68F615D6BB3D71E94B3D34A /* StickerLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerLibrary.swift; sourceTree = "<group>"; };
+		A7B69F26B44AD6E9886AD0A9 /* AICreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICreateView.swift; sourceTree = "<group>"; };
 		A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpRenderer.swift; sourceTree = "<group>"; };
 		A94F6D20B0D9131790C14898 /* CurveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveTests.swift; sourceTree = "<group>"; };
 		AD38C43BA4D64F30298CFE1E /* MosaicConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicConfig.swift; sourceTree = "<group>"; };
@@ -618,6 +620,7 @@
 		13170248B32F06AD050B55A7 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				A7B69F26B44AD6E9886AD0A9 /* AICreateView.swift */,
 				138CDD1F63A5CB5AE46BC584 /* BatchCutoutView.swift */,
 				9133B1FCF2896E0D2C8664F5 /* IDPhotoView.swift */,
 				407ADB4F108D20D406308FD0 /* MaterialsView.swift */,
@@ -1382,6 +1385,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C45A349B2385AD48C8A71C10 /* AICreateView.swift in Sources */,
 				22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */,
 				3CB1558F2457EEB8A0991A47 /* AnalysisCache.swift in Sources */,
 				11124C91A9EDABC08E1BCCE0 /* Analyzer.swift in Sources */,

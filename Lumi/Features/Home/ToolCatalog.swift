@@ -22,6 +22,7 @@ enum ToolCatalog {
         ToolInfo(id: "restore", name: "Restore old photo", symbol: "clock.arrow.circlepath", category: .edit, keywords: ["scratch", "old", "colorize", "修復"]),
         ToolInfo(id: "retouch", name: "Retouch a face", symbol: "face.dashed", category: .edit, keywords: ["beauty", "skin", "portrait", "美顔"]),
         ToolInfo(id: "batch-cutout", name: "Batch cutout", symbol: "person.crop.rectangle.stack", category: .utility, keywords: ["many", "background", "一括"]),
+        ToolInfo(id: "ai-create", name: "AI create", symbol: "sparkles", category: .creative, keywords: ["image playground", "avatar", "emoji", "sticker", "generate", "作成"]),
         ToolInfo(id: "id-photo", name: "ID photo", symbol: "person.text.rectangle", category: .utility, keywords: ["passport", "visa", "証明写真"]),
         ToolInfo(id: "scanner", name: "Scanner", symbol: "doc.viewfinder", category: .utility, keywords: ["document", "pdf", "ocr", "スキャン"]),
         ToolInfo(id: "gif", name: "GIF maker", symbol: "film.stack", category: .utility, keywords: ["animation", "emoji", "sticker", "ジフ"]),
