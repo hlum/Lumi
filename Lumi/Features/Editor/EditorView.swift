@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", clean = "Clean", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -29,6 +29,7 @@ struct EditorView: View {
                     .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
+                    .overlay { if tool == .clean, let o = model.original { CleanBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
@@ -48,6 +49,7 @@ struct EditorView: View {
                     case .mosaic: MosaicPanel(model: model)
                     case .mark: MarkPanel(model: model)
                     case .liquify: LiquifyPanel(model: model)
+                    case .clean: CleanPanel(model: model)
                     case .face: FacePanel(model: model)
                     case .color: ColorPanel(model: model)
                     case .enhance: EnhancePanel(model: model)
@@ -524,7 +526,7 @@ struct ColorPanel: View {
 }
 
 struct FacePanel: View {
-    enum Group: String, CaseIterable { case looks = "Looks", skin = "Skin", shape = "Shape", makeup = "Makeup", eyes = "Eyes", detail = "Detail" }
+    enum Group: String, CaseIterable { case looks = "Looks", ratio = "Ratio", skin = "Skin", shape = "Shape", makeup = "Makeup", eyes = "Eyes", detail = "Detail" }
     @Bindable var model: EditorModel
     @State private var group = Group.looks
     @State private var strength = 1.0
@@ -559,6 +561,11 @@ struct FacePanel: View {
                             }.padding(.horizontal)
                         }
                         PhotosPicker("Recreate from photo", selection: $reference, matching: .images).padding(.top, 2)
+                    case .ratio:
+                        row("Move left/right", f(\.ratio.shiftX)); row("Move up/down", f(\.ratio.shiftY)); row("Rotate", f(\.ratio.rotate)); row("Symmetry", f(\.ratio.symmetry), 0...1)
+                        row("Even out jaw", f(\.ratio.unevenFix), 0...1); row("3D shading", f(\.ratio.shade3D), 0...1)
+                        Toggle("Protect eyes, nose and mouth", isOn: Binding(get: { model.draft.face.ratio.protectFeatures }, set: { v in model.edit { var fr = $0.face; fr.ratio.protectFeatures = v; $0.face = fr } })).padding(.horizontal)
+                        Toggle("Lock glasses", isOn: Binding(get: { model.draft.face.ratio.glassesLock }, set: { v in model.edit { var fr = $0.face; fr.ratio.glassesLock = v; $0.face = fr } })).padding(.horizontal)
                     case .skin:
                         row("Smooth", f(\.skin.smooth), 0...1); row("Texture", f(\.skin.texture), 0...1); row("Whiten", f(\.skin.whiten), 0...1); row("Rosy", f(\.skin.rosy), 0...1); row("Tan", f(\.skin.tan), 0...1)
                     case .shape:
@@ -843,5 +850,49 @@ struct HairBrushOverlay: View {
         case .fill: h.fill = merged(committed.fill)
         }
         model.draft.hair = h
+    }
+}
+
+
+/// Clone stamp: paint where the copy should land; the source is the same spot moved by the offset sliders.
+struct CleanPanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack(spacing: 4) {
+            Text("Paint over what to hide. It is covered with the area at the offset.").font(.caption).foregroundStyle(.secondary)
+            slider("Source ←→", \.offsetX, -0.5...0.5)
+            slider("Source ↑↓", \.offsetY, -0.5...0.5)
+            slider("Noise reduction", \.denoise, 0...1)
+            Button("Clear clone") { model.edit { var c = $0.clean; c.cloneMask = nil; $0.clean = c } }.buttonStyle(.bordered)
+        }
+    }
+    private func slider(_ title: String, _ path: WritableKeyPath<CleanConfig, Double>, _ range: ClosedRange<Double>) -> some View {
+        HStack {
+            Text(LocalizedStringKey(title)).font(.caption).frame(width: 96, alignment: .leading)
+            Slider(value: Binding(get: { model.draft.clean[keyPath: path] }, set: { model.draft.clean[keyPath: path] = $0 }), in: range) { if !$0 { model.commit() } }
+        }.padding(.horizontal)
+    }
+}
+
+struct CleanBrushOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var remover: RemoverModel?
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    let p = map.toImageClamped(v.location)
+                    if remover == nil { remover = RemoverModel(imageSize: imageSize); remover?.brushSize = 0.05; remover?.begin(at: p) } else { remover?.move(to: p) }
+                    if let r = remover {
+                        var c = model.draft.clean
+                        if var base = model.stack0.clean.cloneMask, base.width == r.mask.width, base.height == r.mask.height { base.union(r.mask); c.cloneMask = base } else { c.cloneMask = r.mask }
+                        model.draft.clean = c
+                    }
+                }
+                .onEnded { _ in remover = nil; model.commit() })
+        }
     }
 }
