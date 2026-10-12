@@ -22,6 +22,20 @@ Scope: S = 1–2 files · M = 3–5 files. Anything larger has been split.
 ## Status
 Tick a task when it's done. `[~]` = core logic built and tested, screen or device check still pending. The details for each task are below.
 
+**Phase Q: Quality — makeup, face, body (TOP PRIORITY, added 2026-10-12)**
+Lumi is a personal app that will not be released, so research/non-commercial models and app size are allowed. Details in the Phase Q section at the end of this file.
+- [ ] Q0 Quality bench and personal-use licence rules
+- [ ] Q1 Constrained mesh-warp engine (control points → rigid MLS + line-preserving grid solve)
+- [ ] Q2 Face reshape on the new engine
+- [ ] Q3 Body reshape on the new engine (mask contours, per-part, background lines kept)
+- [ ] Q4 Makeup on face parsing (pixel masks, luminance-preserving colour, finishes, occlusion)
+- [ ] Q5 Dense face landmarks (MediaPipe 478)
+- [ ] Q6 3D body shape fit (SMPL-X) for weight/shape sliders
+- [ ] Q7 Learned body-reshape flow (BR-5K model) as a second engine, compared on the bench
+- [ ] Q8 Makeup transfer from a reference photo (EleGANt / BeautyREC)
+- [ ] Q9 3D face fit for turned heads (3DDFA-V2 class)
+- [ ] ⏸ Checkpoint Q: user compares bench sheets (and their own photos) against Meitu
+
 **Phase D: Design (before any build)**
 - [ ] ⏸ Checkpoint D: designs approved
 
@@ -1280,3 +1294,60 @@ Dropped by your decision. The ID is kept so other task numbers stay stable. Noth
 - [ ] Xcode Cloud green on `main` (the full test suite).
 - [ ] Device pass on an iPhone 11-class phone and a 15 Pro.
 - [ ] Human approval to submit.
+
+---
+
+## Phase Q: Quality — makeup, face, body (top priority)
+
+Why: the user wants these three to beat every other app. Research summary (2026-10-12): the best systems move landmarks/contours and solve one smooth, constrained deformation (rigid moving least squares, Shih et al.-style mesh energies that keep lines straight), use dense or 3D face models (Meitu 3D reshape), reshape bodies from the real outline or a fitted 3D body (Zhou et al. parametric reshaping, NeuralReshaper, Ren et al. CVPR 2022 / BR-5K), and render makeup on pixel-accurate parsing masks with brightness kept and colour changed (LAB/HCL), gloss as its own layer (LipAT, CA-GAN, patents). Lumi today uses round liquify pushes on Vision's 76 points and blend modes on landmark polygons.
+
+Bugs already fixed on the way (2026-10-12): the warp field was mirrored vertically (every reshape landed at the mirrored height); Vision's body joints are named anatomically (`left_upLeg_joint` = hip, `left_leg_joint` = knee, `left_foot_joint` = ankle, `left_forearm_joint` = elbow) so waist/hips/legs/arms never moved; waist/hips push was 6x too strong.
+
+Rules for this phase: every task is judged on the bench (Q0) on the device, not just by unit tests. Contact sheets are pulled to the Mac and looked at before a task is ticked.
+
+### Q0 Quality bench and personal-use licence rules (S–M)
+- A bench of photos in the app's Documents/bench (front face, turned face, glasses, beard, dark and light skin, full body front/side, arms against the body, busy straight-line backgrounds). Diagnostic tests (pattern: `FaceSliderDiagnosticsTests`, `BodySliderDiagnosticsTests`) render every slider at ±0.5/±1 with landmarks, joints and stroke/control points drawn, and write contact sheets; they run only when the bench is present.
+- Optional reference: the user's exports from Meitu for the same photos, shown side by side.
+- Credits: keep crediting everything, but allow research / non-commercial / OpenRAIL licences with a `personalUseOnly` flag (update `Credits.allowedLicenses` and its tests).
+- Accept: one command produces the sheets for every face, body and makeup control.
+
+### Q1 Constrained mesh-warp engine (M)
+- New API: an edit is a set of control-point moves (from → to) plus pinned points, not round brushes. Solve rigid moving least squares on a grid (CPU, ~100x140 nodes), then add a small energy pass that keeps straight background lines straight and weights the person/face region (person mask from BiRefNet Lite). Output stays a `DisplacementField` so the existing GPU kernel, protect-background and fill work unchanged.
+- Keep the old brush path for Liquify only.
+- Accept: unit tests for MLS (points land on targets, rigid regions keep shape, far field ≈ 0), a straight wall line stays straight within 1 px on the bench, solve < 30 ms on A17 for a preview grid.
+
+### Q2 Face reshape on the new engine (M)
+- Every face slider (Face, Eyes, Nose, Mouth, Brows, Ratio) becomes target positions for landmarks with the rest pinned (eyes/mouth pinned when "protect features"); jaw/V shape move the contour along its normals; eye size scales the eye outline about its centre; glasses lock pins the frame band.
+- Accept: on the bench, jaw/V/chin/width visibly change only the outline; no bulging of eyes/lips; the outline overlay matches the result.
+
+### Q3 Body reshape on the new engine (M)
+- Outline from the person mask; split into parts by the skeleton (torso, each arm, each leg); each slider moves that part's contour toward its bone (waist = torso contour between ribs and hips; arms handled separately so a hanging arm is not squeezed into the waist). Background pinned; vacated strip filled (LaMa/SD).
+- Uses Vision 3D body pose (`VNDetectHumanBodyPose3DRequest`) to tell front from side views.
+- Accept: on the bench, waist/hips/legs/arms slim the part only, walls and door frames stay straight, side views work.
+
+### Q4 Makeup on face parsing (M)
+- Masks from the bundled BiSeNet face parsing (lips upper/lower, skin, brows, eyes, hair, glasses classes) run per face window and refined with the landmarks; teeth, glasses and hair excluded automatically.
+- Colour: change chroma in LAB, keep the photo's brightness and creases; finishes (matte, satin, gloss, shimmer) as separate highlight layers following the lip's own light; strength adapts to skin tone; foundation/blush/contour/highlight on the skin class with soft falloff.
+- Accept: lip colour stays inside the lips at the corners and never covers teeth; colour is visible on dark and light skin; bench sheets per look.
+
+### Q5 Dense face landmarks (M)
+- MediaPipe Face Landmarker (478 points incl. irises); convert to Core ML or run TFLite (size and licence no longer matter). Feeds Q2 and Q4 with a tighter jaw, lips and eyelids; falls back to Vision.
+
+### Q6 3D body shape fit (L, split when reached)
+- Fit SMPL-X (research licence is fine here) from joints + mask; "weight", "muscle", "height" sliders change the 3D shape and transfer the 2D change into Q1 control points (Zhou et al. 2010 approach).
+
+### Q7 Learned body-reshape flow (M)
+- Ren et al. CVPR 2022 model trained on BR-5K (non-commercial, fine here) converted to Core ML; offered as an alternative "AI slim" and compared with Q3 on the bench.
+
+### Q8 Makeup transfer from a reference photo (M)
+- EleGANt or BeautyREC (~1 M params) on Core ML: copy a look from any photo, then edit per region with Q4 controls.
+
+### Q9 3D face fit for turned heads (M)
+- 3DDFA-V2-class model; Q2 edits are applied in 3D and projected, so a three-quarter face slims correctly.
+
+### Reconsidered because Lumi is not released
+- Licences: NC/research models allowed (Q0 rule); SMPL-X, BR-5K weights, EleGANt become options.
+- Size: no budget. The Stable Diffusion fill can be bundled instead of an in-app download (user to decide).
+- One device: tune for A17 / 8 GB; old-iPhone fallbacks and latency budgets for 4 GB devices are not needed.
+- Release work (Phase 14 store/submission, public credits page, privacy manifest polish) can be dropped or deferred indefinitely.
+

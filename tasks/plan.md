@@ -150,6 +150,7 @@ T07 edit pipeline (Renderer) ─ T08 undo ─ T09 drafts
 ## Task list (index; details in todo.md)
 | Phase | Tasks | Milestone at its checkpoint |
 |---|---|---|
+| **Q Quality (top priority)** | Q0–Q9 | Makeup, face and body beat other apps on the bench; Lumi is personal-use only (not released) |
 | D Design | (defined in the design session) | Designs approved; nothing is built before this |
 | 0 Scaffold, CI and spikes | T01–T06 | CI green; go/no-go on LaMa, preview, warp and hair model |
 | 1 Editing foundation | T07–T12 | Import → edit → save → reopen → undo |
