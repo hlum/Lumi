@@ -39,7 +39,25 @@ enum InpaintPlan {
 final class LazyInpainter: Inpainting {
     private var real: LaMaInpainter?
     private var revision = -1
+    private var diffusion: DiffusionInpainter?
+    private var lastDiffusionUse = Date.distantPast
+
     func inpaint(_ image: CIImage, mask: CIImage) throws -> CIImage {
+        // the best fill first when the user has downloaded it: Stable Diffusion inpainting. LaMa is the built-in fallback.
+        if let dir = DiffusionInpainter.directory() {
+            if diffusion == nil { diffusion = DiffusionInpainter(directory: dir) }
+            if let d = diffusion, let out = try? d.inpaint(image, mask: mask) {
+                lastDiffusionUse = .now
+                DispatchQueue.global().asyncAfter(deadline: .now() + 120) { [weak self] in
+                    if let self, Date.now.timeIntervalSince(self.lastDiffusionUse) >= 100 { self.diffusion?.unload() }   // give the memory back when idle
+                }
+                return out
+            }
+        } else { diffusion = nil }
+        return try lama(image, mask: mask)
+    }
+
+    private func lama(_ image: CIImage, mask: CIImage) throws -> CIImage {
         if real == nil || revision != ModelStore.shared.revision { real = try LaMaInpainter(); revision = ModelStore.shared.revision }   // a swapped model is picked up here
         return try real!.inpaint(image, mask: mask)
     }

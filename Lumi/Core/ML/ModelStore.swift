@@ -198,6 +198,9 @@ final class ModelStore {
         persist()
     }
 
+    /// Tells the services a model appeared or went away.
+    func noteChanged() { lock.lock(); revision += 1; lock.unlock(); NotificationCenter.default.post(name: .lumiModelsChanged, object: nil) }
+
     /// The folder installed models are copied into (tests and the import screen use it).
     var installedDirectory: URL { directory }
 

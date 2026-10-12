@@ -34,6 +34,7 @@ struct ModelsView: View {
                     if let a = active, !a.bundled, store.entries(slot).contains(where: \.bundled) { Button("Use the built-in model") { store.reset(slot); revision += 1 } }
                 }
             }
+            DiffusionSection()
             Section { Button("Install a model…", systemImage: "square.and.arrow.down") { importing = true } }
         }
         .id(revision)
@@ -130,5 +131,31 @@ struct ModelImportForm: View {
         catch ModelStoreError.incompatible(let miss) { error = "The model doesn't have: \(miss.joined(separator: ", "))." }
         catch ModelStoreError.unmappedRoles(let r) { error = "Choose a feature for: \(r.joined(separator: ", "))." }
         catch { self.error = "Couldn't install that model." }
+    }
+}
+
+/// The optional Stable Diffusion fill model: much better fills, slower, a 2 GB download.
+struct DiffusionSection: View {
+    @State private var download = DiffusionDownload.shared
+
+    var body: some View {
+        Section("Best-quality fill") {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Stable Diffusion inpainting").font(.headline)
+                Text("Fills removed objects and slimmed edges with new, believable detail. Takes about half a minute per fill and needs 8 GB of memory. LaMa stays as the built-in fill.").font(.footnote).foregroundStyle(.secondary)
+                Text("DreamShaper 8 Inpainting by Lykon, Core ML by LocalMuseAI · CreativeML Open RAIL-M licence").font(.caption).foregroundStyle(.secondary)
+            }
+            switch download.state {
+            case .downloading(let p):
+                ProgressView(value: p) { Text("Downloading \(Int(p * 100))% of \(ByteCountFormatter.string(fromByteCount: Int64(DiffusionDownload.totalBytes), countStyle: .file))") }
+                Button("Cancel", role: .cancel) { download.cancel() }
+            case .failed(let why):
+                Text(why).font(.footnote).foregroundStyle(.red)
+                Button("Try again") { download.start() }
+            case .idle:
+                if download.isInstalled { Button("Remove (frees 2 GB)", role: .destructive) { download.remove() } }
+                else { Button("Download (\(ByteCountFormatter.string(fromByteCount: Int64(DiffusionDownload.totalBytes), countStyle: .file)))", systemImage: "arrow.down.circle") { download.start() } }
+            }
+        }
     }
 }
