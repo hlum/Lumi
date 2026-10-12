@@ -13,6 +13,8 @@ struct RemoverPanel: View {
                     .pickerStyle(.segmented).padding(.horizontal)
                 Slider(value: Bindable(remover).brushSize, in: 0.01...0.15).padding(.horizontal).disabled(remover.mode == .box)
                 HStack {
+                    Button("People", systemImage: "person.2") { selectPassersBy(remover) }.buttonStyle(.bordered)
+                    Button("Text", systemImage: "textformat") { selectText(remover) }.buttonStyle(.bordered)
                     Button("Undo stroke", systemImage: "arrow.uturn.backward") { remover.undoStroke() }.disabled(!remover.canUndo)
                     Button(isWorking ? "Removing…" : "Remove") { apply(remover) }.buttonStyle(.borderedProminent).disabled(!remover.hasSelection || isWorking)
                 }.labelStyle(.iconOnly)
@@ -21,6 +23,21 @@ struct RemoverPanel: View {
         .task(id: editor.original?.extent) { if let e = editor.original?.extent { remover = RemoverModel(imageSize: e.size); editor.remover = remover } }
         .onDisappear { editor.remover = nil }
         .alert("Couldn't remove that", isPresented: $failed) {}
+    }
+
+    private func selectPassersBy(_ r: RemoverModel) {
+        guard let o = editor.original, let finder = Renderer.services.peopleFinder,
+              let people = try? finder.people(in: Renderer.proxy(o, maxDimension: 1024)) else { failed = true; return }
+        let by = AutoRemove.passersBy(people)
+        guard let mask = AutoRemove.combinedMask(by, extent: Renderer.proxy(o, maxDimension: 1024).extent) else { failed = true; return }
+        r.select(mask, extent: Renderer.proxy(o, maxDimension: 1024).extent)
+    }
+
+    private func selectText(_ r: RemoverModel) {
+        guard let o = editor.original, let finder = Renderer.services.textFinder else { failed = true; return }
+        let proxy = Renderer.proxy(o, maxDimension: 1024)
+        guard let boxes = try? finder.textBoxes(in: proxy), let mask = AutoRemove.textMask(boxes, extent: proxy.extent) else { failed = true; return }
+        r.select(mask, extent: proxy.extent)
     }
 
     private func apply(_ r: RemoverModel) {

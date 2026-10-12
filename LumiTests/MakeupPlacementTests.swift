@@ -91,4 +91,48 @@ struct MakeupPlacementTests {
         var p = MakeupParams(); p.lipOpacity = 0.4; p.blushStyle = .wide
         #expect(try JSONDecoder().decode(MakeupParams.self, from: JSONEncoder().encode(p)) == p)
     }
+
+    @Test func contourSitsBelowTheCheekbonesTowardTheEarsAndHighlightOnTheNoseBridge() {
+        let f = Self.face(), box = MakeupRenderer.faceBox(f)
+        let c = MakeupRenderer.contourSpots(f), blush = MakeupRenderer.blushSpots(f, style: .wide)
+        #expect(c.count == 2 && c[0].center.y > blush[0].center.y && c[0].center.x < blush[0].center.x && c[1].center.x > blush[1].center.x)
+        #expect(c.allSatisfy { box.contains($0.center) })
+        let h = MakeupRenderer.highlightSpots(f)
+        #expect(h.count == 3)
+        let nose = FaceReshape.center(FaceReshape.points(f, "nose"))!
+        #expect(h[0].center.y < nose.y && abs(h[0].center.x - nose.x) < 0.001)                // nose bridge, above the nose center
+    }
+
+    @Test func contourDarkensHighlightLightensFoundationEvensTheFace() {
+        let base = CIImage(color: CIColor(red: 0.6, green: 0.45, blue: 0.4)).cropped(to: CGRect(x: 0, y: 0, width: 400, height: 400))
+        let f = Self.face()
+        func lum(_ i: CIImage, _ p: CGPoint) -> Int { let c = GeometryTests.rgb(i, x: Int(p.x * 400), y: Int((1 - p.y) * 400)); return Int(c[0]) + Int(c[1]) + Int(c[2]) }
+        var p = MakeupParams(); p.contour = 1
+        let dark = MakeupRenderer.apply(p, to: base, face: f), spot = MakeupRenderer.contourSpots(f)[0].center
+        #expect(lum(dark, spot) < lum(base, spot) - 20)
+        p = MakeupParams(); p.highlight = 1
+        let light = MakeupRenderer.apply(p, to: base, face: f), hl = MakeupRenderer.highlightSpots(f)[0].center
+        #expect(lum(light, hl) > lum(base, hl) + 15)
+        #expect(GeometryTests.near(GeometryTests.rgb(light, x: 5, y: 5), GeometryTests.rgb(base, x: 5, y: 5)))
+        p = MakeupParams(); p.foundation = 1
+        #expect(MakeupRenderer.apply(p, to: base, face: f).extent == base.extent && !p.isIdentity)
+    }
+
+    @Test func foundationSamplesTheFaceNotTheMirroredPatch() {
+        let f = Self.face()
+        let box = MakeupRenderer.ciRect(MakeupRenderer.faceBox(f), size: CGSize(width: 400, height: 400))
+        let bg = CIImage(color: CIColor(red: 0.1, green: 0.9, blue: 0.1)).cropped(to: CGRect(x: 0, y: 0, width: 400, height: 400))
+        let skin = CIImage(color: CIColor(red: 0.8, green: 0.55, blue: 0.45)).cropped(to: box)
+        let base = skin.composited(over: bg)
+        var p = MakeupParams(); p.foundation = 1
+        let out = MakeupRenderer.apply(p, to: base, face: f)
+        let c = GeometryTests.rgb(out, x: Int(box.midX), y: Int(box.midY))
+        #expect(c[0] > c[1] + 40)                      // still skin-toned: the average came from the face, not the green around it
+    }
+
+    @Test func oldMakeupSettingsWithoutTheNewFieldsStillOpen() throws {
+        let old = #"{"lipOpacity":0.4,"lipFinish":"gloss","blushOpacity":0.2}"#
+        let p = try JSONDecoder().decode(MakeupParams.self, from: Data(old.utf8))
+        #expect(p.lipOpacity == 0.4 && p.lipFinish == .gloss && p.contour == 0 && p.foundation == 0)
+    }
 }

@@ -13,7 +13,26 @@ struct MakeupParams: Codable, Equatable {
     var blushColor = RGBA(r: 0.95, g: 0.4, b: 0.45, a: 1)
     var blushOpacity = 0.0
     var blushStyle = BlushStyle.round
-    var isIdentity: Bool { lipOpacity == 0 && blushOpacity == 0 }
+    var contour = 0.0               // 0...1 shadow under the cheekbones and along the jaw
+    var highlight = 0.0             // 0...1 light on the nose bridge and cheekbones
+    var foundation = 0.0            // 0...1 evens out skin color across the face
+    var isIdentity: Bool { lipOpacity == 0 && blushOpacity == 0 && contour == 0 && highlight == 0 && foundation == 0 }
+
+    init() {}
+    enum CodingKeys: String, CodingKey { case lipColor, lipOpacity, lipFinish, ombre, blushColor, blushOpacity, blushStyle, contour, highlight, foundation }
+    init(from d: Decoder) throws {
+        let c = try d.container(keyedBy: CodingKeys.self)
+        lipColor = try c.decodeIfPresent(RGBA.self, forKey: .lipColor) ?? lipColor
+        lipOpacity = try c.decodeIfPresent(Double.self, forKey: .lipOpacity) ?? 0
+        lipFinish = try c.decodeIfPresent(Finish.self, forKey: .lipFinish) ?? .satin
+        ombre = try c.decodeIfPresent(Double.self, forKey: .ombre) ?? 0
+        blushColor = try c.decodeIfPresent(RGBA.self, forKey: .blushColor) ?? blushColor
+        blushOpacity = try c.decodeIfPresent(Double.self, forKey: .blushOpacity) ?? 0
+        blushStyle = try c.decodeIfPresent(BlushStyle.self, forKey: .blushStyle) ?? .round
+        contour = try c.decodeIfPresent(Double.self, forKey: .contour) ?? 0
+        highlight = try c.decodeIfPresent(Double.self, forKey: .highlight) ?? 0
+        foundation = try c.decodeIfPresent(Double.self, forKey: .foundation) ?? 0
+    }
 }
 
 enum MakeupRenderer {
@@ -39,8 +58,49 @@ enum MakeupRenderer {
     }
 
     /// The face box converted to y-down image space.
+    /// A y-down normalized rect as a Core Image (y-up) pixel rect.
+    static func ciRect(_ r: CGRect, size: CGSize) -> CGRect {
+        CGRect(x: r.minX * size.width, y: (1 - r.maxY) * size.height, width: r.width * size.width, height: r.height * size.height)
+    }
+
     static func faceBox(_ face: FaceInfo) -> CGRect {
         CGRect(x: face.box.minX, y: 1 - face.box.maxY, width: face.box.width, height: face.box.height)
+    }
+
+    // MARK: contour, highlight and foundation regions
+
+    /// Soft ellipses (image-normalized, y-down) for contour: the hollows under the cheekbones, toward the ears.
+    static func contourSpots(_ face: FaceInfo) -> [Spot] {
+        let box = faceBox(face)
+        return blushSpots(face, style: .wide).map { b in
+            let outward: CGFloat = b.center.x < box.midX ? -1 : 1
+            return Spot(center: CGPoint(x: b.center.x + outward * box.width * 0.12, y: b.center.y + box.height * 0.1), radius: b.radius * 0.8, squash: 0.45)
+        }
+    }
+
+    /// Highlight: the nose bridge and the top of each cheekbone.
+    static func highlightSpots(_ face: FaceInfo) -> [Spot] {
+        let box = faceBox(face)
+        var out: [Spot] = []
+        let nose = FaceReshape.points(face, "nose")
+        if let c = FaceReshape.center(nose) { out.append(Spot(center: CGPoint(x: c.x, y: c.y - box.height * 0.08), radius: box.width * 0.07, squash: 2.2)) }
+        for b in blushSpots(face, style: .oval) { out.append(Spot(center: CGPoint(x: b.center.x, y: b.center.y - box.height * 0.1), radius: b.radius * 0.7, squash: 0.5)) }
+        return out
+    }
+
+    static func spotsMask(_ spots: [Spot], size: CGSize) -> CIImage? {
+        guard !spots.isEmpty, size.width > 0, size.height > 0 else { return nil }
+        var mask = CIImage(color: .black).cropped(to: CGRect(origin: .zero, size: size))
+        for s in spots {
+            let r = s.radius * Double(size.width)
+            let g = CIFilter.radialGradient()
+            g.center = CGPoint(x: 0, y: 0); g.radius0 = Float(r * 0.1); g.radius1 = Float(r); g.color0 = .white; g.color1 = .black
+            guard var spot = g.outputImage?.cropped(to: CGRect(x: -r, y: -r, width: r * 2, height: r * 2)) else { continue }
+            spot = spot.transformed(by: CGAffineTransform(scaleX: 1, y: s.squash))
+                .transformed(by: CGAffineTransform(translationX: s.center.x * size.width, y: (1 - s.center.y) * size.height))
+            mask = spot.composited(over: CIImage(color: .clear).cropped(to: mask.extent)).applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: mask]).cropped(to: mask.extent)
+        }
+        return mask
     }
 
     // MARK: masks
@@ -115,6 +175,20 @@ enum MakeupRenderer {
             if p.lipFinish == .gloss {
                 out = tint(RGBA.white, mask: lips.clampedToExtent().applyingGaussianBlur(sigma: Double(size.width) * 0.01).cropped(to: lips.extent), opacity: 0.18, mode: "CISoftLightBlendMode")
             }
+        }
+        if p.foundation > 0, let skin = SkinMask.make(face: face, size: size, feather: 0.03) {
+            // pull the face toward its own average color and soften, which evens out patches and redness
+            let avg = out.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: MakeupRenderer.ciRect(MakeupRenderer.faceBox(face), size: size))])
+            var px = [UInt8](repeating: 0, count: 4)
+            CIContext().render(avg, toBitmap: &px, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
+            let tone = RGBA(r: Double(px[0]) / 255, g: Double(px[1]) / 255, b: Double(px[2]) / 255, a: 1)
+            out = tint(tone, mask: skin, opacity: p.foundation * 0.6, mode: "CIColorBlendMode")   // tone of the face average, light and texture of the photo
+        }
+        if p.contour > 0, let m = MakeupRenderer.spotsMask(contourSpots(face), size: size) {
+            out = tint(RGBA(r: 0.45, g: 0.3, b: 0.25, a: 1), mask: m, opacity: p.contour * 0.7, mode: "CIMultiplyBlendMode")
+        }
+        if p.highlight > 0, let m = MakeupRenderer.spotsMask(highlightSpots(face), size: size) {
+            out = tint(RGBA.white, mask: m, opacity: min(p.highlight * 1.2, 1), mode: "CISoftLightBlendMode")
         }
         if p.blushOpacity > 0, let blush = blushMask(face, style: p.blushStyle, size: size) {
             out = tint(p.blushColor, mask: blush, opacity: p.blushOpacity, mode: "CISoftLightBlendMode")

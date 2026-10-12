@@ -87,3 +87,26 @@ struct HairTests {
         #expect(try JSONDecoder().decode(HairColorParams.self, from: JSONEncoder().encode(p)) == p)
     }
 }
+
+struct HairColorGateTests {
+    /// Dark hair above a skin-coloured face, over a bright background; the whole picture counts as person.
+    private func photo() -> CIImage {
+        let e = HairTests.extent
+        let bg = CIImage(color: CIColor(red: 0.9, green: 0.9, blue: 0.95)).cropped(to: e)
+        let hair = CIImage(color: CIColor(red: 0.08, green: 0.06, blue: 0.05)).cropped(to: CGRect(x: 60, y: 125, width: 80, height: 50))
+        let skin = CIImage(color: CIColor(red: 0.85, green: 0.65, blue: 0.55)).cropped(to: CGRect(x: 70, y: 70, width: 60, height: 60))
+        return skin.composited(over: hair.composited(over: bg))
+    }
+
+    @Test func gateKeepsHairColouredPixelsAndDropsOthers() {
+        let m = HairMask.estimate(person: HairTests.everyone(), face: HairTests.face(), image: photo())
+        #expect(GeometryTests.rgb(m, x: 100, y: 150)[0] > 150)             // dark hair above the face
+        #expect(GeometryTests.rgb(m, x: 62, y: 95)[0] < 60)                // bright background beside the face, inside the head region
+    }
+
+    @Test func noHairAboveTheFaceMeansNoGate() {
+        let plain = CIImage(color: CIColor(red: 0.8, green: 0.6, blue: 0.5)).cropped(to: HairTests.extent)
+        let nobody = MosaicOps.mask(rects: [], extent: HairTests.extent)
+        #expect(HairMask.colorGate(image: plain, person: nobody, box: CGRect(x: 0.35, y: 0.35, width: 0.3, height: 0.3)) == nil)
+    }
+}

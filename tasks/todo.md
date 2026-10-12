@@ -67,8 +67,8 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 
 **Phase 4: Remover, cutout, expand**
 - [~] T29 Remover v1, brush and box
-- [ ] T30 Remover auto chips
-- [ ] T31 Clone tab and specialty removers
+- [x] T30 Remover auto chips
+- [~] T31 Clone tab and specialty removers
 - [~] T32 Cutout and background
 - [x] T33 Batch cutout
 - [~] T34 AI Expand
@@ -80,20 +80,20 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T37 Blemishes
 - [~] T38 Under-eye and wrinkles
 - [~] T39 Face-shape warps
-- [ ] T40 Ratio, 3D and protection
+- [~] T40 Ratio, 3D and protection
 - [~] T41 Eye, nose, mouth and brow warps
 - [~] T42 Eye detail and teeth
 - [x] T43 Manual face slim and volume
-- [~] T44 Auto beauty
+- [x] T44 Auto beauty
 - [ ] ⏸ Checkpoint 5
 
 **Phase 6: Makeup and hair**
-- [~] T45 Makeup engine: lips, blush, contour
-- [ ] T46 Eye makeup and brows
-- [ ] T47 Makeup content, looks, recreate
-- [ ] T48 Nail try-on
-- [~] T49 Hair color
-- [ ] T50 Hair shape
+- [x] T45 Makeup engine: lips, blush, contour
+- [x] T46 Eye makeup and brows
+- [x] T47 Makeup content, looks, recreate
+- [~] T48 Nail try-on
+- [x] T49 Hair color
+- [x] T50 Hair shape
 - [ ] ⏸ Checkpoint 6
 
 **Phase 7: Body**
@@ -107,9 +107,9 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T55 Recipes
 - [~] T56 Batch edit
 - [~] T57 Collage templates
-- [ ] T58 Freeform, split, seamless collage
+- [~] T58 Freeform, split, seamless collage
 - [~] T59 Long stitch and screenshot stitch
-- [ ] T60 Materials, templates, wallpapers
+- [~] T60 Materials, templates, wallpapers
 - [ ] ⏸ Checkpoint 8
 
 **Phase 9: Camera**
@@ -130,7 +130,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [~] T69 Timeline core
 - [~] T70 Clip operations and transitions
 - [~] T71 Per-clip color and effects
-- [ ] T72 Text, stickers, keyframes
+- [~] T72 Text, stickers, keyframes
 - [ ] T73 Overlay video, masks, tracking
 - [ ] T74 Audio
 - [ ] T75 Captions and teleprompter

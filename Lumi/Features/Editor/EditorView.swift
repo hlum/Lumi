@@ -3,10 +3,10 @@ import SwiftData
 import SwiftUI
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", clean = "Clean", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
     }
 }
 
@@ -26,8 +26,10 @@ struct EditorView: View {
             if model.preview != nil {
                 MetalPreviewView(image: model.preview)
                     .overlay { if tool == .text || tool == .sticker { LayerGestureOverlay(model: model) } }
+                    .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
+                    .overlay { if tool == .clean, let o = model.original { CleanBrushOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
                     .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
@@ -43,9 +45,11 @@ struct EditorView: View {
                     case .sticker: StickerPanel(model: model)
                     case .frame: FramePanel(model: model)
                     case .doodle: DoodlePanel(model: model)
+                    case .hair: HairPanel(model: model)
                     case .mosaic: MosaicPanel(model: model)
                     case .mark: MarkPanel(model: model)
                     case .liquify: LiquifyPanel(model: model)
+                    case .clean: CleanPanel(model: model)
                     case .face: FacePanel(model: model)
                     case .color: ColorPanel(model: model)
                     case .enhance: EnhancePanel(model: model)
@@ -283,7 +287,7 @@ struct FilterPanel: View {
                 HStack {
                     Button("Off") { model.edit { $0.filter = nil; $0.filterEraser = nil } }.buttonStyle(.bordered)
                     ForEach(shown) { e in
-                        Button(LocalizedStringKey(e.name)) { prefs.used(e.id); model.edit { $0.filter = (e.id, model.draft.filter?.intensity ?? 1) } }
+                        Button(LocalizedStringKey(e.name)) { prefs.used(e.id); let keep = model.draft.filter?.intensity ?? 1; model.edit { $0.filter = (e.id, keep) } }
                             .buttonStyle(.bordered).tint(model.draft.filter?.id == e.id ? .accentColor : .secondary)
                     }
                 }.padding(.horizontal)
@@ -522,13 +526,21 @@ struct ColorPanel: View {
 }
 
 struct FacePanel: View {
-    enum Group: String, CaseIterable { case looks = "Looks", skin = "Skin", shape = "Shape", makeup = "Makeup", detail = "Detail" }
+    enum Group: String, CaseIterable { case looks = "Looks", ratio = "Ratio", skin = "Skin", shape = "Shape", makeup = "Makeup", eyes = "Eyes", detail = "Detail" }
     @Bindable var model: EditorModel
     @State private var group = Group.looks
     @State private var strength = 1.0
     @State private var lookID = AutoBeauty.looks[0].id
+    @State private var reference: PhotosPickerItem?
+    @State private var referenceFailed = false
 
     var body: some View {
+        content
+            .onChange(of: reference) { _, new in Task { await recreate(new) } }
+            .alert("Couldn't read a face", isPresented: $referenceFailed) {}
+    }
+
+    private var content: some View {
         VStack(spacing: 4) {
             Picker("Group", selection: $group) { ForEach(Group.allCases, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
             ScrollView {
@@ -540,18 +552,56 @@ struct FacePanel: View {
                             Button("Off") { model.edit { $0.face = FaceRetouch() } }.buttonStyle(.bordered)
                         }
                         row("Strength", $strength, 0...1) { apply() }
+                        Text("Makeup looks").font(.caption).foregroundStyle(.secondary)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(MakeupLooks.all) { l in
+                                    Button(LocalizedStringKey(l.name)) { applyMakeup(l) }.buttonStyle(.bordered)
+                                }
+                            }.padding(.horizontal)
+                        }
+                        PhotosPicker("Recreate from photo", selection: $reference, matching: .images).padding(.top, 2)
+                    case .ratio:
+                        row("Move left/right", f(\.ratio.shiftX)); row("Move up/down", f(\.ratio.shiftY)); row("Rotate", f(\.ratio.rotate)); row("Symmetry", f(\.ratio.symmetry), 0...1)
+                        row("Even out jaw", f(\.ratio.unevenFix), 0...1); row("3D shading", f(\.ratio.shade3D), 0...1)
+                        Toggle("Protect eyes, nose and mouth", isOn: Binding(get: { model.draft.face.ratio.protectFeatures }, set: { v in model.edit { var fr = $0.face; fr.ratio.protectFeatures = v; $0.face = fr } })).padding(.horizontal)
+                        Toggle("Lock glasses", isOn: Binding(get: { model.draft.face.ratio.glassesLock }, set: { v in model.edit { var fr = $0.face; fr.ratio.glassesLock = v; $0.face = fr } })).padding(.horizontal)
                     case .skin:
                         row("Smooth", f(\.skin.smooth), 0...1); row("Texture", f(\.skin.texture), 0...1); row("Whiten", f(\.skin.whiten), 0...1); row("Rosy", f(\.skin.rosy), 0...1); row("Tan", f(\.skin.tan), 0...1)
                     case .shape:
                         row("Jaw", f(\.reshape.jawSlim)); row("Face width", f(\.reshape.faceWidth)); row("Chin", f(\.reshape.chinLength)); row("Eyes", f(\.reshape.eyeSize)); row("Nose", f(\.reshape.noseSlim)); row("Mouth", f(\.reshape.mouthSize)); row("Cheek volume", f(\.reshape.cheekVolume)); row("Lift", f(\.reshape.lift))
                     case .makeup:
-                        row("Lipstick", f(\.makeup.lipOpacity), 0...1); row("Blush", f(\.makeup.blushOpacity), 0...1); row("Lip shine", f(\.makeup.ombre), 0...1)
+                        row("Lipstick", f(\.makeup.lipOpacity), 0...1); row("Blush", f(\.makeup.blushOpacity), 0...1); row("Lip shine", f(\.makeup.ombre), 0...1); row("Contour", f(\.makeup.contour), 0...1); row("Highlight", f(\.makeup.highlight), 0...1); row("Foundation", f(\.makeup.foundation), 0...1)
+                    case .eyes:
+                        row("Shadow", e(\.eyes.left.shadow, \.eyes.right.shadow), 0...1); row("Eyeliner", e(\.eyes.left.liner, \.eyes.right.liner), 0...1); row("Lashes", e(\.eyes.left.lashes, \.eyes.right.lashes), 0...1)
+                        row("Brow color", f(\.eyes.browOpacity), 0...1); row("Brow height", f(\.eyes.browHeight))
+                        Picker("Brow shape", selection: Binding(get: { model.draft.face.eyes.browShape }, set: { v in model.edit { var fr = $0.face; fr.eyes.browShape = v; $0.face = fr } })) {
+                            ForEach(EyeMakeup.BrowShape.allCases, id: \.self) { Text($0.rawValue.capitalized).tag($0) }
+                        }.pickerStyle(.segmented).padding(.horizontal)
                     case .detail:
                         row("Flash", f(\.detail.flash), 0...1); row("Under-eye", f(\.detail.underEye), 0...1); row("Fine lines", f(\.detail.wrinkles), 0...1); row("Teeth", f(\.detail.teethWhiten), 0...1); row("Bright eyes", f(\.detail.eyeBright), 0...1)
                     }
                 }
             }
         }
+    }
+
+    /// One slider that drives both eyes.
+    private func e(_ l: WritableKeyPath<FaceRetouch, Double>, _ r: WritableKeyPath<FaceRetouch, Double>) -> Binding<Double> {
+        Binding(get: { model.draft.face[keyPath: l] }, set: { model.draft.face[keyPath: l] = $0; model.draft.face[keyPath: r] = $0 })
+    }
+
+    private func applyMakeup(_ l: MakeupLook) {
+        let s = MakeupLooks.scaled(l, strength: strength)
+        model.edit { var f = $0.face; f.makeup = s.makeup; f.eyes = s.eyes; $0.face = f }
+    }
+
+    private func recreate(_ item: PhotosPickerItem?) async {
+        guard let item, let data = try? await item.loadTransferable(type: Data.self),
+              let img = CIImage(data: data, options: [.applyOrientationProperty: true]),
+              let face = (try? VisionFaceLandmarker().faces(in: img))?.first else { referenceFailed = true; return }
+        let look = RecreateLook.look(from: RecreateLook.sample(img, face: face))
+        model.edit { var f = $0.face; f.makeup = look.makeup; f.eyes = look.eyes; $0.face = f }
     }
 
     private func apply() { if let l = AutoBeauty.looks.first(where: { $0.id == lookID }) { model.edit { $0.face = FaceRetouch.look(l, strength: strength) } } }
@@ -734,5 +784,115 @@ struct LayerGestureOverlay: View {
                     .onEnded { _ in baseRotation = 0; model.commit() })
         }
         .allowsHitTesting(model.selectedLayer != nil)
+    }
+}
+
+struct HairPanel: View {
+    @Bindable var model: EditorModel
+    @State private var category = "Natural"
+    private var categories: [String] { var s = Set<String>(); return HairRetouch.swatches.map(\.category).filter { s.insert($0).inserted } }
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Picker("Category", selection: $category) { ForEach(categories, id: \.self) { Text(LocalizedStringKey($0)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    Button("Off") { model.edit { $0.hair = HairRetouch() } }.buttonStyle(.bordered)
+                    ForEach(HairRetouch.swatches.filter { $0.category == category }, id: \.name) { s in
+                        Button { model.edit { var h = $0.hair; h.dye.color = s.color; h.dye.strength = max(h.dye.strength, 0.8); $0.hair = h } } label: {
+                            Circle().fill(Color(red: s.color.r, green: s.color.g, blue: s.color.b)).frame(width: 34, height: 34).overlay(Circle().stroke(.secondary, lineWidth: 1))
+                        }.accessibilityLabel(Text(LocalizedStringKey(s.name)))
+                    }
+                }.padding(.horizontal)
+            }
+            row("Dye", \.hair.dye.strength); row("Keep shine", \.hair.dye.keepShine); row("De-oil", \.hair.deOil); row("Smooth", \.hair.smooth); row("Roots", \.hair.rootRetouch)
+            row("Volume", \.hair.volume, -1...1); row("Hairline", \.hair.hairline, -1...1); row("Glow", \.hair.glow); row("Flyaways", \.hair.flyaway)
+            HStack {
+                Toggle("Brush", isOn: $model.hairBrushActive).fixedSize()
+                Picker("Mode", selection: $model.hairBrushMode) { Text("Add").tag(HairBrushMode.add); Text("Erase").tag(HairBrushMode.erase); Text("Fill").tag(HairBrushMode.fill) }.pickerStyle(.segmented)
+            }.padding(.horizontal)
+        }
+    }
+
+    private func row(_ title: String, _ path: WritableKeyPath<EditDocument, Double>, _ range: ClosedRange<Double> = 0...1) -> some View {
+        HStack {
+            Text(LocalizedStringKey(title)).font(.caption).frame(width: 80, alignment: .leading)
+            Slider(value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), in: range) { if !$0 { model.commit() } }
+        }.padding(.horizontal)
+    }
+}
+
+struct HairBrushOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var brush: RemoverModel?
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    let p = map.toImageClamped(v.location)
+                    if brush == nil { brush = RemoverModel(imageSize: imageSize); brush?.brushSize = 0.04; brush?.begin(at: p) } else { brush?.move(to: p) }
+                    if let b = brush { apply(b.mask) }
+                }
+                .onEnded { _ in brush = nil; model.commit() })
+        }
+    }
+
+    private func apply(_ stroke: MaskCanvas) {
+        var h = model.draft.hair
+        let committed = model.stack0.hair
+        func merged(_ base: MaskCanvas?) -> MaskCanvas { guard var b = base, b.width == stroke.width, b.height == stroke.height else { return stroke }; b.union(stroke); return b }
+        switch model.hairBrushMode {
+        case .add: h.add = merged(committed.add)
+        case .erase: h.remove = merged(committed.remove)
+        case .fill: h.fill = merged(committed.fill)
+        }
+        model.draft.hair = h
+    }
+}
+
+
+/// Clone stamp: paint where the copy should land; the source is the same spot moved by the offset sliders.
+struct CleanPanel: View {
+    @Bindable var model: EditorModel
+    var body: some View {
+        VStack(spacing: 4) {
+            Text("Paint over what to hide. It is covered with the area at the offset.").font(.caption).foregroundStyle(.secondary)
+            slider("Source ←→", \.offsetX, -0.5...0.5)
+            slider("Source ↑↓", \.offsetY, -0.5...0.5)
+            slider("Noise reduction", \.denoise, 0...1)
+            Button("Clear clone") { model.edit { var c = $0.clean; c.cloneMask = nil; $0.clean = c } }.buttonStyle(.bordered)
+        }
+    }
+    private func slider(_ title: String, _ path: WritableKeyPath<CleanConfig, Double>, _ range: ClosedRange<Double>) -> some View {
+        HStack {
+            Text(LocalizedStringKey(title)).font(.caption).frame(width: 96, alignment: .leading)
+            Slider(value: Binding(get: { model.draft.clean[keyPath: path] }, set: { model.draft.clean[keyPath: path] = $0 }), in: range) { if !$0 { model.commit() } }
+        }.padding(.horizontal)
+    }
+}
+
+struct CleanBrushOverlay: View {
+    @Bindable var model: EditorModel
+    let imageSize: CGSize
+    @State private var remover: RemoverModel?
+
+    var body: some View {
+        GeometryReader { geo in
+            let map = FitMapping(view: geo.size, image: imageSize)
+            Color.clear.contentShape(Rectangle()).gesture(DragGesture(minimumDistance: 0)
+                .onChanged { v in
+                    let p = map.toImageClamped(v.location)
+                    if remover == nil { remover = RemoverModel(imageSize: imageSize); remover?.brushSize = 0.05; remover?.begin(at: p) } else { remover?.move(to: p) }
+                    if let r = remover {
+                        var c = model.draft.clean
+                        if var base = model.stack0.clean.cloneMask, base.width == r.mask.width, base.height == r.mask.height { base.union(r.mask); c.cloneMask = base } else { c.cloneMask = r.mask }
+                        model.draft.clean = c
+                    }
+                }
+                .onEnded { _ in remover = nil; model.commit() })
+        }
     }
 }

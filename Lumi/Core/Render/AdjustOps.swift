@@ -55,10 +55,21 @@ enum AdjustOps {
         guard !p.isIdentity else { return image }
         var img = image
 
-        if p.brightness != 0 || p.contrast != 0 || p.saturation != 0 {
+        if p.brightness != 0 {
+            // a midtone lift with black and white pinned: brighter without the washed-out look an additive offset gives
+            let b = p.brightness
+            let f = CIFilter.toneCurve()
+            f.inputImage = img
+            f.point0 = CGPoint(x: 0, y: 0)
+            f.point1 = CGPoint(x: 0.25, y: 0.25 + 0.12 * b)
+            f.point2 = CGPoint(x: 0.5, y: 0.5 + 0.2 * b)
+            f.point3 = CGPoint(x: 0.75, y: 0.75 + 0.12 * b)
+            f.point4 = CGPoint(x: 1, y: 1)
+            img = f.outputImage ?? img
+        }
+        if p.contrast != 0 || p.saturation != 0 {
             let f = CIFilter.colorControls()
             f.inputImage = img
-            f.brightness = Float(p.brightness * 0.5)
             f.contrast = Float(1 + p.contrast * 0.5)
             f.saturation = Float(1 + p.saturation)
             img = f.outputImage ?? img

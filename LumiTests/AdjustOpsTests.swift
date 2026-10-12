@@ -19,6 +19,16 @@ struct AdjustOpsTests {
         #expect(Self.px(AdjustParams(brightness: -0.5))[0] < base)
     }
 
+    @Test func brightnessKeepsBlackAndWhitePinned() {
+        // an additive offset lifts black and looks faded; brightness must not
+        for b in [0.6, 1.0] {
+            #expect(Self.px(AdjustParams(brightness: b), base: 0)[0] <= 2)
+            #expect(Self.px(AdjustParams(brightness: b), base: 1)[0] >= 253)
+        }
+        #expect(Self.px(AdjustParams(brightness: -1), base: 1)[0] >= 253)
+        #expect(Self.px(AdjustParams(brightness: 1), base: 0.5)[0] > Self.px(AdjustParams(), base: 0.5)[0] + 20)
+    }
+
     @Test func contrastSpreadsAroundMid() {
         #expect(Self.px(AdjustParams(contrast: 1), base: 0.8)[0] > Self.px(AdjustParams(), base: 0.8)[0])
         #expect(Self.px(AdjustParams(contrast: 1), base: 0.2)[0] < Self.px(AdjustParams(), base: 0.2)[0])

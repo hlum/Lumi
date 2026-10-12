@@ -17,6 +17,8 @@ struct LibraryPhotoSaver: PhotoSaving {
 
 enum EditorError: Error, Equatable { case noImage, photosDenied, undecodable, exportFailed }
 
+enum HairBrushMode: Hashable { case add, erase, fill }
+
 @Observable @MainActor
 final class EditorModel {
     static let proxySize: CGFloat = 2048
@@ -39,6 +41,8 @@ final class EditorModel {
     var doodleBrush = DoodleStroke.Brush.solid
     var warpBrush = WarpBrush()
     var filterEraserActive = false
+    var hairBrushActive = false
+    var hairBrushMode = HairBrushMode.add
     /// The text or sticker layer the gestures act on.
     var selectedLayer: UUID?
     /// The eraser mask as of the last committed edit; a drag adds to it.

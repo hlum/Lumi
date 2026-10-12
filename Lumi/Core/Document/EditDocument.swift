@@ -107,6 +107,16 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.flatMap { $0.isEmpty ? nil : EditOperation.filterEraser($0) }) { if case .filterEraser = $0 { true } else { false } } }
     }
 
+    var hair: HairRetouch {
+        get { operations.lazy.compactMap { if case .hair(let v) = $0 { v } else { nil } }.last ?? HairRetouch() }
+        set { set(newValue.isIdentity ? nil : .hair(newValue)) { if case .hair = $0 { true } else { false } } }
+    }
+
+    var clean: CleanConfig {
+        get { operations.lazy.compactMap { if case .clean(let v) = $0 { v } else { nil } }.last ?? CleanConfig() }
+        set { set(newValue.isIdentity ? nil : .clean(newValue)) { if case .clean = $0 { true } else { false } } }
+    }
+
     /// Applies operations (e.g. from a recipe): each replaces any existing operation of the same kind.
     func applying(_ ops: [EditOperation]) -> EditDocument {
         var d = self
