@@ -317,6 +317,7 @@ struct CropPanel: View {
                 LumiSliderRow(title: "Straighten", value: Binding(get: { model.draft.crop.angle }, set: { model.draft.crop.angle = $0 }), range: -45...45, unit: 1, onEnd: { resetRect(); model.commit() })
                 LumiSliderRow(title: "Vertical", value: Binding(get: { model.draft.crop.keystoneV }, set: { model.draft.crop.keystoneV = $0 }), range: -1...1, onEnd: { model.commit() })
                 LumiSliderRow(title: "Horizontal", value: Binding(get: { model.draft.crop.keystoneH }, set: { model.draft.crop.keystoneH = $0 }), range: -1...1, onEnd: { model.commit() })
+                LumiSliderRow(title: "Lens fix", value: Binding(get: { model.draft.crop.lens }, set: { model.draft.crop.lens = $0 }), range: -1...1, onEnd: { model.commit() })
                 LumiChip(title: "Auto level", symbol: "level") {
                     if let o = model.original, let a = AutoStraighten.angle(for: Renderer.proxy(o, maxDimension: 1024)) { model.edit { $0.crop.angle = a }; resetRect(); model.commit() }
                 }

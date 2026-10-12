@@ -10,6 +10,7 @@ struct CropSpec: Codable, Equatable {
     var flipV = false
     var keystoneV = 0.0           // -1...1 leaning verticals (shot from below or above)
     var keystoneH = 0.0           // -1...1 converging horizontals (shot from the side)
+    var lens = 0.0                // -1...1 lens distortion: + straightens barrel, - pincushion
 
     var isIdentity: Bool { self == CropSpec() }
 
@@ -33,7 +34,7 @@ struct CropSpec: Codable, Equatable {
 extension CropSpec {
     /// Old drafts have no keystone; anything missing stays at its default.
     init(from decoder: Decoder) throws {
-        enum K: String, CodingKey { case rect, quarterTurns, angle, flipH, flipV, keystoneV, keystoneH }
+        enum K: String, CodingKey { case rect, quarterTurns, angle, flipH, flipV, keystoneV, keystoneH, lens }
         let c = try decoder.container(keyedBy: K.self)
         self.init()
         rect = try c.decodeIfPresent(CGRect.self, forKey: .rect) ?? rect
@@ -43,6 +44,7 @@ extension CropSpec {
         flipV = try c.decodeIfPresent(Bool.self, forKey: .flipV) ?? false
         keystoneV = try c.decodeIfPresent(Double.self, forKey: .keystoneV) ?? 0
         keystoneH = try c.decodeIfPresent(Double.self, forKey: .keystoneH) ?? 0
+        lens = try c.decodeIfPresent(Double.self, forKey: .lens) ?? 0
     }
 }
 
@@ -51,6 +53,7 @@ enum GeometryOps {
         guard !spec.isIdentity else { return image }
         var img = image.transformed(by: CGAffineTransform(translationX: -image.extent.minX, y: -image.extent.minY))
 
+        if spec.lens != 0 { img = MeshWarpRenderer.apply(DisplacementField.lens(amount: Float(spec.lens)), to: img) }
         if spec.keystoneV != 0 || spec.keystoneH != 0 { img = keystone(img, v: spec.keystoneV, h: spec.keystoneH) }
 
         if spec.flipH { img = flip(img, horizontal: true) }

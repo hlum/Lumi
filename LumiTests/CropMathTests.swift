@@ -60,3 +60,23 @@ struct CropMathTests {
         #expect(try JSONDecoder().decode(CropSpec.self, from: JSONEncoder().encode(k)) == k)
     }
 }
+
+struct LensFixTests {
+    @Test func barrelFixPullsSamplesTowardTheCentreMoreAtTheEdges() {
+        let f = DisplacementField.lens(amount: 1)
+        let edge = f.offset(x: 1, y: 0.5), nearCentre = f.offset(x: 0.6, y: 0.5)
+        #expect(edge.0 < 0 && nearCentre.0 < 0 && abs(edge.0) > abs(nearCentre.0) * 3)         // samples come from nearer the centre, mostly at the edge
+        #expect(abs(f.offset(x: 0.5, y: 0.5).0) < 1e-6)
+        let g = DisplacementField.lens(amount: -1)
+        #expect(g.offset(x: 1, y: 0.5).0 > 0)                                                    // pincushion: the opposite way
+        #expect(DisplacementField.lens(amount: 0).isIdentity)
+    }
+
+    @Test func lensFixKeepsTheFrameAndStraightensABowedLine() {
+        var spec = CropSpec(); spec.lens = 0.8
+        let img = CIImage(color: .gray).cropped(to: CGRect(x: 0, y: 0, width: 300, height: 200))
+        #expect(!spec.isIdentity && GeometryOps.apply(spec, to: img).extent == img.extent)
+        let old = try? JSONDecoder().decode(CropSpec.self, from: Data(#"{"quarterTurns":1}"#.utf8))
+        #expect(old?.lens == 0 && old?.quarterTurns == 1)
+    }
+}

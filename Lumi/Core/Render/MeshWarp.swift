@@ -15,6 +15,20 @@ struct DisplacementField: Codable, Equatable {
         dy = dx
     }
 
+    /// Lens distortion fix. Positive straightens barrel distortion (wide-angle lenses bow lines outward), negative straightens pincushion.
+    static func lens(amount: Float, cols: Int = 48, rows: Int = 48) -> DisplacementField {
+        var f = DisplacementField(cols: cols, rows: rows)
+        guard amount != 0 else { return f }
+        let a = amount * 0.35
+        for j in 0..<rows { for i in 0..<cols {
+            let vx = Float(i) / Float(cols - 1) - 0.5, vy = Float(j) / Float(rows - 1) - 0.5
+            let r2 = (vx * vx + vy * vy) * 4                 // 0 at the center, 1 at the middle of an edge
+            let k = j * cols + i
+            f.dx[k] = -vx * a * r2; f.dy[k] = -vy * a * r2
+        } }
+        return f
+    }
+
     var isIdentity: Bool { !dx.contains { $0 != 0 } && !dy.contains { $0 != 0 } }
 
     /// Bilinear sample at normalized (x, y); clamps outside 0...1 so edges never tear.
