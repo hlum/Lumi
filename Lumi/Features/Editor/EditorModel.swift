@@ -44,6 +44,11 @@ final class EditorModel {
     var cropAspect: Double?
     /// Which part of the face the slider in use works on; the preview outlines it. Cleared shortly after the slider is released.
     var activeMark: FaceMark?
+    var lightEraserActive = false
+    /// Move preview: the picture as it looks now, played through a slow camera move.
+    private(set) var motion: AnimatePhoto?
+    private var motionFrame: CIImage?
+    private var motionTask: Task<Void, Never>?
     /// Size of a tap-to-heal spot, as a fraction of the picture width.
     var blemishTapSize = 0.025
     /// Nails found in the picture (hand pose), for the Nails tool.
@@ -78,6 +83,7 @@ final class EditorModel {
     var preview: CIImage? {
         guard let proxy else { return nil }
         if showOriginal { return proxy }
+        if let motionFrame { return motionFrame }
         // upscaling is an export-time step: running a 4x model on the preview proxy would be slow and show no more than the screen can
         var live = draft; live.upscale = nil
         if cropEditing { live.crop.rect = CGRect(x: 0, y: 0, width: 1, height: 1) }
@@ -133,6 +139,40 @@ final class EditorModel {
         guard let o = original, let masker = Renderer.services.subjectMasker, let mask = (try? masker.subjectMask(for: o)) ?? nil else { return nil }
         var c = CutoutConfig(); c.feather = 0.1
         return CustomStickerStore.shared.add(cutout: CutoutOps.apply(c, to: o, subjectMask: mask))
+    }
+
+    // MARK: move preview and GIF
+
+    func startMotion(_ a: AnimatePhoto) {
+        guard let proxy else { return }
+        stopMotion()
+        motion = a
+        var live = draft; live.upscale = nil
+        let base = Renderer.render(proxy, document: live)
+        let mask: CIImage? = a.style == .parallax ? ((try? Renderer.services.subjectMasker?.subjectMask(for: base)) ?? nil) : nil
+        motionTask = Task { [weak self] in
+            let n = a.frameCount
+            var i = 0
+            while !Task.isCancelled {
+                self?.motionFrame = a.frame(of: base, personMask: mask, at: n > 1 ? Double(i % n) / Double(n - 1) : 0)
+                i += 1
+                try? await Task.sleep(for: .milliseconds(Int(1000 / max(a.fps, 1))))
+            }
+        }
+    }
+
+    func stopMotion() { motionTask?.cancel(); motionTask = nil; motion = nil; motionFrame = nil }
+
+    /// The current move as a looping GIF, saved to Photos.
+    func saveMotionGIF() async -> Bool {
+        guard let a = motion, let proxy else { return false }
+        var live = draft; live.upscale = nil
+        let base = Renderer.render(Renderer.proxy(proxy, maxDimension: 720), document: live)
+        let mask: CIImage? = a.style == .parallax ? ((try? Renderer.services.subjectMasker?.subjectMask(for: base)) ?? nil) : nil
+        let ctx = CIContext()
+        let frames = a.frames(of: base, personMask: mask).compactMap { ctx.createCGImage($0, from: $0.extent) }
+        guard let data = GIFMaker.encode(frames, options: .init(fps: a.fps, maxSide: 720, loopCount: 0)) else { return false }
+        do { try await PHPhotoLibrary.shared().performChanges { PHAssetCreationRequest.forAsset().addResource(with: .photo, data: data, options: nil) }; return true } catch { return false }
     }
 
     /// Shows or hides the outline for a slider; hiding waits a moment so the outline is still there when the finger lifts.

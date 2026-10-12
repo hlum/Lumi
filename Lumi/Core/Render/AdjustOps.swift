@@ -88,7 +88,7 @@ enum AdjustOps {
             let f = CIFilter.temperatureAndTint()
             f.inputImage = img
             f.neutral = CIVector(x: 6500, y: 0)
-            f.targetNeutral = CIVector(x: 6500 - p.temperature * 2500, y: p.tint * 100)
+            f.targetNeutral = CIVector(x: 6500 - p.temperature * 2500, y: -p.tint * 100)       // + tint = magenta, like other editors
             img = f.outputImage ?? img
         }
         if p.exposure != 0 {

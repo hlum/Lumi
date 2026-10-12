@@ -9,6 +9,7 @@ enum EditorCategory: String, CaseIterable, Identifiable {
 
 enum EditorTool: String, CaseIterable, Identifiable {
     case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filters", sticker = "Stickers", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Manual slim", clean = "Clean", face = "Face", makeup = "Makeup", color = "Color", enhance = "Enhance", export = "Export"
+    case relight = "AI Flash", effects = "Effects"
     case autoBeauty = "Auto beauty", skin = "Skin", reshape = "Reshape", blemish = "Blemishes", eyesTeeth = "Eyes and teeth", underEye = "Under-eye", body = "Body"
     case looks = "Looks", lips = "Lips", eyeMakeup = "Eyes", nails = "Nails"
     var id: String { rawValue }
@@ -18,6 +19,7 @@ enum EditorTool: String, CaseIterable, Identifiable {
         case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .makeup: "wand.and.stars"
         case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "sparkles"; case .export: "square.and.arrow.up.on.square"
         case .autoBeauty: "sparkle.magnifyingglass"; case .skin: "face.dashed"; case .reshape: "person.crop.circle.badge.questionmark"; case .blemish: "circle.dotted"; case .eyesTeeth: "eye"; case .underEye: "moon.zzz"
+        case .relight: "bolt.fill"; case .effects: "sparkle"
         case .body: "figure.stand"; case .looks: "sparkles.rectangle.stack"; case .lips: "mouth"; case .eyeMakeup: "eyebrow"; case .nails: "hand.raised.fingers.spread"
         }
     }
@@ -35,7 +37,7 @@ enum EditorTool: String, CaseIterable, Identifiable {
     /// Tools shown in a category's grid, in order. Export is reached from Save.
     static func tools(in c: EditorCategory) -> [EditorTool] {
         switch c {
-        case .edit: [.crop, .adjust, .filter, .color, .text, .sticker, .remove, .cutout, .clean, .enhance, .frame, .doodle, .mosaic, .mark]
+        case .edit: [.crop, .adjust, .filter, .color, .relight, .text, .sticker, .remove, .cutout, .effects, .clean, .enhance, .frame, .doodle, .mosaic, .mark]
         case .retouch: [.autoBeauty, .skin, .reshape, .blemish, .eyesTeeth, .underEye]
         case .body: [.body, .liquify]
         case .hair: [.hair]
@@ -135,17 +137,7 @@ struct EditorView: View {
         let size = model.preview?.extent.size ?? CGSize(width: 1, height: 1)
         return MetalPreviewView(image: model.preview)
             .aspectRatio(max(size.width, 1) / max(size.height, 1), contentMode: .fit)
-            .overlay { if tool == .text || tool == .sticker { LayerGestureOverlay(model: model) } }
-            .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
-            .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
-            .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
-            .overlay { if tool?.usesFaces == true, let o = model.preview?.extent.size { FaceMarksOverlay(mark: model.activeMark, faces: model.overlayFaces, imageSize: o) } }
-            .overlay { if tool == .blemish, let o = model.preview?.extent.size { BlemishTapOverlay(model: model, imageSize: o) } }
-            .overlay { if tool == .crop, let size = model.preview?.extent.size { CropOverlay(model: model, imageSize: size) } }
-            .overlay { if tool == .clean, let o = model.original { CleanBrushOverlay(model: model, imageSize: o.extent.size) } }
-            .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
-            .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
-            .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
+            .overlay { toolOverlay(previewSize: size) }
             .overlay(alignment: .bottomTrailing) {
                 Label("Compare", systemImage: "eye").font(.system(size: 14, weight: .bold, design: .rounded))
                     .padding(.horizontal, 14).frame(height: 36).background(Capsule().fill(.white.opacity(0.9))).foregroundStyle(.black).padding(12)
@@ -154,6 +146,31 @@ struct EditorView: View {
             }
             .clipShape(RoundedRectangle(cornerRadius: LumiShape.photo, style: .continuous))
             .padding(.horizontal, LumiShape.margin)
+    }
+
+    /// What is drawn or caught on top of the photo while a tool is open: brushes, outlines, the crop frame.
+    @ViewBuilder private func toolOverlay(previewSize size: CGSize) -> some View {
+        let original = model.original?.extent.size
+        ZStack {
+            if let t = tool {
+                if t.usesFaces { FaceMarksOverlay(mark: model.activeMark, faces: model.overlayFaces, imageSize: size) }
+                switch t {
+                case .text, .sticker: LayerGestureOverlay(model: model)
+                case .hair: if model.hairBrushActive, let o = original { HairBrushOverlay(model: model, imageSize: o) }
+                case .mosaic: if let o = original { MosaicBrushOverlay(model: model, imageSize: o) }
+                case .filter: if model.filterEraserActive, let o = original { FilterEraserOverlay(model: model, imageSize: o) }
+                case .relight, .effects:
+                    if model.lightEraserActive { MaskPaintOverlay(model: model, imageSize: size, committed: { model.stack0.relight.erase }, write: { m in var r = model.draft.relight; r.erase = m; model.draft.relight = r }) }
+                case .blemish: BlemishTapOverlay(model: model, imageSize: size)
+                case .crop: CropOverlay(model: model, imageSize: size)
+                case .clean: if let o = original { CleanBrushOverlay(model: model, imageSize: o) }
+                case .liquify: if let o = original { LiquifyOverlay(model: model, imageSize: o) }
+                case .doodle: if let o = original { DoodleOverlay(model: model, imageSize: o) }
+                case .remove: if let r = model.remover, let o = original { RemoverOverlay(remover: r, imageSize: o) }
+                default: EmptyView()
+                }
+            }
+        }
     }
 
     @ViewBuilder private var bottom: some View {
@@ -203,6 +220,8 @@ struct EditorView: View {
         case .clean: CleanPanel(model: model)
         case .face: FacePanel(model: model)
         case .makeup: FacePanel(model: model, only: [.looks, .makeup, .eyes])
+        case .relight: RelightPanel(model: model)
+        case .effects: EffectsPanel(model: model)
         case .autoBeauty: AutoBeautyPanel(model: model)
         case .skin: SkinPanel(model: model)
         case .reshape: ReshapePanel(model: model)
