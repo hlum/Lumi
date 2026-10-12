@@ -227,3 +227,25 @@ struct LumiButtonStyle: ButtonStyle {
             .opacity(enabled ? (configuration.isPressed ? 0.7 : 1) : 0.4)
     }
 }
+
+/// Text tabs with a dark selected pill, for the groups inside a tool (Face, Eyes, Nose...).
+struct LumiCategoryTabs<T: Hashable>: View {
+    var items: [(T, LocalizedStringKey)]
+    @Binding var selection: T
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 2) {
+                ForEach(items.indices, id: \.self) { i in
+                    let (value, title) = items[i]
+                    Button { selection = value } label: {
+                        Text(title).font(.system(size: 14, weight: .bold, design: .rounded)).lineLimit(1)
+                            .padding(.horizontal, 12).frame(minHeight: 34)
+                            .foregroundStyle(selection == value ? LumiColor.onSelectedPill : LumiColor.textSecondary)
+                            .background(Capsule().fill(selection == value ? LumiColor.selectedPill : .clear))
+                    }
+                    .buttonStyle(.plain).accessibilityAddTraits(selection == value ? .isSelected : [])
+                }
+            }
+        }
+    }
+}
