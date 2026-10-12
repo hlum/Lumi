@@ -5,3 +5,4 @@ build/
 *.xcresult
 graphify-out/
 Lumi/Resources/Models/*.mlpackage
+bench/out/

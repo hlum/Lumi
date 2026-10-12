@@ -24,7 +24,7 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 
 **Phase Q: Quality — makeup, face, body (TOP PRIORITY, added 2026-10-12)**
 Lumi is a personal app that will not be released, so research/non-commercial models and app size are allowed. Details in the Phase Q section at the end of this file.
-- [ ] Q0 Quality bench and personal-use licence rules
+- [x] Q0 Quality bench and personal-use licence rules (12 Commons photos in `bench/`, `scripts/bench.sh push|pull`, `QualityBenchTests`)
 - [ ] Q1 Constrained mesh-warp engine (control points → rigid MLS + line-preserving grid solve)
 - [ ] Q2 Face reshape on the new engine
 - [ ] Q3 Body reshape on the new engine (mask contours, per-part, background lines kept)

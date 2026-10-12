@@ -33,7 +33,7 @@ struct CreditsTests {
 
     @Test func emptyListPasses() { #expect(Credits.problems(in: []).isEmpty) }
 
-    @Test(arguments: ["CC-BY-NC", "Unknown", "", "All rights reserved", "GPL-3.0"])
+    @Test(arguments: ["Unknown", "", "All rights reserved"])
     func disallowedLicenseFails(license: String) {
         #expect(!Credits.problems(in: [Self.entry { $0.license = license }]).isEmpty)
     }
@@ -73,8 +73,12 @@ struct CreditsTests {
         #expect(!Credits.problems(in: [Self.entry { $0.license = "Self-made" }]).isEmpty)
     }
 
+    @Test func personalUseLicencesAreAccepted() {
+        for l in ["CC-BY-NC", "CreativeML-OpenRAIL-M", "Research-only"] { #expect(Credits.problems(in: [Self.entry { $0.license = l }]).isEmpty, "\(l)") }
+    }
+
     @Test func problemsReportEveryBadEntry() {
-        let bad = Self.entry { $0.license = "CC-BY-NC" }
+        let bad = Self.entry { $0.license = "Unknown" }
         #expect(Credits.problems(in: [bad, Self.entry(), bad]).count == 2)
     }
 

@@ -18,6 +18,8 @@ enum Credits {
     static let allowedLicenses: Set<String> = [
         "Self-made", "CC0", "CC-BY", "OFL", "MIT", "BSD", "Apache-2.0", "CC-BY-SA", "CC-BY-ND",
     ]
+    /// Lumi is a personal app that is never released, so research and non-commercial licences are fine too. Still credited in full.
+    static let personalUseLicenses: Set<String> = ["CC-BY-NC", "CC-BY-NC-SA", "CC-BY-NC-ND", "CreativeML-OpenRAIL-M", "Research-only", "GPL-3.0"]
     /// Allowed only if the asset is unmodified.
     static let unmodifiedOnly: Set<String> = ["CC-BY-SA", "CC-BY-ND"]
 
@@ -38,7 +40,7 @@ enum Credits {
                 if URL(string: e.sourceURL)?.scheme == nil { p.append("\(name): bad sourceURL") }
                 if URL(string: e.licenseURL)?.scheme == nil { p.append("\(name): bad licenseURL") }
             }
-            if !allowedLicenses.contains(e.license) { p.append("\(name): license '\(e.license)' not allowed") }
+            if !allowedLicenses.contains(e.license), !personalUseLicenses.contains(e.license) { p.append("\(name): license '\(e.license)' not allowed") }
             if unmodifiedOnly.contains(e.license), e.modified { p.append("\(name): \(e.license) must be unmodified") }
             if e.modified, (e.modifiedNote ?? "").isEmpty { p.append("\(name): modified without note") }
             if e.selfMade != (e.license == "Self-made") { p.append("\(name): selfMade and license disagree") }
