@@ -68,6 +68,8 @@ enum Renderer {
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
             case .clean(let c): img = CleanOps.apply(c, to: img)
             case .match(let m): img = m.apply(to: img)
+            case .relight(let r): img = relit(r, from: img, prefix: Array(document.operations[0..<i]))
+            case .effect(let e): img = PhotoEffect.apply(e.effect, strength: e.strength, to: img)
             case .body(let b): img = bodyRetouched(b, from: img, prefix: Array(document.operations[0..<i]))
             case .hair(let h): img = hairRetouched(h, from: img, prefix: Array(document.operations[0..<i]))
             case .face(let f): img = retouched(f, from: img, prefix: Array(document.operations[0..<i]))
@@ -149,6 +151,21 @@ enum Renderer {
             mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil
         }
         return LayerRenderer.render(stack, over: image, subjectMask: mask)
+    }
+
+    static func relit(_ r: RelightConfig, from image: CIImage, prefix: [EditOperation]) -> CIImage {
+        guard !r.isIdentity else { return image }
+        var faces: [FaceInfo] = []
+        let needsFaces = [RelightStyle.backlit, .flash, .fillLight, .photoBooth, .ledStrip, .redLight, .goldenHour].contains(r.style)
+        if needsFaces, let finder = services.faceLandmarker {
+            let key = "faces|" + cacheKey(image, prefix)
+            if let c = services.faceCache, c.key == key { faces = c.faces } else { faces = (try? finder.faces(in: image)) ?? []; services.remember(faces: faces, key: key) }
+        }
+        var mask: CIImage?
+        if r.style != .night, r.style != .backlit, let masker = services.subjectMasker {
+            mask = (try? services.cached("mask|" + cacheKey(image, prefix)) { try masker.subjectMask(for: image) }) ?? nil
+        }
+        return RelightOps.apply(r, to: image, faces: faces, personMask: mask)
     }
 
     static func bodyRetouched(_ b: BodyRetouch, from image: CIImage, prefix: [EditOperation]) -> CIImage {

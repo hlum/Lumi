@@ -112,6 +112,16 @@ struct EditDocument: Codable, Equatable {
         set { set(newValue.isIdentity ? nil : .hair(newValue)) { if case .hair = $0 { true } else { false } } }
     }
 
+    var relight: RelightConfig {
+        get { operations.lazy.compactMap { if case .relight(let v) = $0 { v } else { nil } }.last ?? RelightConfig() }
+        set { set(newValue.isIdentity ? nil : .relight(newValue)) { if case .relight = $0 { true } else { false } } }
+    }
+
+    var effect: PhotoEffectConfig {
+        get { operations.lazy.compactMap { if case .effect(let v) = $0 { v } else { nil } }.last ?? PhotoEffectConfig() }
+        set { set(newValue.isIdentity ? nil : .effect(newValue)) { if case .effect = $0 { true } else { false } } }
+    }
+
     var colorMatch: ColorMatch {
         get { operations.lazy.compactMap { if case .match(let v) = $0 { v } else { nil } }.last ?? ColorMatch() }
         set { set(newValue.isIdentity ? nil : .match(newValue)) { if case .match = $0 { true } else { false } } }

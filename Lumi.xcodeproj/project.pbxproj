@@ -47,6 +47,7 @@
 		211A042734A27742A4EEE6F1 /* SmoothingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA5EC60103F951C695EF6AC /* SmoothingTests.swift */; };
 		218907D163F6E19BEE4529FB /* MeshWarp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E30B76F361E96AFADE7BB51 /* MeshWarp.swift */; };
 		22ADE7732F75DFE1FAAE3BC1 /* AdjustOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C1AF23918152C57AE4A68 /* AdjustOps.swift */; };
+		230193B71859A3EED4256AFB /* RelightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269ED5A058D95519B569DD79 /* RelightTests.swift */; };
 		2337611A5B6D84A1BD4286A1 /* FaceMarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446B48E32E6CE57CD21ACB08 /* FaceMarks.swift */; };
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
 		26BC875599259DE988357289 /* FeatureRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97773758CBCAC5870E0B2DA /* FeatureRuleTests.swift */; };
@@ -221,6 +222,7 @@
 		DC907DCEBE9FB784EB71CFDA /* FeatureRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6CF13D91A200E0A3D41E0C /* FeatureRules.swift */; };
 		DCFBD0C0527D24FDEE72F237 /* CutoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 730D4AA73C47234B92073E64 /* CutoutTests.swift */; };
 		DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69EA3A082E4527360B4F44E8 /* ToolCatalog.swift */; };
+		DDCAE9FB289E38C760C7946E /* RelightOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABBB1258F39E8DCC7ED841F /* RelightOps.swift */; };
 		DE5981280041B68298DDA33A /* VideoEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BBA9DDFE9AD6D53BCDDA41 /* VideoEditorView.swift */; };
 		DE76D9A30B68F54C16A16823 /* SpotAndBeautyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BFE211254C95958D5476D6 /* SpotAndBeautyTests.swift */; };
 		DF7761A3CBBCF7D23EE560CF /* BodyReshape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4056C5884735CA99A57205A6 /* BodyReshape.swift */; };
@@ -294,6 +296,7 @@
 		2248574B322F87BAF16D744D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		2354F623C6B2A8255A9876AD /* CustomStickers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomStickers.swift; sourceTree = "<group>"; };
 		25C459A2F56ACFF1F4D3C614 /* CreditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsView.swift; sourceTree = "<group>"; };
+		269ED5A058D95519B569DD79 /* RelightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelightTests.swift; sourceTree = "<group>"; };
 		27CAD8D752BD3195AA3D1BDA /* PreviewBenchmarkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewBenchmarkTests.swift; sourceTree = "<group>"; };
 		27D67AF8641E961FC03E18AF /* VideoEraseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEraseTests.swift; sourceTree = "<group>"; };
 		285DE6546B441D0BEC50F540 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
@@ -353,6 +356,7 @@
 		579A8761D0613BF1231125C7 /* FaceMarksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMarksTests.swift; sourceTree = "<group>"; };
 		57E9E64080230EEA3F3B18FE /* TextStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyleTests.swift; sourceTree = "<group>"; };
 		5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpscalerTests.swift; sourceTree = "<group>"; };
+		5ABBB1258F39E8DCC7ED841F /* RelightOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelightOps.swift; sourceTree = "<group>"; };
 		5D68FC2907097196C8F56737 /* CameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTests.swift; sourceTree = "<group>"; };
 		5E78D5B610E53FA8AD5383B2 /* fixture.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fixture.json; sourceTree = "<group>"; };
 		5F80F74829A897FA9E5B3FF4 /* MeshWarpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshWarpTests.swift; sourceTree = "<group>"; };
@@ -943,6 +947,7 @@
 				3B443E2575575BE475C5FB9B /* MosaicOps.swift */,
 				E2059AFF4788F6C150A916E4 /* OutlineOps.swift */,
 				6FA639C89ECF81684B57A521 /* ProtectedWarp.swift */,
+				5ABBB1258F39E8DCC7ED841F /* RelightOps.swift */,
 				4C877CE8B244EF3D2C0593F7 /* Renderer.swift */,
 				E5BFF55F06515FDDB7BD22F6 /* SkinOps.swift */,
 				79F7CE3228CC4C06A2B8DBB1 /* ToneCurve.swift */,
@@ -1043,6 +1048,7 @@
 				9695B325C436F8ED8E7CC5BB /* RecipeLibraryTests.swift */,
 				C601C878EAB11731365C44CD /* RecipeTests.swift */,
 				37C05446CF65FFBBDCAD63DD /* ReleaseTests.swift */,
+				269ED5A058D95519B569DD79 /* RelightTests.swift */,
 				7CC47F6D1DB33A9F7C52B4A8 /* RemoverTests.swift */,
 				850D7C49D60EA488C83EDB92 /* RendererTests.swift */,
 				8A84271AE2975CD30F866726 /* ResizeTests.swift */,
@@ -1425,6 +1431,7 @@
 				8688B3D9817E40BCD09156F0 /* RecipeStorage.swift in Sources */,
 				0C4B48B4C405B4E90C47F1F6 /* RecipesView.swift in Sources */,
 				5B00954CB85DAF39E1F3349E /* RelightLooks.swift in Sources */,
+				DDCAE9FB289E38C760C7946E /* RelightOps.swift in Sources */,
 				5EF7A37ECD66AD6D2245428E /* RemoverModel.swift in Sources */,
 				DC1DC989B13C717126FDE014 /* RemoverPanel.swift in Sources */,
 				45B917F1FAE953E37309C1D4 /* Renderer.swift in Sources */,
@@ -1542,6 +1549,7 @@
 				DF88952B315102B0BB5A7269 /* RecipeLibraryTests.swift in Sources */,
 				0A021A54E63AED940A54802C /* RecipeTests.swift in Sources */,
 				45A2A6315A061461D17AE80C /* ReleaseTests.swift in Sources */,
+				230193B71859A3EED4256AFB /* RelightTests.swift in Sources */,
 				450643AA42C6B62F8D57F59A /* RemoverTests.swift in Sources */,
 				5AD22969AE080B5D97C2D11F /* RendererTests.swift in Sources */,
 				6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */,
