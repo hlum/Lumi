@@ -99,6 +99,7 @@
 		5B00954CB85DAF39E1F3349E /* RelightLooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65391B34A9130D32033A23D9 /* RelightLooks.swift */; };
 		5C57429A79CCC112236D0C32 /* FrameAnalysisTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C4E142522B532A65E9C6422 /* FrameAnalysisTrack.swift */; };
 		5EF7A37ECD66AD6D2245428E /* RemoverModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B98FF1815ACDA1C82AF82D8 /* RemoverModel.swift */; };
+		5FD696AC8F306483CA959714 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B71D4970D54ED19C7EE44A /* Theme.swift */; };
 		6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A84271AE2975CD30F866726 /* ResizeTests.swift */; };
 		62321582DF77C5697193257F /* ExportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85827E04B5DD5DA38A53552 /* ExportSettings.swift */; };
 		640D33462F10D0B171470ACF /* Inpainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B11508DB0D8D14D15FDA02 /* Inpainter.swift */; };
@@ -316,6 +317,7 @@
 		4FFF9DBEC384E6F9CE564684 /* BatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchModel.swift; sourceTree = "<group>"; };
 		54685C22FF7DC6494AC7D235 /* AppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShortcuts.swift; sourceTree = "<group>"; };
 		54802D0010B339E8A4721CF8 /* MaterialCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialCatalog.swift; sourceTree = "<group>"; };
+		54B71D4970D54ED19C7EE44A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		560797701B1E028267073F3C /* TemporalBlend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporalBlend.swift; sourceTree = "<group>"; };
 		56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageView.swift; sourceTree = "<group>"; };
 		57E9E64080230EEA3F3B18FE /* TextStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyleTests.swift; sourceTree = "<group>"; };
@@ -474,6 +476,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		01CFA7D2BE4829C425FFD4F6 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				54B71D4970D54ED19C7EE44A /* Theme.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
 		044230783C63FB54A581C5B0 /* Video */ = {
 			isa = PBXGroup;
 			children = (
@@ -637,6 +647,7 @@
 			children = (
 				8AF4B291295C59BDECDE9C9C /* App */,
 				B7DB7A6FDC19D5D465DCDB98 /* Core */,
+				01CFA7D2BE4829C425FFD4F6 /* DesignSystem */,
 				F16C16BE0D0D1729BC1B8D82 /* Features */,
 				BA648EAC6A3A18A66A253DED /* Resources */,
 			);
@@ -1358,6 +1369,7 @@
 				DA7561385A0E08570304FE1C /* Teleprompter.swift in Sources */,
 				53C612EEEABE1BCA225B854C /* TemporalBlend.swift in Sources */,
 				AE65DD435A9BE444E2C9F93A /* TextStylePresets.swift in Sources */,
+				5FD696AC8F306483CA959714 /* Theme.swift in Sources */,
 				0C7E0DC147CDB99162857C93 /* TimelineModel.swift in Sources */,
 				A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */,
 				DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */,

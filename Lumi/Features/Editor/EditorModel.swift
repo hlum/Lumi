@@ -123,6 +123,9 @@ final class EditorModel {
 
     func commit() { stack.commit(draft); autosave() }
 
+    /// Puts the document back to an earlier state (a tool's Cancel).
+    func revert(to doc: EditDocument) { draft = doc; commit() }
+
     private func autosave() {
         guard let session else { return }
         session.save(stack.current, thumbnail: thumbnailData())

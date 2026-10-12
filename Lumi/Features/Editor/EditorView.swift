@@ -2,83 +2,67 @@ import PhotosUI
 import SwiftData
 import SwiftUI
 
+enum EditorCategory: String, CaseIterable, Identifiable {
+    case edit = "Edit", retouch = "Retouch", body = "Body", hair = "Hair", makeup = "Makeup"
+    var id: String { rawValue }
+}
+
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filter", sticker = "Sticker", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", clean = "Clean", face = "Face", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filters", sticker = "Stickers", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", clean = "Clean", face = "Face", makeup = "Makeup", color = "Color", enhance = "Enhance", export = "Export"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "arrow.up.left.and.arrow.down.right"; case .export: "square.and.arrow.up.on.square" }
+        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .makeup: "wand.and.stars"; case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "sparkles"; case .export: "square.and.arrow.up.on.square" }
+    }
+    var category: EditorCategory {
+        switch self {
+        case .face: .retouch
+        case .liquify: .body
+        case .hair: .hair
+        case .makeup: .makeup
+        default: .edit
+        }
+    }
+    /// Tools shown in a category's grid, in order. Export is reached from Save.
+    static func tools(in c: EditorCategory) -> [EditorTool] {
+        switch c {
+        case .edit: [.crop, .adjust, .filter, .color, .text, .sticker, .remove, .cutout, .clean, .enhance, .frame, .doodle, .mosaic, .mark]
+        case .retouch: [.face, .clean]
+        case .body: [.liquify]
+        case .hair: [.hair]
+        case .makeup: [.makeup]
+        }
     }
 }
 
 struct EditorView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
     /// Pass a project to reopen its draft.
     var project: Project?
     @State private var model = EditorModel()
     @State private var item: PhotosPickerItem?
     @State private var loadFailed = false
-    @State private var tool = EditorTool.adjust
+    @State private var tool: EditorTool?
+    @State private var category = EditorCategory.edit
+    @State private var snapshot: EditDocument?          // the document when the open tool began, for Cancel
     @State private var library = RecipeLibrary()
     @State private var recipeSaved = false
+    @State private var showExport = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            if model.preview != nil {
-                MetalPreviewView(image: model.preview)
-                    .overlay { if tool == .text || tool == .sticker { LayerGestureOverlay(model: model) } }
-                    .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
-                    .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
-                    .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
-                    .overlay { if tool == .clean, let o = model.original { CleanBrushOverlay(model: model, imageSize: o.extent.size) } }
-                    .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
-                    .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
-                    .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
-                    .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
-                Group {
-                    switch tool {
-                    case .adjust: AdjustPanel(model: model)
-                    case .crop: CropPanel(model: model)
-                    case .text: TextPanel(model: model)
-                    case .remove: RemoverPanel(editor: model)
-                    case .cutout: CutoutPanel(model: model)
-                    case .filter: FilterPanel(model: model)
-                    case .sticker: StickerPanel(model: model)
-                    case .frame: FramePanel(model: model)
-                    case .doodle: DoodlePanel(model: model)
-                    case .hair: HairPanel(model: model)
-                    case .mosaic: MosaicPanel(model: model)
-                    case .mark: MarkPanel(model: model)
-                    case .liquify: LiquifyPanel(model: model)
-                    case .clean: CleanPanel(model: model)
-                    case .face: FacePanel(model: model)
-                    case .color: ColorPanel(model: model)
-                    case .enhance: EnhancePanel(model: model)
-                    case .export: ExportPanel(model: model)
-                    }
-                }
-                .frame(maxHeight: 220)
-                Picker("Tool", selection: $tool) {
-                    ForEach(EditorTool.allCases) { Label($0.rawValue, systemImage: $0.symbol).tag($0) }
-                }
-                .pickerStyle(.segmented).padding()
-            } else {
-                ContentUnavailableView("Pick a photo", systemImage: "photo")
+        ZStack {
+            LumiColor.ground.ignoresSafeArea()
+            VStack(spacing: 12) {
+                topBar
+                if model.preview != nil { photo } else { empty }
+                if model.preview != nil { bottom }
             }
         }
-        .navigationTitle("Editor")
+        .toolbar(.hidden, for: .navigationBar)
         .task {
             let store = ProjectStore(context: context, directory: ProjectStore.defaultDirectory)
             model.session = ProjectSession(store: store, project: project)
             if project != nil { try? model.openDraft() }
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) { PhotosPicker("Photo", selection: $item, matching: .images) }
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                Button("Undo", systemImage: "arrow.uturn.backward") { model.undo() }.disabled(!model.canUndo)
-                Button("Redo", systemImage: "arrow.uturn.forward") { model.redo() }.disabled(!model.canRedo)
-                Button("Save recipe", systemImage: "wand.and.stars.inverse") { saveRecipe() }.disabled(model.original == nil || model.draft.operations.isEmpty)
-                Button("Save", systemImage: "square.and.arrow.down") { Task { await model.save() } }.disabled(model.original == nil)
-            }
         }
         .onChange(of: item) { _, new in
             guard let new else { return }
@@ -87,9 +71,128 @@ struct EditorView: View {
                 else { loadFailed = true }
             }
         }
+        .sheet(isPresented: $showExport) { ExportPanel(model: model).padding().presentationDetents([.medium]) }
         .alert("Recipe saved", isPresented: $recipeSaved) {}
         .alert("Couldn't open that photo", isPresented: $loadFailed) {}
         .alert("Couldn't save", isPresented: .constant(model.saveError != nil)) {}
+    }
+
+    // MARK: pieces
+
+    private var topBar: some View {
+        HStack(spacing: 10) {
+            LumiIconButton(symbol: "xmark", label: "Close editor", raised: true) { dismiss() }
+            Spacer()
+            HStack(spacing: 0) {
+                LumiIconButton(symbol: "arrow.uturn.backward", label: "Undo", disabled: !model.canUndo) { model.undo() }.background(.clear)
+                LumiIconButton(symbol: "arrow.uturn.forward", label: "Redo", disabled: !model.canRedo) { model.redo() }
+            }
+            .background(Capsule().fill(LumiColor.surface)).shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+            Spacer()
+            Menu {
+                Button("Save to Photos", systemImage: "square.and.arrow.down") { Task { await model.save() } }
+                Button("Export options", systemImage: "slider.horizontal.3") { showExport = true }
+                Button("Save as recipe", systemImage: "wand.and.stars.inverse") { saveRecipe() }.disabled(model.draft.operations.isEmpty)
+                PhotosPicker("Change photo", selection: $item, matching: .images)
+            } label: {
+                Text("Save").font(.system(size: 16, weight: .bold, design: .rounded)).foregroundStyle(LumiColor.onSelectedPill)
+                    .padding(.horizontal, 20).frame(height: 44).background(Capsule().fill(LumiColor.selectedPill))
+            }
+            .disabled(model.original == nil)
+        }
+        .padding(.horizontal, 14).padding(.top, 4)
+    }
+
+    private var empty: some View {
+        VStack(spacing: 14) {
+            Spacer()
+            Image(systemName: "photo").font(.system(size: 44)).foregroundStyle(LumiColor.textSecondary)
+            Text("Pick a photo").font(LumiFont.title())
+            PhotosPicker(selection: $item, matching: .images) {
+                Text("Choose from library").font(LumiFont.chip()).foregroundStyle(LumiColor.onAccent).padding(.horizontal, 22).frame(height: 48).background(Capsule().fill(LumiColor.accent))
+            }
+            Spacer()
+        }
+    }
+
+    private var photo: some View {
+        MetalPreviewView(image: model.preview)
+            .overlay { if tool == .text || tool == .sticker { LayerGestureOverlay(model: model) } }
+            .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
+            .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
+            .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
+            .overlay { if tool == .clean, let o = model.original { CleanBrushOverlay(model: model, imageSize: o.extent.size) } }
+            .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
+            .overlay { if tool == .doodle, let o = model.original { DoodleOverlay(model: model, imageSize: o.extent.size) } }
+            .overlay { if tool == .remove, let r = model.remover, let o = model.original { RemoverOverlay(remover: r, imageSize: o.extent.size) } }
+            .overlay(alignment: .bottomTrailing) {
+                Label("Compare", systemImage: "eye").font(.system(size: 14, weight: .bold, design: .rounded))
+                    .padding(.horizontal, 14).frame(height: 36).background(Capsule().fill(.white.opacity(0.9))).foregroundStyle(.black).padding(12)
+                    .onLongPressGesture(minimumDuration: 0.1, pressing: { model.showOriginal = $0 }, perform: {})
+                    .accessibilityLabel("Hold to compare with original")
+            }
+            .clipShape(RoundedRectangle(cornerRadius: LumiShape.photo, style: .continuous))
+            .padding(.horizontal, LumiShape.margin)
+    }
+
+    @ViewBuilder private var bottom: some View {
+        LumiPanel {
+            VStack(spacing: 12) {
+                if let t = tool {
+                    LumiPanelHeader(title: LocalizedStringKey(t.rawValue), cancel: { close(revert: true) }, apply: { close(revert: false) })
+                    ScrollView { panel(for: t).frame(maxWidth: .infinity) }.scrollBounceBehavior(.basedOnSize)
+                } else {
+                    grid
+                }
+            }
+            .padding(.bottom, 8)
+        }
+        .frame(height: tool == nil ? 300 : 340)
+    }
+
+    private var grid: some View {
+        let tools = EditorTool.tools(in: category)
+        return VStack(spacing: 14) {
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 5), spacing: 12) {
+                    ForEach(tools) { t in
+                        LumiToolCircle(symbol: t.symbol, value: nil, title: LocalizedStringKey(t.rawValue)) { open(t) }
+                    }
+                }
+            }
+            LumiSegmented(items: EditorCategory.allCases.map { ($0, LocalizedStringKey($0.rawValue)) }, selection: $category, height: 52)
+        }
+    }
+
+    @ViewBuilder private func panel(for t: EditorTool) -> some View {
+        switch t {
+        case .adjust: AdjustPanel(model: model)
+        case .crop: CropPanel(model: model)
+        case .text: TextPanel(model: model)
+        case .remove: RemoverPanel(editor: model)
+        case .cutout: CutoutPanel(model: model)
+        case .filter: FilterPanel(model: model)
+        case .sticker: StickerPanel(model: model)
+        case .frame: FramePanel(model: model)
+        case .doodle: DoodlePanel(model: model)
+        case .hair: HairPanel(model: model)
+        case .mosaic: MosaicPanel(model: model)
+        case .mark: MarkPanel(model: model)
+        case .liquify: LiquifyPanel(model: model)
+        case .clean: CleanPanel(model: model)
+        case .face: FacePanel(model: model)
+        case .makeup: FacePanel(model: model, only: [.looks, .makeup, .eyes])
+        case .color: ColorPanel(model: model)
+        case .enhance: EnhancePanel(model: model)
+        case .export: ExportPanel(model: model)
+        }
+    }
+
+    private func open(_ t: EditorTool) { snapshot = model.stack0; tool = t }
+    private func close(revert: Bool) {
+        if revert, let s = snapshot { model.revert(to: s) }
+        model.filterEraserActive = false; model.hairBrushActive = false
+        tool = nil; snapshot = nil
     }
 }
 
@@ -111,29 +214,28 @@ struct AdjustPanel: View {
     }
     @Bindable var model: EditorModel
     @State private var group = Group.light
+    @State private var key = AdjustParams.Key.exposure
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 12) {
+            LumiSegmented(items: Group.allCases.map { ($0, LocalizedStringKey($0.rawValue)) }, selection: $group, height: 40)
+                .onChange(of: group) { _, g in key = g.keys[0] }
+            LumiSliderRow(title: LocalizedStringKey(key.rawValue.capitalized), value: Binding(get: { model.draft.adjust[key] }, set: { model.draft.adjust[key] = $0 }),
+                          range: key.range, onEnd: { model.commit() })
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(AdjustParams.presets.keys.sorted(), id: \.self) { name in
-                        Button(name.capitalized) { model.edit { $0.adjust = AdjustParams.presets[name]! } }.buttonStyle(.bordered)
+                HStack(spacing: 6) {
+                    ForEach(group.keys, id: \.self) { k in
+                        let v = Int((model.draft.adjust[k] * 100).rounded())
+                        LumiToolCircle(symbol: nil, value: v == 0 ? "0" : (v > 0 && k.range.lowerBound < 0 ? "+\(v)" : "\(v)"), title: LocalizedStringKey(k.rawValue.capitalized), selected: k == key) { key = k }
                     }
-                    Button("Reset all", systemImage: "arrow.counterclockwise") { model.edit { $0.adjust = AdjustParams() } }.buttonStyle(.bordered).disabled(model.draft.adjust.isIdentity)
-                }.padding(.horizontal)
+                }
             }
-            Picker("Group", selection: $group) { ForEach(Group.allCases, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(group.keys, id: \.self) { key in
-                        HStack(spacing: 8) {
-                            Text(LocalizedStringKey(key.rawValue.capitalized)).font(.caption).frame(width: 78, alignment: .leading)
-                            Slider(value: Binding(get: { model.draft.adjust[key] }, set: { model.draft.adjust[key] = $0 }), in: key.range) { editing in if !editing { model.commit() } }
-                            // shown as -100...100 like other editors; double tap resets
-                            Text(String(Int((model.draft.adjust[key] * 100).rounded()))).font(.caption.monospacedDigit()).frame(width: 34, alignment: .trailing)
-                                .onTapGesture(count: 2) { model.edit { $0.adjust.reset(key) } }
-                        }.padding(.horizontal).accessibilityElement(children: .combine)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(AdjustParams.presets.keys.sorted(), id: \.self) { name in
+                        LumiChip(title: LocalizedStringKey(name.capitalized)) { model.edit { $0.adjust = AdjustParams.presets[name]! } }
                     }
+                    LumiChip(title: "Reset all", symbol: "arrow.counterclockwise") { model.edit { $0.adjust = AdjustParams() } }
                 }
             }
         }
@@ -546,6 +648,7 @@ struct ColorPanel: View {
 struct FacePanel: View {
     enum Group: String, CaseIterable { case looks = "Looks", ratio = "Ratio", skin = "Skin", shape = "Shape", makeup = "Makeup", eyes = "Eyes", detail = "Detail" }
     @Bindable var model: EditorModel
+    var only: [Group] = Group.allCases
     @State private var group = Group.looks
     @State private var strength = 1.0
     @State private var lookID = AutoBeauty.looks[0].id
@@ -560,7 +663,7 @@ struct FacePanel: View {
 
     private var content: some View {
         VStack(spacing: 4) {
-            Picker("Group", selection: $group) { ForEach(Group.allCases, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+            Picker("Group", selection: $group) { ForEach(only, id: \.self) { Text(LocalizedStringKey($0.rawValue)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
             ScrollView {
                 VStack(spacing: 2) {
                     switch group {
