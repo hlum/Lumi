@@ -44,6 +44,10 @@ final class EditorModel {
     var cropAspect: Double?
     /// Which part of the face the slider in use works on; the preview outlines it. Cleared shortly after the slider is released.
     var activeMark: FaceMark?
+    /// Size of a tap-to-heal spot, as a fraction of the picture width.
+    var blemishTapSize = 0.025
+    /// Nails found in the picture (hand pose), for the Nails tool.
+    private(set) var nailCount = 0
     /// Faces found in the picture as it looks before the face edit, for the outlines. Refreshed when a face tool opens.
     private(set) var overlayFaces: [FaceInfo] = []
     private var markClear: Task<Void, Never>?
@@ -138,6 +142,15 @@ final class EditorModel {
         markClear = Task { [weak self] in
             try? await Task.sleep(for: .milliseconds(900))
             if !Task.isCancelled { self?.activeMark = nil }
+        }
+    }
+
+    func refreshNailCount() {
+        guard let proxy, let hands = Renderer.services.handFinder else { nailCount = 0; return }
+        let img = proxy
+        Task.detached {
+            let n = NailRegions.find(in: img, finder: hands).count
+            await MainActor.run { self.nailCount = n }
         }
     }
 

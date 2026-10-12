@@ -8,28 +8,38 @@ enum EditorCategory: String, CaseIterable, Identifiable {
 }
 
 enum EditorTool: String, CaseIterable, Identifiable {
-    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filters", sticker = "Stickers", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Liquify", clean = "Clean", face = "Face", makeup = "Makeup", color = "Color", enhance = "Enhance", export = "Export"
+    case adjust = "Adjust", crop = "Crop", text = "Text", remove = "Remove", cutout = "Cutout", filter = "Filters", sticker = "Stickers", frame = "Frame", doodle = "Doodle", hair = "Hair", mosaic = "Mosaic", mark = "Mark", liquify = "Manual slim", clean = "Clean", face = "Face", makeup = "Makeup", color = "Color", enhance = "Enhance", export = "Export"
+    case autoBeauty = "Auto beauty", skin = "Skin", reshape = "Reshape", blemish = "Blemishes", eyesTeeth = "Eyes and teeth", underEye = "Under-eye", body = "Body"
+    case looks = "Looks", lips = "Lips", eyeMakeup = "Eyes", nails = "Nails"
     var id: String { rawValue }
     var symbol: String {
-        switch self { case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"; case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .makeup: "wand.and.stars"; case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "sparkles"; case .export: "square.and.arrow.up.on.square" }
+        switch self {
+        case .adjust: "slider.horizontal.3"; case .crop: "crop.rotate"; case .text: "textformat"; case .remove: "eraser"; case .cutout: "person.crop.rectangle"; case .filter: "camera.filters"
+        case .sticker: "face.smiling"; case .frame: "photo.artframe"; case .doodle: "scribble"; case .color: "paintpalette"; case .face: "face.smiling.inverse"; case .makeup: "wand.and.stars"
+        case .liquify: "hand.draw"; case .clean: "bandage"; case .mark: "checkmark.seal"; case .mosaic: "square.grid.3x3.fill"; case .hair: "comb"; case .enhance: "sparkles"; case .export: "square.and.arrow.up.on.square"
+        case .autoBeauty: "sparkle.magnifyingglass"; case .skin: "face.dashed"; case .reshape: "person.crop.circle.badge.questionmark"; case .blemish: "circle.dotted"; case .eyesTeeth: "eye"; case .underEye: "moon.zzz"
+        case .body: "figure.stand"; case .looks: "sparkles.rectangle.stack"; case .lips: "mouth"; case .eyeMakeup: "eyebrow"; case .nails: "hand.raised.fingers.spread"
+        }
     }
     var category: EditorCategory {
         switch self {
-        case .face: .retouch
-        case .liquify: .body
+        case .face, .autoBeauty, .skin, .reshape, .blemish, .eyesTeeth, .underEye: .retouch
+        case .liquify, .body: .body
         case .hair: .hair
-        case .makeup: .makeup
+        case .makeup, .looks, .lips, .eyeMakeup, .nails: .makeup
         default: .edit
         }
     }
+    /// Tools that work on faces: they need the detected faces for the outlines.
+    var usesFaces: Bool { [.face, .makeup, .autoBeauty, .skin, .reshape, .blemish, .eyesTeeth, .underEye, .looks, .lips, .eyeMakeup].contains(self) }
     /// Tools shown in a category's grid, in order. Export is reached from Save.
     static func tools(in c: EditorCategory) -> [EditorTool] {
         switch c {
         case .edit: [.crop, .adjust, .filter, .color, .text, .sticker, .remove, .cutout, .clean, .enhance, .frame, .doodle, .mosaic, .mark]
-        case .retouch: [.face, .clean]
-        case .body: [.liquify]
+        case .retouch: [.autoBeauty, .skin, .reshape, .blemish, .eyesTeeth, .underEye]
+        case .body: [.body, .liquify]
         case .hair: [.hair]
-        case .makeup: [.makeup]
+        case .makeup: [.looks, .lips, .eyeMakeup, .nails]
         }
     }
 }
@@ -129,7 +139,8 @@ struct EditorView: View {
             .overlay { if tool == .hair, model.hairBrushActive, let o = model.original { HairBrushOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .mosaic, let o = model.original { MosaicBrushOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .filter, model.filterEraserActive, let o = model.original { FilterEraserOverlay(model: model, imageSize: o.extent.size) } }
-            .overlay { if tool == .face || tool == .makeup, let o = model.preview?.extent.size { FaceMarksOverlay(mark: model.activeMark, faces: model.overlayFaces, imageSize: o) } }
+            .overlay { if tool?.usesFaces == true, let o = model.preview?.extent.size { FaceMarksOverlay(mark: model.activeMark, faces: model.overlayFaces, imageSize: o) } }
+            .overlay { if tool == .blemish, let o = model.preview?.extent.size { BlemishTapOverlay(model: model, imageSize: o) } }
             .overlay { if tool == .crop, let size = model.preview?.extent.size { CropOverlay(model: model, imageSize: size) } }
             .overlay { if tool == .clean, let o = model.original { CleanBrushOverlay(model: model, imageSize: o.extent.size) } }
             .overlay { if tool == .liquify, let o = model.original { LiquifyOverlay(model: model, imageSize: o.extent.size) } }
@@ -192,13 +203,24 @@ struct EditorView: View {
         case .clean: CleanPanel(model: model)
         case .face: FacePanel(model: model)
         case .makeup: FacePanel(model: model, only: [.looks, .makeup, .eyes])
+        case .autoBeauty: AutoBeautyPanel(model: model)
+        case .skin: SkinPanel(model: model)
+        case .reshape: ReshapePanel(model: model)
+        case .blemish: BlemishPanel(model: model)
+        case .eyesTeeth: EyesTeethPanel(model: model)
+        case .underEye: UnderEyePanel(model: model)
+        case .body: BodyPanel(model: model)
+        case .looks: LooksPanel(model: model)
+        case .lips: LipsPanel(model: model)
+        case .eyeMakeup: EyeMakeupPanel(model: model)
+        case .nails: NailsPanel(model: model)
         case .color: ColorPanel(model: model)
         case .enhance: EnhancePanel(model: model)
         case .export: ExportPanel(model: model)
         }
     }
 
-    private func open(_ t: EditorTool) { snapshot = model.stack0; tool = t; model.cropEditing = (t == .crop); model.cropAspect = nil; if t == .face || t == .makeup { model.refreshOverlayFaces() } }
+    private func open(_ t: EditorTool) { snapshot = model.stack0; tool = t; model.cropEditing = (t == .crop); model.cropAspect = nil; if t.usesFaces { model.refreshOverlayFaces() } }
     private func close(revert: Bool) {
         if revert, let s = snapshot { model.revert(to: s) }
         model.filterEraserActive = false; model.hairBrushActive = false; model.cropEditing = false

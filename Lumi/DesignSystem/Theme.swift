@@ -249,3 +249,42 @@ struct LumiCategoryTabs<T: Hashable>: View {
         }
     }
 }
+
+/// Colour dots to choose from; the chosen one gets a ring.
+struct LumiSwatchRow: View {
+    var colors: [(name: String, color: RGBA)]
+    var selected: RGBA?
+    var onPick: (RGBA) -> Void
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(colors, id: \.name) { c in
+                    Button { onPick(c.color) } label: {
+                        Circle().fill(Color(red: c.color.r, green: c.color.g, blue: c.color.b)).frame(width: 36, height: 36)
+                            .overlay(Circle().strokeBorder(LumiColor.hairline, lineWidth: 1))
+                            .padding(3).overlay(Circle().strokeBorder(selected == c.color ? LumiColor.selectedPill : .clear, lineWidth: 2))
+                            .frame(minWidth: LumiShape.minTarget, minHeight: LumiShape.minTarget)
+                    }
+                    .buttonStyle(.plain).accessibilityLabel(Text(LocalizedStringKey(c.name))).accessibilityAddTraits(selected == c.color ? .isSelected : [])
+                }
+            }
+        }
+    }
+}
+
+/// A labelled on/off row in an inset well.
+struct LumiToggleRow: View {
+    var title: LocalizedStringKey
+    var subtitle: LocalizedStringKey?
+    @Binding var isOn: Bool
+    var body: some View {
+        Toggle(isOn: $isOn) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title).font(LumiFont.chip())
+                if let subtitle { Text(subtitle).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(LumiColor.textSecondary) }
+            }
+        }
+        .tint(.green).padding(.horizontal, 14).frame(minHeight: 52)
+        .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(LumiColor.well))
+    }
+}

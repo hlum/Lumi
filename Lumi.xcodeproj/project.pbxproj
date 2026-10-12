@@ -161,6 +161,7 @@
 		9948E6D438301B2FEC3B02A8 /* JobQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758E2EDB9B3AA8DA13668ABB /* JobQueueTests.swift */; };
 		99A436F6C64A32889BCDB426 /* BodyReshapeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721EBCF30A38FD687AAADCEF /* BodyReshapeTests.swift */; };
 		99D653B8C904143C21F97409 /* MakeupRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6FE36300AD7B97C5B1994 /* MakeupRenderer.swift */; };
+		9E21D046B28D2C23B531DBBB /* EditorToolsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9F243D6DFB6DC8523FF20 /* EditorToolsTests.swift */; };
 		9E357359C05C0F7B61740269 /* PersonTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E006716572EFEE41E4812 /* PersonTargetTests.swift */; };
 		9F8C2AB60EED891570437160 /* CollageRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3296174D0A02A8DFD1B83D /* CollageRenderTests.swift */; };
 		9FC75B88023089400072764C /* MeshWarpRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C846C3281B02FDC3DB4F92 /* MeshWarpRenderer.swift */; };
@@ -340,6 +341,7 @@
 		54685C22FF7DC6494AC7D235 /* AppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShortcuts.swift; sourceTree = "<group>"; };
 		54802D0010B339E8A4721CF8 /* MaterialCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialCatalog.swift; sourceTree = "<group>"; };
 		54B71D4970D54ED19C7EE44A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		55F9F243D6DFB6DC8523FF20 /* EditorToolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorToolsTests.swift; sourceTree = "<group>"; };
 		560797701B1E028267073F3C /* TemporalBlend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporalBlend.swift; sourceTree = "<group>"; };
 		56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageView.swift; sourceTree = "<group>"; };
 		579A8761D0613BF1231125C7 /* FaceMarksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMarksTests.swift; sourceTree = "<group>"; };
@@ -985,6 +987,7 @@
 				730D4AA73C47234B92073E64 /* CutoutTests.swift */,
 				F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */,
 				0E1D6C5B8340CA812A9D315F /* EditorModelTests.swift */,
+				55F9F243D6DFB6DC8523FF20 /* EditorToolsTests.swift */,
 				4548288F6D84417CA426A40C /* EffectsTests.swift */,
 				338C1ECF08D0026F2F0775CB /* ExpandTests.swift */,
 				9D78D42373B602DC28F02BF2 /* ExportSettingsTests.swift */,
@@ -1480,6 +1483,7 @@
 				DCFBD0C0527D24FDEE72F237 /* CutoutTests.swift in Sources */,
 				ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */,
 				3D2FC4108B1341AF8A656F12 /* EditorModelTests.swift in Sources */,
+				9E21D046B28D2C23B531DBBB /* EditorToolsTests.swift in Sources */,
 				2BD346D7C4889343CC78A644 /* EffectsTests.swift in Sources */,
 				C1D936432AC938BF41E628BC /* ExpandTests.swift in Sources */,
 				83674C9CD76993A36AA0DC52 /* ExportSettingsTests.swift in Sources */,
