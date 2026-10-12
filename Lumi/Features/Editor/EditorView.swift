@@ -654,67 +654,106 @@ struct ExportPanel: View {
 }
 
 struct ColorPanel: View {
-    enum Section: String, CaseIterable { case hsl = "HSL", curves = "Curves", tone = "Tone", palette = "Palette" }
+    enum Section: String, CaseIterable { case curves = "Curves", hsl = "HSL", split = "Split", match = "Match" }
     enum Channel: String, CaseIterable { case rgb = "RGB", red = "R", green = "G", blue = "B" }
     @Bindable var model: EditorModel
-    @State private var section = Section.hsl
+    @State private var section = Section.curves
     @State private var band = 0
     @State private var channel = Channel.rgb
-    @State private var shadows = 0.0
-    @State private var mids = 0.0
-    @State private var highs = 0.0
+    @State private var reference: PhotosPickerItem?
+    @State private var failed = false
+
+    private var curveBinding: Binding<ToneCurve> {
+        Binding(get: {
+            switch channel { case .rgb: model.draft.grade.rgbCurve; case .red: model.draft.grade.redCurve; case .green: model.draft.grade.greenCurve; case .blue: model.draft.grade.blueCurve }
+        }, set: { v in
+            switch channel { case .rgb: model.draft.grade.rgbCurve = v; case .red: model.draft.grade.redCurve = v; case .green: model.draft.grade.greenCurve = v; case .blue: model.draft.grade.blueCurve = v }
+        })
+    }
 
     var body: some View {
-        VStack(spacing: 6) {
-            Picker("Section", selection: $section) { ForEach(Section.allCases, id: \.self) { Text($0.rawValue).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
+        VStack(spacing: 12) {
+            LumiSegmented(items: Section.allCases.map { ($0, LocalizedStringKey($0.rawValue)) }, selection: $section, height: 40)
             switch section {
+            case .curves:
+                HStack(alignment: .top, spacing: 12) {
+                    CurveGraph(curve: curveBinding, tint: channel == .red ? .red : channel == .green ? .green : channel == .blue ? .blue : LumiColor.text, onEnd: { model.commit() }).frame(height: 170)
+                    VStack(spacing: 6) {
+                        ForEach(Channel.allCases, id: \.self) { c in
+                            Button { channel = c } label: {
+                                Text(c.rawValue).font(.system(size: 13, weight: .heavy, design: .rounded)).frame(width: 40, height: 40)
+                                    .foregroundStyle(channel == c ? LumiColor.onSelectedPill : (c == .red ? .red : c == .green ? .green : c == .blue ? .blue : LumiColor.text))
+                                    .background(Circle().fill(channel == c ? LumiColor.selectedPill : LumiColor.well))
+                            }.buttonStyle(.plain).accessibilityLabel(c == .rgb ? "All channels" : c == .red ? "Red channel" : c == .green ? "Green channel" : "Blue channel")
+                        }
+                    }
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(ColorGrade.curvePresets.keys.sorted(), id: \.self) { name in
+                            LumiChip(title: LocalizedStringKey(name.capitalized)) { let c = ColorGrade.curvePresets[name]!; model.edit { $0.grade.rgbCurve = c.rgb; $0.grade.redCurve = c.r; $0.grade.greenCurve = c.g; $0.grade.blueCurve = c.b } }
+                        }
+                        LumiChip(title: "Reset", symbol: "arrow.counterclockwise") { model.edit { $0.grade.rgbCurve = ToneCurve(); $0.grade.redCurve = ToneCurve(); $0.grade.greenCurve = ToneCurve(); $0.grade.blueCurve = ToneCurve() } }
+                    }
+                }
             case .hsl:
-                Picker("Band", selection: $band) { ForEach(0..<8, id: \.self) { Text(ColorGrade.bandNames[$0]).tag($0) } }.pickerStyle(.menu)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(0..<8, id: \.self) { i in
+                            let c = ColorGrade.rgb(ColorGrade.bandCenters[i], 0.85, 0.5)
+                            Button { band = i } label: {
+                                Circle().fill(Color(red: c.0, green: c.1, blue: c.2)).frame(width: 34, height: 34)
+                                    .padding(4).overlay(Circle().strokeBorder(band == i ? LumiColor.selectedPill : .clear, lineWidth: 2)).frame(minWidth: 44, minHeight: 44)
+                            }.buttonStyle(.plain).accessibilityLabel(Text(ColorGrade.bandNames[i]))
+                        }
+                    }
+                }
                 slider("Hue", Binding(get: { model.draft.grade.bands[band].hue }, set: { model.draft.grade.bands[band].hue = $0 }))
                 slider("Saturation", Binding(get: { model.draft.grade.bands[band].sat }, set: { model.draft.grade.bands[band].sat = $0 }))
                 slider("Luminance", Binding(get: { model.draft.grade.bands[band].lum }, set: { model.draft.grade.bands[band].lum = $0 }))
-            case .curves:
-                Picker("Channel", selection: $channel) { ForEach(Channel.allCases, id: \.self) { Text($0.rawValue).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(ColorGrade.curvePresets.keys.sorted(), id: \.self) { name in
-                            Button(name.capitalized) { let c = ColorGrade.curvePresets[name]!; model.edit { $0.grade.rgbCurve = c.rgb; $0.grade.redCurve = c.r; $0.grade.greenCurve = c.g; $0.grade.blueCurve = c.b } }.buttonStyle(LumiButtonStyle())
-                        }
-                        Button("Reset") { model.edit { $0.grade.rgbCurve = ToneCurve(); $0.grade.redCurve = ToneCurve(); $0.grade.greenCurve = ToneCurve(); $0.grade.blueCurve = ToneCurve() }; shadows = 0; mids = 0; highs = 0 }.buttonStyle(LumiButtonStyle())
-                    }.padding(.horizontal)
-                }
-                slider("Shadows", $shadows, apply: curve); slider("Midtones", $mids, apply: curve); slider("Highlights", $highs, apply: curve)
-            case .tone:
+            case .split:
                 slider("Shadow tint", Binding(get: { model.draft.grade.shadows.sat }, set: { model.draft.grade.shadows.sat = $0 }), range: 0...1)
                 slider("Shadow hue", Binding(get: { model.draft.grade.shadows.hue / 360 }, set: { model.draft.grade.shadows.hue = $0 * 360 }), range: 0...1)
                 slider("Highlight tint", Binding(get: { model.draft.grade.highlights.sat }, set: { model.draft.grade.highlights.sat = $0 }), range: 0...1)
                 slider("Highlight hue", Binding(get: { model.draft.grade.highlights.hue / 360 }, set: { model.draft.grade.highlights.hue = $0 * 360 }), range: 0...1)
-                Stepper("Posterize: \(model.draft.grade.posterize == 0 ? "off" : "\(model.draft.grade.posterize)")", value: Binding(get: { model.draft.grade.posterize }, set: { v in model.edit { $0.grade.posterize = v == 1 ? 0 : v } }), in: 0...16).padding(.horizontal)
-            case .palette:
-                if let o = model.original {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack { ForEach(Array(ColorSampler.palette(Renderer.proxy(o, maxDimension: 256), count: 8).enumerated()), id: \.offset) { _, c in
-                            Circle().fill(Color(red: c.r, green: c.g, blue: c.b)).frame(width: 36, height: 36).overlay(Circle().stroke(.secondary, lineWidth: 1))
-                        } }.padding(.horizontal)
+                slider("Balance", Binding(get: { model.draft.grade.balance }, set: { model.draft.grade.balance = $0 }))
+                Stepper("Posterize: \(model.draft.grade.posterize == 0 ? "off" : "\(model.draft.grade.posterize)")", value: Binding(get: { model.draft.grade.posterize }, set: { v in model.edit { $0.grade.posterize = v == 1 ? 2 : v } }), in: 0...16)
+                    .font(LumiFont.chip())
+            case .match:
+                PhotosPicker(selection: $reference, matching: .images) {
+                    HStack {
+                        Image(systemName: "photo.on.rectangle").foregroundStyle(LumiColor.accentText)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Copy colours from a photo").font(LumiFont.chip())
+                            Text(model.draft.colorMatch.isIdentity ? "Choose a reference" : (model.draft.colorMatch.name.isEmpty ? "Reference chosen" : model.draft.colorMatch.name)).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(LumiColor.textSecondary)
+                        }
+                        Spacer()
+                        Text("Change").font(LumiFont.chip())
                     }
-                    Text("Colors in this photo").font(.caption).foregroundStyle(.secondary)
+                    .foregroundStyle(LumiColor.text).padding(.horizontal, 14).frame(minHeight: 60).background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(LumiColor.well))
+                }
+                slider("Strength", Binding(get: { model.draft.colorMatch.strength }, set: { model.draft.colorMatch.strength = $0 }), range: 0...1)
+                    .disabled(model.draft.colorMatch.mean.isEmpty).opacity(model.draft.colorMatch.mean.isEmpty ? 0.5 : 1)
+                if !model.draft.colorMatch.mean.isEmpty { LumiChip(title: "Remove match", symbol: "xmark") { model.edit { $0.colorMatch = ColorMatch() } } }
+                if let o = model.original {
+                    Text("Colours in this photo").font(LumiFont.caption()).foregroundStyle(LumiColor.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
+                    LumiSwatchRow(colors: ColorSampler.palette(Renderer.proxy(o, maxDimension: 256), count: 8).enumerated().map { ("c\($0.offset)", RGBA(r: $0.element.r, g: $0.element.g, b: $0.element.b, a: 1)) }, selected: nil) { _ in }
                 }
             }
         }
+        .onChange(of: reference) { _, new in Task { await load(new) } }
+        .alert("Couldn't read that photo", isPresented: $failed) {}
     }
 
-    private func curve() {
-        let c = ColorGrade.curve(shadows: shadows, mids: mids, highlights: highs)
-        switch channel {
-        case .rgb: model.draft.grade.rgbCurve = c
-        case .red: model.draft.grade.redCurve = c
-        case .green: model.draft.grade.greenCurve = c
-        case .blue: model.draft.grade.blueCurve = c
-        }
+    private func load(_ item: PhotosPickerItem?) async {
+        guard let item, let data = try? await item.loadTransferable(type: Data.self), let img = CIImage(data: data, options: [.applyOrientationProperty: true]),
+              var m = ColorMatch.from(reference: img, name: "From photo") else { failed = true; return }
+        m.strength = max(model.draft.colorMatch.strength, 0.7)
+        model.edit { $0.colorMatch = m }
     }
 
-    private func slider(_ title: String, _ value: Binding<Double>, range: ClosedRange<Double> = -1...1, apply: (() -> Void)? = nil) -> some View {
-        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { value.wrappedValue }, set: { value.wrappedValue = $0; apply?() }), range: range, onEnd: { model.commit() })
+    private func slider(_ title: String, _ value: Binding<Double>, range: ClosedRange<Double> = -1...1) -> some View {
+        LumiSliderRow(title: LocalizedStringKey(title), value: value, range: range, onEnd: { model.commit() })
     }
 }
 

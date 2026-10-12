@@ -24,10 +24,11 @@ enum EditOperation: Codable, Equatable {
     case hair(HairRetouch)
     case clean(CleanConfig)
     case body(BodyRetouch)
+    case match(ColorMatch)
 }
 
 extension EditOperation {
-    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle, mosaic, watermark, upscale, colorize, grade, face, filterEraser, hair, clean, body }
+    enum Kind: String, Codable, CaseIterable { case exposure, crop, adjust, curve, warp, layers, remove, cutout, expand, filter, frame, doodle, mosaic, watermark, upscale, colorize, grade, face, filterEraser, hair, clean, body, match }
     var kind: Kind {
         switch self {
         case .exposure: .exposure
@@ -52,6 +53,7 @@ extension EditOperation {
         case .hair: .hair
         case .clean: .clean
         case .body: .body
+        case .match: .match
         }
     }
     /// Recipe category: what part of the look this belongs to.
@@ -77,6 +79,7 @@ extension EditOperation {
         case .hair: .beauty
         case .clean: .geometry
         case .body: .body
+        case .match: .color
         }
     }
 }

@@ -67,6 +67,7 @@ enum Renderer {
             case .mosaic(let c): img = mosaiced(c, from: img, prefix: Array(document.operations[0..<i]))
             case .watermark(let w): img = WatermarkRenderer.apply(w, to: img)
             case .clean(let c): img = CleanOps.apply(c, to: img)
+            case .match(let m): img = m.apply(to: img)
             case .body(let b): img = bodyRetouched(b, from: img, prefix: Array(document.operations[0..<i]))
             case .hair(let h): img = hairRetouched(h, from: img, prefix: Array(document.operations[0..<i]))
             case .face(let f): img = retouched(f, from: img, prefix: Array(document.operations[0..<i]))

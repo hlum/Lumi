@@ -18,6 +18,7 @@
 		0A021A54E63AED940A54802C /* RecipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C601C878EAB11731365C44CD /* RecipeTests.swift */; };
 		0A791CF4E293B4893085EE98 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC95A6F45C46B646F93E2D4 /* ProjectsView.swift */; };
 		0ADC466E8278302A0E3E2126 /* ScanTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9281ACAA8C6371A0C0267962 /* ScanTools.swift */; };
+		0BB21E6AF02001228BCEB073 /* ColorMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56685F5CC6C118B205BFB4DD /* ColorMatch.swift */; };
 		0C4B48B4C405B4E90C47F1F6 /* RecipesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BBB0A3E50A73CBACB2C0EE /* RecipesView.swift */; };
 		0C56460A4271CB78FCC27DC1 /* GIFMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C21D2081DEB7065DD17200A /* GIFMaker.swift */; };
 		0C7E0DC147CDB99162857C93 /* TimelineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC53D4A8CB9F5A9BAB80464 /* TimelineModel.swift */; };
@@ -208,6 +209,7 @@
 		D254994CB8668CC7250C1FAA /* SilenceDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF8F949CF8880941F15A2079 /* SilenceDetector.swift */; };
 		D25AE64C8477AC526C1CE9FA /* BodyRetouchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06522BADBC01A7B64B050C33 /* BodyRetouchTests.swift */; };
 		D3A97438320340CB684CA12F /* CropMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F4A553F7DBD79CE33F4F2B /* CropMathTests.swift */; };
+		D613C6A932143E8A376C04BC /* CurveEditingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46EF411EE8989B3314E778C3 /* CurveEditingTests.swift */; };
 		D79451D1C07977D38A56950A /* HairRetouch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDE7CA45356967DF21A46A0 /* HairRetouch.swift */; };
 		D7AD8B53E5E51940F310F0D2 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EB1B596C23861FE0CBE17A /* Recipe.swift */; };
 		D83608EE7515CE4F81544548 /* ExpandOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDEBB9B313A86BB3572A813 /* ExpandOps.swift */; };
@@ -235,6 +237,7 @@
 		ED3C34C7D1709A6A2BDE82ED /* EditDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BC247728EC46E7A9D0CB47 /* EditDocumentTests.swift */; };
 		F13D0CC4FEA21D598C819C24 /* NailRegionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F8FC563B28512D074DF857 /* NailRegionsTests.swift */; };
 		F2C233173BBFC0ED58E91121 /* SpotDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91992465D157A7E3AB46D7 /* SpotDetector.swift */; };
+		F2EF6FF8718C39948E35C0E8 /* CurveGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315609F56B0F684A4ADC3232 /* CurveGraph.swift */; };
 		F30F07E38EDD31513B6F456A /* UpscalerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A58DD35CAB0C1B6BFD1A727 /* UpscalerTests.swift */; };
 		F400AA68C74B3582CF54E3C5 /* Tracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD8E3175B358CE893CDE430 /* Tracking.swift */; };
 		F4EB922F3593D5A9D7BC4031 /* FrameOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7449BB3478E8BCC8F1A69434 /* FrameOps.swift */; };
@@ -303,6 +306,7 @@
 		2FCE469925F2BCC4E28A55B7 /* FilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterStore.swift; sourceTree = "<group>"; };
 		3037684EC9790617FB2CFC8A /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		31433AC97ACCC1BCFFD76BC9 /* LiveConvertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveConvertTests.swift; sourceTree = "<group>"; };
+		315609F56B0F684A4ADC3232 /* CurveGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveGraph.swift; sourceTree = "<group>"; };
 		336D9D25B8DC482C4BCE4290 /* EyeMakeup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeMakeup.swift; sourceTree = "<group>"; };
 		338C1ECF08D0026F2F0775CB /* ExpandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandTests.swift; sourceTree = "<group>"; };
 		34AB18D4E9D9C0700E76DB3D /* MosaicWatermarkRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicWatermarkRenderTests.swift; sourceTree = "<group>"; };
@@ -327,6 +331,7 @@
 		446B48E32E6CE57CD21ACB08 /* FaceMarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMarks.swift; sourceTree = "<group>"; };
 		4548288F6D84417CA426A40C /* EffectsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectsTests.swift; sourceTree = "<group>"; };
 		45966C6CA5A5390BAC7F83FB /* UndoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStack.swift; sourceTree = "<group>"; };
+		46EF411EE8989B3314E778C3 /* CurveEditingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveEditingTests.swift; sourceTree = "<group>"; };
 		4809696B9AF5D8CC4BAB8B4F /* Analyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analyzer.swift; sourceTree = "<group>"; };
 		491867C4A15830F8C5BBEF55 /* Credits.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Credits.json; sourceTree = "<group>"; };
 		4AC011813FE7D8DCABE6FB68 /* LUTTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTTests.swift; sourceTree = "<group>"; };
@@ -343,6 +348,7 @@
 		54B71D4970D54ED19C7EE44A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		55F9F243D6DFB6DC8523FF20 /* EditorToolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorToolsTests.swift; sourceTree = "<group>"; };
 		560797701B1E028267073F3C /* TemporalBlend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporalBlend.swift; sourceTree = "<group>"; };
+		56685F5CC6C118B205BFB4DD /* ColorMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMatch.swift; sourceTree = "<group>"; };
 		56EE71DD9B6E26DADD7F53C8 /* CollageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageView.swift; sourceTree = "<group>"; };
 		579A8761D0613BF1231125C7 /* FaceMarksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMarksTests.swift; sourceTree = "<group>"; };
 		57E9E64080230EEA3F3B18FE /* TextStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyleTests.swift; sourceTree = "<group>"; };
@@ -575,6 +581,7 @@
 		177CFFE24C503CC63F753430 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				315609F56B0F684A4ADC3232 /* CurveGraph.swift */,
 				1D13C4C46B9AD0D54183A2A0 /* EditorModel.swift */,
 				E5F6FD85211E45314EB0ED25 /* EditorView.swift */,
 				C305033709DA743B9DF905C8 /* RetouchPanels.swift */,
@@ -918,6 +925,7 @@
 				786D71A6B8F6EF43B99937E2 /* BlemishOps.swift */,
 				41A7462FA0D75AFB1C2527E5 /* CleanOps.swift */,
 				214BB12F83784F9AEAACB266 /* ColorGrade.swift */,
+				56685F5CC6C118B205BFB4DD /* ColorMatch.swift */,
 				4FF428B6B4FBF876D807E6B9 /* ColorTransfer.swift */,
 				DC85D7AD85B6BE2035404A46 /* CropMath.swift */,
 				822743120DCD963E72152CDB /* CutoutOps.swift */,
@@ -982,6 +990,7 @@
 				BEAF88B5C1AB8069C7E10DAB /* ColorTransferTests.swift */,
 				0AD89BB9DF96D731FCA7B689 /* CreditsTests.swift */,
 				95F4A553F7DBD79CE33F4F2B /* CropMathTests.swift */,
+				46EF411EE8989B3314E778C3 /* CurveEditingTests.swift */,
 				A94F6D20B0D9131790C14898 /* CurveTests.swift */,
 				2D3E37A0402B6B7066566B9E /* CustomStickerTests.swift */,
 				730D4AA73C47234B92073E64 /* CutoutTests.swift */,
@@ -1337,6 +1346,7 @@
 				B3D95597F2A370678BF74B9F /* CollageRenderer.swift in Sources */,
 				3000A029E09623068E131F57 /* CollageView.swift in Sources */,
 				3938C5E1862848B59A01F30A /* ColorGrade.swift in Sources */,
+				0BB21E6AF02001228BCEB073 /* ColorMatch.swift in Sources */,
 				39DCF5316E4C2A6FFD6298B2 /* ColorTransfer.swift in Sources */,
 				A763F197145E77726D1CCD75 /* Colorizer.swift in Sources */,
 				7492F14FB2292096698590B2 /* Compositor.swift in Sources */,
@@ -1344,6 +1354,7 @@
 				3F879262D545D16CF7056A5E /* Credits.swift in Sources */,
 				371BDFA62C9238AD2D404998 /* CreditsView.swift in Sources */,
 				5A75EA2201A0494D07F54692 /* CropMath.swift in Sources */,
+				F2EF6FF8718C39948E35C0E8 /* CurveGraph.swift in Sources */,
 				FA16BE874A77EF03C16C62E2 /* CustomStickers.swift in Sources */,
 				0C91A2CBB6E19A72F82926C5 /* CutoutOps.swift in Sources */,
 				90341E5BC7AD514792DD3A91 /* EditDocument.swift in Sources */,
@@ -1478,6 +1489,7 @@
 				6F38BBAA6211CED47BE2976F /* ColorizerTests.swift in Sources */,
 				724AD92D5B08A041213D0CEF /* CreditsTests.swift in Sources */,
 				D3A97438320340CB684CA12F /* CropMathTests.swift in Sources */,
+				D613C6A932143E8A376C04BC /* CurveEditingTests.swift in Sources */,
 				E5662E9D43C967D1ECD37CD1 /* CurveTests.swift in Sources */,
 				83346AFDA3AC7141979344AC /* CustomStickerTests.swift in Sources */,
 				DCFBD0C0527D24FDEE72F237 /* CutoutTests.swift in Sources */,
