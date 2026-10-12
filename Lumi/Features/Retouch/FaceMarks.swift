@@ -3,6 +3,9 @@ import SwiftUI
 
 /// The part of the face a slider is working on; the preview outlines it while the slider moves.
 enum FaceMark: Hashable {
+    /// Shapes the outline can describe by a line. Colour-type edits never get one.
+    var isOutlineOnly: Bool { switch self { case .blush, .contour, .highlight, .hair, .skin, .underEye, .teeth, .lips: false; default: true } }
+
     case face, skin, jaw, chin, faceWidth, lift, eyes, brows, nose, mouth, lips, teeth, cheeks, blush, contour, highlight, underEye
     case hair            // drawn from the hair mask, not from landmarks
 }
@@ -78,9 +81,9 @@ struct FaceMarksOverlay: View {
                 if let mark {
                     ForEach(Array(faces.enumerated()), id: \.offset) { _, face in
                         ForEach(Array(FaceMarks.shapes(mark, face: face, aspect: aspect).enumerated()), id: \.offset) { _, shape in
-                            path(shape, in: d).stroke(.white, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                                .shadow(color: LumiColor.accent, radius: 3)
-                            path(shape, in: d).stroke(LumiColor.accent, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round, dash: [1, 5]))
+                            // a thin, see-through line: it shows where the edit works without covering what changes
+                            path(shape, in: d).stroke(.white.opacity(0.75), style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+                                .shadow(color: .black.opacity(0.35), radius: 1)
                         }
                     }
                 }

@@ -31,6 +31,12 @@ struct ToolsView: View {
         switch t.id {
         case "recipes": RecipesView()
         case "collage": CollageView()
+        case "id-photo": IDPhotoView()
+        case "scanner": ScannerView()
+        case "gif": GIFMakerView()
+        case "stitch": StitchView()
+        case "wallpaper": WallpaperView()
+        case "materials": MaterialsView()
         default: EditorView()
         }
     }

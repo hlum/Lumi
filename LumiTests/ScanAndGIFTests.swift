@@ -78,3 +78,21 @@ struct ScanAndGIFTests {
         #expect(ScanTools.pdf([]) == nil)
     }
 }
+
+struct GIFSequenceTests {
+    @Test func bounceGoesForwardThenBackWithoutRepeatingTheEnds() {
+        #expect(GIFMaker.sequence([1, 2, 3, 4], bounce: true) == [1, 2, 3, 4, 3, 2])
+        #expect(GIFMaker.sequence([1, 2, 3, 4], bounce: false) == [1, 2, 3, 4])
+        #expect(GIFMaker.sequence([1, 2], bounce: true) == [1, 2] && GIFMaker.sequence([Int](), bounce: true).isEmpty)
+    }
+
+    @Test func settingsPersistAndDefaultToSensibleValues() {
+        let saved = (AppPrefs.format, AppPrefs.quality, AppPrefs.maxLongSide, AppPrefs.appearance)
+        defer { (AppPrefs.format, AppPrefs.quality, AppPrefs.maxLongSide, AppPrefs.appearance) = saved }
+        AppPrefs.format = .heic; AppPrefs.quality = 5; AppPrefs.maxLongSide = 2048; AppPrefs.appearance = .dark
+        let s = AppPrefs.exportSettings()
+        #expect(s.format == .heic && s.quality == 1 && s.maxLongSide == 2048 && AppPrefs.appearance == .dark)
+        AppPrefs.maxLongSide = 0
+        #expect(AppPrefs.exportSettings().maxLongSide == nil)
+    }
+}

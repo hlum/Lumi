@@ -10,6 +10,12 @@ enum GIFMaker {
         var loopCount = 0           // 0 = forever
     }
 
+    /// Frames in play order: forward, or forward then back without repeating the end frames (bounce).
+    static func sequence<T>(_ frames: [T], bounce: Bool) -> [T] {
+        guard bounce, frames.count > 2 else { return frames }
+        return frames + frames.dropFirst().dropLast().reversed()
+    }
+
     /// Longest side limited to `maxSide`, never upscaled.
     static func targetSize(for size: CGSize, maxSide: Int) -> CGSize {
         let longest = max(size.width, size.height)

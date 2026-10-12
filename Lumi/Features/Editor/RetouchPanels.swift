@@ -66,7 +66,7 @@ struct ReshapePanel: View {
         case .balance: [FaceSlider(title: "Move left/right", path: \.ratio.shiftX, mark: .face), FaceSlider(title: "Move up/down", path: \.ratio.shiftY, mark: .face),
                         FaceSlider(title: "Rotate", path: \.ratio.rotate, mark: .face), FaceSlider(title: "Symmetry", path: \.ratio.symmetry, range: 0...1, mark: .face),
                         FaceSlider(title: "Even out jaw", path: \.ratio.unevenFix, range: 0...1, mark: .jaw)]
-        case .shade: [FaceSlider(title: "3D shading", path: \.ratio.shade3D, range: 0...1, mark: .contour)]
+        case .shade: [FaceSlider(title: "3D shading", path: \.ratio.shade3D, range: 0...1)]
         }
     }
 
@@ -145,16 +145,18 @@ struct AutoBeautyPanel: View {
 
 struct SkinPanel: View {
     @Bindable var model: EditorModel
+    /// Appearance changes: no outline on the photo, the change itself is what the user watches.
+    static let items: [FaceSlider] = [
+        FaceSlider(title: "Smooth", path: \.skin.smooth, range: 0...1), FaceSlider(title: "Even out", path: \.skin.even, range: 0...1),
+        FaceSlider(title: "Matte", path: \.skin.matte, range: 0...1), FaceSlider(title: "Glow", path: \.skin.glow, range: 0...1),
+        FaceSlider(title: "Texture", path: \.skin.texture, range: 0...1), FaceSlider(title: "Whiten", path: \.skin.whiten, range: 0...1),
+    ]
     static let tones: [(String, Double, Double, Double)] = [("Natural", 0, 0, 0), ("Rosy", 0, 0.5, 0), ("Warm", 0, 0, 0.35), ("Bright", 0.5, 0, 0)]
     @State private var showTone = false
 
     var body: some View {
         VStack(spacing: 12) {
-            FaceSliderGroup(model: model, items: [
-                FaceSlider(title: "Smooth", path: \.skin.smooth, range: 0...1, mark: .skin), FaceSlider(title: "Even out", path: \.skin.even, range: 0...1, mark: .skin),
-                FaceSlider(title: "Matte", path: \.skin.matte, range: 0...1, mark: .skin), FaceSlider(title: "Glow", path: \.skin.glow, range: 0...1, mark: .skin),
-                FaceSlider(title: "Texture", path: \.skin.texture, range: 0...1, mark: .skin), FaceSlider(title: "Whiten", path: \.skin.whiten, range: 0...1, mark: .skin),
-            ])
+            FaceSliderGroup(model: model, items: Self.items)
             Text("Tone").font(LumiFont.caption()).foregroundStyle(LumiColor.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
             HStack(spacing: 14) {
                 ForEach(Self.tones, id: \.0) { t in
@@ -178,6 +180,11 @@ struct SkinPanel: View {
 struct EyesTeethPanel: View {
     enum Area: String, CaseIterable { case eyes = "Eyes", teeth = "Teeth" }
     @Bindable var model: EditorModel
+    static let eyeItems: [FaceSlider] = [
+        FaceSlider(title: "Brighten", path: \.detail.eyeBright, range: 0...1), FaceSlider(title: "Contacts", path: \.detail.contactAmount, range: 0...1),
+        FaceSlider(title: "Catchlight", path: \.detail.catchlight, range: 0...1), FaceSlider(title: "Eye bags", path: \.detail.eyeBags, range: 0...1),
+    ]
+    static let teethItems: [FaceSlider] = [FaceSlider(title: "Whiten", path: \.detail.teethWhiten, range: 0...1)]
     @State private var area = Area.eyes
 
     var body: some View {
@@ -185,16 +192,13 @@ struct EyesTeethPanel: View {
             LumiSegmented(items: Area.allCases.map { ($0, LocalizedStringKey($0.rawValue)) }, selection: $area, height: 40)
             switch area {
             case .eyes:
-                FaceSliderGroup(model: model, items: [
-                    FaceSlider(title: "Brighten", path: \.detail.eyeBright, range: 0...1, mark: .eyes), FaceSlider(title: "Contacts", path: \.detail.contactAmount, range: 0...1, mark: .eyes),
-                    FaceSlider(title: "Catchlight", path: \.detail.catchlight, range: 0...1, mark: .eyes), FaceSlider(title: "Eye bags", path: \.detail.eyeBags, range: 0...1, mark: .underEye),
-                ])
+                FaceSliderGroup(model: model, items: Self.eyeItems)
                 Text("Lens colour").font(LumiFont.caption()).foregroundStyle(LumiColor.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
                 LumiSwatchRow(colors: LumiPalette.lens, selected: model.draft.face.detail.contactColor) { c in
                     model.edit { var f = $0.face; f.detail.contactColor = c; if f.detail.contactAmount == 0 { f.detail.contactAmount = 0.6 }; $0.face = f }
                 }
             case .teeth:
-                FaceSliderGroup(model: model, items: [FaceSlider(title: "Whiten", path: \.detail.teethWhiten, range: 0...1, mark: .teeth)])
+                FaceSliderGroup(model: model, items: Self.teethItems)
             }
         }
     }
@@ -204,13 +208,14 @@ struct EyesTeethPanel: View {
 
 struct UnderEyePanel: View {
     @Bindable var model: EditorModel
+    static let items: [FaceSlider] = [
+        FaceSlider(title: "Dark circles", path: \.detail.underEye, range: 0...1), FaceSlider(title: "Eye bags", path: \.detail.eyeBags, range: 0...1),
+        FaceSlider(title: "Tear troughs", path: \.detail.tearTroughs, range: 0...1), FaceSlider(title: "Smile lines", path: \.detail.smileLines, range: 0...1),
+        FaceSlider(title: "Eye lines", path: \.detail.eyeLines, range: 0...1),
+    ]
     var body: some View {
         VStack(spacing: 12) {
-            FaceSliderGroup(model: model, items: [
-                FaceSlider(title: "Dark circles", path: \.detail.underEye, range: 0...1, mark: .underEye), FaceSlider(title: "Eye bags", path: \.detail.eyeBags, range: 0...1, mark: .underEye),
-                FaceSlider(title: "Tear troughs", path: \.detail.tearTroughs, range: 0...1, mark: .underEye), FaceSlider(title: "Smile lines", path: \.detail.smileLines, range: 0...1, mark: .mouth),
-                FaceSlider(title: "Eye lines", path: \.detail.eyeLines, range: 0...1, mark: .eyes),
-            ])
+            FaceSliderGroup(model: model, items: Self.items)
             LumiChip(title: "One-tap smooth", symbol: "wand.and.stars") {
                 model.edit { var f = $0.face; f.detail.underEye = 0.6; f.detail.eyeBags = 0.4; f.detail.eyeLines = 0.4; f.detail.smileLines = 0.3; $0.face = f }
             }
@@ -383,7 +388,7 @@ struct LipsPanel: View {
     }
 
     private func slider(_ title: String, _ path: WritableKeyPath<FaceRetouch, Double>, _ mark: FaceMark) -> some View {
-        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft.face[keyPath: path] }, set: { model.draft.face[keyPath: path] = $0 }), range: 0...1, onEditing: { model.mark(mark, editing: $0) }, onEnd: { model.commit() })
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft.face[keyPath: path] }, set: { model.draft.face[keyPath: path] = $0 }), range: 0...1, onEnd: { model.commit() })
     }
 }
 
@@ -409,8 +414,8 @@ struct EyeMakeupPanel: View {
             case .brows:
                 HStack(spacing: 8) { ForEach(EyeMakeup.BrowShape.allCases, id: \.self) { s in LumiChip(title: LocalizedStringKey(s.rawValue.capitalized), selected: model.draft.face.eyes.browShape == s) { model.edit { var f = $0.face; f.eyes.browShape = s; $0.face = f } } } }
                 LumiSwatchRow(colors: LumiPalette.brows, selected: model.draft.face.eyes.browColor) { c in model.edit { var f = $0.face; f.eyes.browColor = c; if f.eyes.browOpacity == 0 { f.eyes.browOpacity = 0.5 }; $0.face = f } }
-                LumiSliderRow(title: "Colour", value: Binding(get: { model.draft.face.eyes.browOpacity }, set: { model.draft.face.eyes.browOpacity = $0 }), range: 0...1, onEditing: { model.mark(.brows, editing: $0) }, onEnd: { model.commit() })
-                LumiSliderRow(title: "Height", value: Binding(get: { model.draft.face.eyes.browHeight }, set: { model.draft.face.eyes.browHeight = $0 }), range: -1...1, onEditing: { model.mark(.brows, editing: $0) }, onEnd: { model.commit() })
+                LumiSliderRow(title: "Colour", value: Binding(get: { model.draft.face.eyes.browOpacity }, set: { model.draft.face.eyes.browOpacity = $0 }), range: 0...1, onEnd: { model.commit() })
+                LumiSliderRow(title: "Height", value: Binding(get: { model.draft.face.eyes.browHeight }, set: { model.draft.face.eyes.browHeight = $0 }), range: -1...1, onEnd: { model.commit() })
             }
         }
     }
@@ -421,8 +426,7 @@ struct EyeMakeupPanel: View {
 
     private func eyeSlider(_ title: String, _ path: WritableKeyPath<EyeSide, Double>) -> some View {
         let get: () -> Double = { side == .right ? model.draft.face.eyes.right[keyPath: path] : model.draft.face.eyes.left[keyPath: path] }
-        return LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: get, set: { v in apply(&model.draft.face) { $0[keyPath: path] = v } }), range: 0...1,
-                             onEditing: { model.mark(.eyes, editing: $0) }, onEnd: { model.commit() })
+        return LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: get, set: { v in apply(&model.draft.face) { $0[keyPath: path] = v } }), range: 0...1, onEnd: { model.commit() })
     }
 }
 

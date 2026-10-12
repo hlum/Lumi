@@ -13,6 +13,8 @@ struct Job: Identifiable, Equatable {
 /// Runs long jobs (video export, upscale, batch) one at a time, with progress, cancel and a short history ("recent tasks").
 @Observable @MainActor
 final class JobCenter {
+    /// The app-wide queue (tests make their own).
+    static let shared = JobCenter()
     static let historyLimit = 20
     private(set) var jobs: [Job] = []
     private var work: [UUID: (JobHandle) async throws -> Void] = [:]

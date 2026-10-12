@@ -157,7 +157,7 @@ struct EditorView: View {
                 switch t {
                 case .text, .sticker: LayerGestureOverlay(model: model)
                 case .hair:
-                    HairMaskOverlay(image: model.hairOverlay, visible: model.activeMark == .hair || model.hairBrushActive, imageSize: size)
+                    HairMaskOverlay(image: model.hairOverlay, visible: model.hairBrushActive, imageSize: size)
                     if model.hairBrushActive, let o = original { HairBrushOverlay(model: model, imageSize: o) }
                 case .mosaic: if let o = original { MosaicBrushOverlay(model: model, imageSize: o) }
                 case .filter: if model.filterEraserActive, let o = original { FilterEraserOverlay(model: model, imageSize: o) }
@@ -890,12 +890,8 @@ struct FacePanel: View {
     /// What each slider works on, so the preview can outline it.
     private static let marks: [String: FaceMark] = [
         "Jaw": .jaw, "Face width": .faceWidth, "Chin": .chin, "Eyes": .eyes, "Nose": .nose, "Mouth": .mouth, "Cheek volume": .cheeks, "Lift": .lift,
-        "Move left/right": .face, "Move up/down": .face, "Rotate": .face, "Symmetry": .face, "Even out jaw": .jaw, "3D shading": .contour,
-        "Smooth": .skin, "Texture": .skin, "Whiten": .skin, "Rosy": .skin, "Tan": .skin,
-        "Lipstick": .lips, "Blush": .blush, "Lip shine": .lips, "Contour": .contour, "Highlight": .highlight, "Foundation": .skin,
-        "Shadow": .eyes, "Eyeliner": .eyes, "Lashes": .eyes, "Brow color": .brows, "Brow height": .brows,
-        "Flash": .skin, "Under-eye": .underEye, "Fine lines": .skin, "Teeth": .teeth, "Bright eyes": .eyes,
-    ]
+        "Move left/right": .face, "Move up/down": .face, "Rotate": .face, "Symmetry": .face, "Even out jaw": .jaw, "Brow height": .brows,
+    ]   // shape sliders only: colour, skin and makeup sliders show no outline, so nothing hides what they change
 
     private func row(_ title: String, _ value: Binding<Double>, _ range: ClosedRange<Double> = -1...1, onEnd: (() -> Void)? = nil) -> some View {
         let mark = Self.marks[title]
@@ -1108,7 +1104,7 @@ struct HairPanel: View {
 
     private func slider(_ title: String, _ path: WritableKeyPath<EditDocument, Double>, _ range: ClosedRange<Double>) -> some View {
         LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), range: range,
-                      onEditing: { model.mark(.hair, editing: $0) }, onEnd: { model.commit() })
+                      onEnd: { model.commit() })
     }
 }
 

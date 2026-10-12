@@ -21,6 +21,9 @@ enum ToolCatalog {
         ToolInfo(id: "scanner", name: "Scanner", symbol: "doc.viewfinder", category: .utility, keywords: ["document", "pdf", "ocr", "スキャン"]),
         ToolInfo(id: "gif", name: "GIF maker", symbol: "film.stack", category: .utility, keywords: ["animation", "emoji", "sticker", "ジフ"]),
         ToolInfo(id: "recipes", name: "Recipes", symbol: "wand.and.stars", category: .creative, keywords: ["batch", "preset", "look", "レシピ", "一括"]),
+        ToolInfo(id: "stitch", name: "Stitch", symbol: "rectangle.stack", category: .creative, keywords: ["screenshot", "long", "join", "長い", "つなげる"]),
+        ToolInfo(id: "wallpaper", name: "Wallpaper", symbol: "iphone", category: .creative, keywords: ["lock screen", "background", "壁紙"]),
+        ToolInfo(id: "materials", name: "Materials", symbol: "square.grid.3x3", category: .creative, keywords: ["sticker", "font", "frame", "素材"]),
         ToolInfo(id: "collage", name: "Collage", symbol: "square.grid.2x2", category: .creative, keywords: ["grid", "layout", "stitch", "コラージュ"]),
     ]
 

@@ -200,7 +200,7 @@ final class EditorModel {
         markClear?.cancel()
         if editing { activeMark = m; return }
         markClear = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(900))
+            try? await Task.sleep(for: .milliseconds(450))
             if !Task.isCancelled { self?.activeMark = nil }
         }
     }
@@ -264,7 +264,7 @@ final class EditorModel {
     func undo() { stack.undo(); draft = stack.current; autosave() }
     func redo() { stack.redo(); draft = stack.current; autosave() }
 
-    var exportSettings = ExportSettings()
+    var exportSettings = AppPrefs.exportSettings()
 
     /// Print preset: crops to the paper's aspect and exports at exact pixels for the DPI.
     func applyPrintSize(width: Double, height: Double, unit: LengthUnit, dpi: Double) {

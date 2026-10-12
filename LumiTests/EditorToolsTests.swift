@@ -31,4 +31,17 @@ struct EditorToolsTests {
             for it in items { f[keyPath: it.path] = it.range.upperBound; #expect(f != FaceRetouch(), "\(tab)/\(it.title)"); f = FaceRetouch() }
         }
     }
+
+    @Test func colourAndAppearanceSlidersNeverShowAnOverlay() {
+        let appearance = SkinPanel.items + EyesTeethPanel.eyeItems + EyesTeethPanel.teethItems + UnderEyePanel.items
+        for it in appearance { #expect(it.mark == nil, "\(it.title) must not draw over the photo") }
+        #expect(ReshapePanel.items(.shade).allSatisfy { $0.mark == nil })              // 3D shading is a tone change
+    }
+
+    @Test func onlyShapeSlidersGetAnOutlineAndItIsALineNotAFill() {
+        for tab in ReshapePanel.Tab.allCases where tab != .shade {
+            for it in ReshapePanel.items(tab) { if let m = it.mark { #expect(m.isOutlineOnly, "\(tab)/\(it.title) outlines with a fill-type mark") } }
+        }
+        for m in [FaceMark.blush, .contour, .highlight, .hair, .skin, .lips, .underEye, .teeth] { #expect(!m.isOutlineOnly, "\(m)") }
+    }
 }
