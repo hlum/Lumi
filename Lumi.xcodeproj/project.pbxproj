@@ -48,6 +48,7 @@
 		255F8EF2EA19EA5EF4506100 /* MaskCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F49C52541F35A4F285D365 /* MaskCanvas.swift */; };
 		26F152CB55562C0BDF70DC59 /* BrushMaterials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D8C62187DBA6E4EB73CED9 /* BrushMaterials.swift */; };
 		273D543B11136D4A76F4C689 /* HairShapeRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9812652ED2B4FA541D5176 /* HairShapeRules.swift */; };
+		294285BE52D8BEBE1D821616 /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B560B256BFC549A639749E /* ToolsView.swift */; };
 		2B428336931DE42B36FE7E1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE509B7E09EAD4881D427FE /* Assets.xcassets */; };
 		2BD346D7C4889343CC78A644 /* EffectsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4548288F6D84417CA426A40C /* EffectsTests.swift */; };
 		2DCC9D0ACAE306EFA4366917 /* Upscaler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62EF418D1F183C9E6E0BDE1 /* Upscaler.swift */; };
@@ -445,6 +446,7 @@
 		E2059AFF4788F6C150A916E4 /* OutlineOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineOps.swift; sourceTree = "<group>"; };
 		E22662F2B0C00CF77164B509 /* MetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPreviewView.swift; sourceTree = "<group>"; };
 		E22CC38C9B53B9C2D4734A55 /* Keyframes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keyframes.swift; sourceTree = "<group>"; };
+		E3B560B256BFC549A639749E /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
 		E4411F910665922CEBCCE048 /* PersonTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTarget.swift; sourceTree = "<group>"; };
 		E457AF41C440227957E07867 /* AutoRemoveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoRemoveTests.swift; sourceTree = "<group>"; };
 		E5BFF55F06515FDDB7BD22F6 /* SkinOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinOps.swift; sourceTree = "<group>"; };
@@ -629,6 +631,7 @@
 			children = (
 				2248574B322F87BAF16D744D /* HomeView.swift */,
 				69EA3A082E4527360B4F44E8 /* ToolCatalog.swift */,
+				E3B560B256BFC549A639749E /* ToolsView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -1373,6 +1376,7 @@
 				0C7E0DC147CDB99162857C93 /* TimelineModel.swift in Sources */,
 				A579C9E6F52753404284DA16 /* ToneCurve.swift in Sources */,
 				DD7A04184F3691A47344223A /* ToolCatalog.swift in Sources */,
+				294285BE52D8BEBE1D821616 /* ToolsView.swift in Sources */,
 				F400AA68C74B3582CF54E3C5 /* Tracking.swift in Sources */,
 				149650652799725343BD8EC4 /* Transitions.swift in Sources */,
 				DB367B355A8F7DA47E068F8D /* UndoStack.swift in Sources */,

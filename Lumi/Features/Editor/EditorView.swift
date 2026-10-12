@@ -39,6 +39,9 @@ struct EditorView: View {
     @Environment(\.dismiss) private var dismiss
     /// Pass a project to reopen its draft.
     var project: Project?
+    /// A photo chosen on the Home screen, and the tool to open on it.
+    var initial: Data?
+    var startTool: EditorTool?
     @State private var model = EditorModel()
     @State private var item: PhotosPickerItem?
     @State private var loadFailed = false
@@ -58,11 +61,14 @@ struct EditorView: View {
                 if model.preview != nil { bottom }
             }
         }
-        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar).hidesLumiBar()
         .task {
             let store = ProjectStore(context: context, directory: ProjectStore.defaultDirectory)
             model.session = ProjectSession(store: store, project: project)
             if project != nil { try? model.openDraft() }
+            else if let initial, model.original == nil {
+                if (try? model.load(data: initial)) == nil { loadFailed = true } else if let startTool { category = startTool.category; open(startTool) }
+            }
         }
         .onChange(of: item) { _, new in
             guard let new else { return }
