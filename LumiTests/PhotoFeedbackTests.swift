@@ -47,11 +47,11 @@ struct PhotoFeedbackTests {
 
     @Test func slimmingWaistNarrowsTheBodyInTheRender() {
         let bg = CIImage(color: CIColor(red: 0.2, green: 0.2, blue: 0.2)).cropped(to: Self.rect)
-        let body = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: CGRect(x: 32, y: 0, width: 64, height: 128)).composited(over: bg)
+        let body = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: CGRect(x: 44, y: 0, width: 40, height: 128)).composited(over: bg)
         var b = BodyRetouch(); b.params.waist = 1; b.protectBackground = false
-        let out = BodyRetouchRender.apply(b, to: body, poses: [Self.facing()], personMask: MosaicOps.mask(rects: [CGRect(x: 0.25, y: 0, width: 0.5, height: 1)], extent: Self.rect), inpainter: nil)
+        let out = BodyRetouchRender.apply(b, to: body, poses: [Self.facing()], personMask: MosaicOps.mask(rects: [CGRect(x: 44.0 / 128, y: 0, width: 40.0 / 128, height: 1)], extent: Self.rect), inpainter: nil)
         func width(_ img: CIImage) -> Int { (0..<128).filter { GeometryTests.rgb(img, x: $0, y: 79)[0] > 150 }.count }   // the waist, 38% down from the top
-        #expect(width(out) < width(body) - 3, "waist \(width(body)) -> \(width(out))")
+        #expect(width(out) < width(body) - 2, "waist \(width(body)) -> \(width(out))")
     }
 
     @Test func brushCirclesStayRoundOnWidePhotos() {

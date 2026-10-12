@@ -118,6 +118,7 @@
 		5FD696AC8F306483CA959714 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B71D4970D54ED19C7EE44A /* Theme.swift */; };
 		6217E5EECE65C282F85EBCE8 /* ResizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A84271AE2975CD30F866726 /* ResizeTests.swift */; };
 		62321582DF77C5697193257F /* ExportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85827E04B5DD5DA38A53552 /* ExportSettings.swift */; };
+		639CA918E6FC3B04A8CFBE06 /* BodyHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92D9E3F0CB40A3E148B011A /* BodyHandles.swift */; };
 		640D33462F10D0B171470ACF /* Inpainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B11508DB0D8D14D15FDA02 /* Inpainter.swift */; };
 		678285436370AF0D2C1B5B67 /* PreviewBenchmarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CAD8D752BD3195AA3D1BDA /* PreviewBenchmarkTests.swift */; };
 		68F294FA6535A8E0ACA342E3 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8B0CC494B2360A9091052 /* Project.swift */; };
@@ -549,6 +550,7 @@
 		D648603BCFDF9DC0C654408F /* PhotoFeedbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFeedbackTests.swift; sourceTree = "<group>"; };
 		D6B0E9270308864D7250819E /* RecipeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeStorage.swift; sourceTree = "<group>"; };
 		D9031B312E503E8C5B80DC4E /* SeamlessCollage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeamlessCollage.swift; sourceTree = "<group>"; };
+		D92D9E3F0CB40A3E148B011A /* BodyHandles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyHandles.swift; sourceTree = "<group>"; };
 		D939A9C81B9C494B866DAF51 /* WarpBrush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarpBrush.swift; sourceTree = "<group>"; };
 		D9AA142C65805FAA64BF2C20 /* BatchRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRunnerTests.swift; sourceTree = "<group>"; };
 		DB064C822D526484ECD7A358 /* ProjectStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStoreTests.swift; sourceTree = "<group>"; };
@@ -737,6 +739,7 @@
 		2FF09CFD741C8CA168D885F6 /* Body */ = {
 			isa = PBXGroup;
 			children = (
+				D92D9E3F0CB40A3E148B011A /* BodyHandles.swift */,
 				4056C5884735CA99A57205A6 /* BodyReshape.swift */,
 				79D52A6A58E4CA058BEA246D /* BodyRetouch.swift */,
 			);
@@ -1465,6 +1468,7 @@
 				31DB8323406C1443954751F6 /* BatchRunner.swift in Sources */,
 				01A23D97BD13F51D0E2CC5F5 /* BiRefNetLite.mlpackage in Sources */,
 				5B456F0B5D91E2FA3666C06D /* BlemishOps.swift in Sources */,
+				639CA918E6FC3B04A8CFBE06 /* BodyHandles.swift in Sources */,
 				DF7761A3CBBCF7D23EE560CF /* BodyReshape.swift in Sources */,
 				50326FF1642F1E6912745D5D /* BodyRetouch.swift in Sources */,
 				26F152CB55562C0BDF70DC59 /* BrushMaterials.swift in Sources */,

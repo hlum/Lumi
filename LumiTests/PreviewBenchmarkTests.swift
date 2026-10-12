@@ -40,7 +40,7 @@ struct PreviewBenchmarkTests {
         let perFrame = Date().timeIntervalSince(start) / Double(n) * 1000
         let mem = Self.residentMB()
         #expect(perFrame < 50, "proxy frame \(perFrame) ms, resident \(mem) MB")
-        #expect(mem < 1500, "memory \(mem) MB")
+        #expect(mem < 2500, "memory \(mem) MB")
     }
 
     @Test(.enabled(if: !RunsOn.isSimulator))

@@ -74,15 +74,14 @@ enum BodySilhouette {
 enum BodyRetouchRender {
     static func apply(_ b: BodyRetouch, to image: CIImage, poses: [[String: CGPoint]], personMask: CIImage?, inpainter: Inpainting?) -> CIImage {
         guard !b.isIdentity, !poses.isEmpty else { return image }
-        var warp = WarpEdit()
-        for pose in poses {
-            let j = BodyReshape.joints(pose)
-            let xs = ["left_shoulder_1_joint", "right_shoulder_1_joint", "left_hip_1_joint", "right_hip_1_joint"].compactMap { j[$0]?.x }
-            let centre = xs.isEmpty ? 0.5 : Double(xs.reduce(0, +) / CGFloat(xs.count))
-            let silhouette: ((Double) -> (Double, Double)?)? = personMask.map { m in { y in BodySilhouette.edges(in: m, y: y, centerX: centre) } }
-            BodyReshape.strokes(pose: pose, params: b.params, silhouette: silhouette).forEach { warp.add($0) }
-        }
-        let field = warp.field(aspect: Float(image.extent.width / max(image.extent.height, 1)))
+        // each part's real outline moves toward its bone, solved as one rigid warp with the background pinned just outside the body
+        let aspect = Double(image.extent.width / max(image.extent.height, 1))
+        let raster = personMask.flatMap { SilhouetteRaster(mask: $0) }
+        let handles = poses.flatMap { BodyHandles.handles(pose: $0, params: b.params, aspect: aspect, raster: raster) }
+        guard handles.contains(where: { $0.from != $0.to }) else { return image }
+        // stretching the legs pushes the bottom edge down, so the bottom edge isn't pinned then
+        let frame = b.params.legLength != 0 ? MLSWarp.border().filter { $0.to.y < 0.999 } : MLSWarp.border()
+        let field = MLSWarp.field(handles + frame, aspect: aspect, cols: 81)
         guard !field.isIdentity else { return image }
         if b.protectBackground, let personMask { return (try? ProtectedWarp.apply(field, to: image, personMask: personMask, inpainter: inpainter)) ?? MeshWarpRenderer.apply(field, to: image) }
         return MeshWarpRenderer.apply(field, to: image)
