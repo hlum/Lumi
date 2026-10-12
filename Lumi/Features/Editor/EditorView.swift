@@ -156,7 +156,9 @@ struct EditorView: View {
                 if t.usesFaces { FaceMarksOverlay(mark: model.activeMark, faces: model.overlayFaces, imageSize: size) }
                 switch t {
                 case .text, .sticker: LayerGestureOverlay(model: model)
-                case .hair: if model.hairBrushActive, let o = original { HairBrushOverlay(model: model, imageSize: o) }
+                case .hair:
+                    HairMaskOverlay(image: model.hairOverlay, visible: model.activeMark == .hair || model.hairBrushActive, imageSize: size)
+                    if model.hairBrushActive, let o = original { HairBrushOverlay(model: model, imageSize: o) }
                 case .mosaic: if let o = original { MosaicBrushOverlay(model: model, imageSize: o) }
                 case .filter: if model.filterEraserActive, let o = original { FilterEraserOverlay(model: model, imageSize: o) }
                 case .relight, .effects:
@@ -766,12 +768,13 @@ struct ColorPanel: View {
                 Stepper("Posterize: \(model.draft.grade.posterize == 0 ? "off" : "\(model.draft.grade.posterize)")", value: Binding(get: { model.draft.grade.posterize }, set: { v in model.edit { $0.grade.posterize = v == 1 ? 2 : v } }), in: 0...16)
                     .font(LumiFont.chip())
             case .match:
+                let subtitle = model.draft.colorMatch.isIdentity ? "Choose a reference" : (model.draft.colorMatch.name.isEmpty ? "Reference chosen" : model.draft.colorMatch.name)
                 PhotosPicker(selection: $reference, matching: .images) {
                     HStack {
                         Image(systemName: "photo.on.rectangle").foregroundStyle(LumiColor.accentText)
                         VStack(alignment: .leading, spacing: 1) {
                             Text("Copy colours from a photo").font(LumiFont.chip())
-                            Text(model.draft.colorMatch.isIdentity ? "Choose a reference" : (model.draft.colorMatch.name.isEmpty ? "Reference chosen" : model.draft.colorMatch.name)).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(LumiColor.textSecondary)
+                            Text(subtitle).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(LumiColor.textSecondary)
                         }
                         Spacer()
                         Text("Change").font(LumiFont.chip())
@@ -1079,34 +1082,63 @@ struct LayerGestureOverlay: View {
 }
 
 struct HairPanel: View {
+    enum Tab: String, CaseIterable { case colour = "Colour", shape = "Shape", brush = "Brush" }
     @Bindable var model: EditorModel
+    @State private var tab = Tab.colour
     @State private var category = "Natural"
     private var categories: [String] { var s = Set<String>(); return HairRetouch.swatches.map(\.category).filter { s.insert($0).inserted } }
 
     var body: some View {
-        VStack(spacing: 4) {
-            Picker("Category", selection: $category) { ForEach(categories, id: \.self) { Text(LocalizedStringKey($0)).tag($0) } }.pickerStyle(.segmented).padding(.horizontal)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    Button("Off") { model.edit { $0.hair = HairRetouch() } }.buttonStyle(LumiButtonStyle())
-                    ForEach(HairRetouch.swatches.filter { $0.category == category }, id: \.name) { s in
-                        Button { model.edit { var h = $0.hair; h.dye.color = s.color; h.dye.strength = max(h.dye.strength, 0.8); $0.hair = h } } label: {
-                            Circle().fill(Color(red: s.color.r, green: s.color.g, blue: s.color.b)).frame(width: 34, height: 34).overlay(Circle().stroke(.secondary, lineWidth: 1))
-                        }.accessibilityLabel(Text(LocalizedStringKey(s.name)))
-                    }
-                }.padding(.horizontal)
+        VStack(spacing: 12) {
+            LumiSegmented(items: Tab.allCases.map { ($0, LocalizedStringKey($0.rawValue)) }, selection: $tab, height: 40)
+            switch tab {
+            case .colour:
+                LumiCategoryTabs(items: categories.map { ($0, LocalizedStringKey($0)) }, selection: $category)
+                LumiSwatchRow(colors: HairRetouch.swatches.filter { $0.category == category }.map { ($0.name, $0.color) }, selected: model.draft.hair.dye.strength > 0 ? model.draft.hair.dye.color : nil) { c in
+                    model.edit { var h = $0.hair; h.dye.color = c; h.dye.strength = max(h.dye.strength, 0.8); $0.hair = h }
+                }
+                slider("Amount", \.hair.dye.strength, 0...1)
+                slider("Keep shine", \.hair.dye.keepShine, 0...1)
+                slider("Roots", \.hair.rootRetouch, 0...1)
+                HStack(spacing: 8) {
+                    LumiChip(title: "De-oil", selected: model.draft.hair.deOil > 0) { model.edit { var h = $0.hair; h.deOil = h.deOil > 0 ? 0 : 0.6; $0.hair = h } }
+                    LumiChip(title: "Smooth", selected: model.draft.hair.smooth > 0) { model.edit { var h = $0.hair; h.smooth = h.smooth > 0 ? 0 : 0.5; $0.hair = h } }
+                    Spacer()
+                    LumiChip(title: "Off", symbol: "xmark") { model.edit { $0.hair = HairRetouch() } }
+                }
+            case .shape:
+                slider("Crown lift", \.hair.volume, -1...1); slider("Hairline", \.hair.hairline, -1...1); slider("Glow", \.hair.glow, 0...1); slider("Flyaways", \.hair.flyaway, 0...1)
+                LumiToggleRow(title: "Keep background straight", subtitle: nil, isOn: .constant(true)).disabled(true).opacity(0.6)
+            case .brush:
+                LumiToggleRow(title: "Brush the hair area", subtitle: "Add what was missed, erase what is not hair, fill thin spots", isOn: $model.hairBrushActive)
+                LumiSegmented(items: [(HairBrushMode.add, "Add"), (HairBrushMode.erase, "Erase"), (HairBrushMode.fill, "Fill")], selection: $model.hairBrushMode, height: 40)
+                if model.draft.hair.add != nil || model.draft.hair.remove != nil { LumiChip(title: "Reset brush edits", symbol: "arrow.counterclockwise") { model.edit { var h = $0.hair; h.add = nil; h.remove = nil; h.fill = nil; $0.hair = h }; model.refreshHairOverlay() } }
             }
-            row("Dye", \.hair.dye.strength); row("Keep shine", \.hair.dye.keepShine); row("De-oil", \.hair.deOil); row("Smooth", \.hair.smooth); row("Roots", \.hair.rootRetouch)
-            row("Volume", \.hair.volume, -1...1); row("Hairline", \.hair.hairline, -1...1); row("Glow", \.hair.glow); row("Flyaways", \.hair.flyaway)
-            HStack {
-                Toggle("Brush", isOn: $model.hairBrushActive).fixedSize()
-                Picker("Mode", selection: $model.hairBrushMode) { Text("Add").tag(HairBrushMode.add); Text("Erase").tag(HairBrushMode.erase); Text("Fill").tag(HairBrushMode.fill) }.pickerStyle(.segmented)
-            }.padding(.horizontal)
         }
+        .onAppear { model.refreshHairOverlay() }
+        .onChange(of: model.draft.hair.add) { _, _ in model.refreshHairOverlay() }
+        .onChange(of: model.draft.hair.remove) { _, _ in model.refreshHairOverlay() }
     }
 
-    private func row(_ title: String, _ path: WritableKeyPath<EditDocument, Double>, _ range: ClosedRange<Double> = 0...1) -> some View {
-        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), range: range, onEnd: { model.commit() })
+    private func slider(_ title: String, _ path: WritableKeyPath<EditDocument, Double>, _ range: ClosedRange<Double>) -> some View {
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { model.draft[keyPath: path] }, set: { model.draft[keyPath: path] = $0 }), range: range,
+                      onEditing: { model.mark(.hair, editing: $0) }, onEnd: { model.commit() })
+    }
+}
+
+/// The hair mask, tinted, while a hair slider moves or the brush is on: it shows what the edit will touch.
+struct HairMaskOverlay: View {
+    let image: CGImage?
+    let visible: Bool
+    let imageSize: CGSize
+    var body: some View {
+        GeometryReader { geo in
+            let d = FitMapping(view: geo.size, image: imageSize).displayed
+            if let image, visible {
+                Image(decorative: image, scale: 1).resizable().frame(width: d.width, height: d.height).position(x: d.midX, y: d.midY).transition(.opacity)
+            }
+        }
+        .animation(.easeOut(duration: 0.2), value: visible).allowsHitTesting(false).accessibilityHidden(true)
     }
 }
 

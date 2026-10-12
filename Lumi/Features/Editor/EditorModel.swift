@@ -55,6 +55,8 @@ final class EditorModel {
     private(set) var nailCount = 0
     /// Faces found in the picture as it looks before the face edit, for the outlines. Refreshed when a face tool opens.
     private(set) var overlayFaces: [FaceInfo] = []
+    /// The hair mask as a tinted picture, so the Hair tool can show which pixels it will change.
+    private(set) var hairOverlay: CGImage?
     private var markClear: Task<Void, Never>?
     var doodleBrush = DoodleStroke.Brush.solid
     var warpBrush = WarpBrush()
@@ -198,6 +200,22 @@ final class EditorModel {
         markClear = Task { [weak self] in
             try? await Task.sleep(for: .milliseconds(900))
             if !Task.isCancelled { self?.activeMark = nil }
+        }
+    }
+
+    func refreshHairOverlay() {
+        guard let proxy, let masker = Renderer.services.hairMasker else { hairOverlay = nil; return }
+        var doc = draft; doc.hair = HairRetouch(); doc.upscale = nil
+        let base = Renderer.render(Renderer.proxy(proxy, maxDimension: 640), document: doc)
+        let h = draft.hair
+        Task.detached { [base] in
+            guard let m = (try? masker.hairMasks(in: base))?.first else { await MainActor.run { self.hairOverlay = nil }; return }
+            let refined = HairMask.refine(m, add: h.add, remove: h.remove)
+            let tint = CIImage(color: CIColor(red: 1, green: 0.48, blue: 0.27, alpha: 1)).cropped(to: refined.extent)
+            let alpha = refined.applyingFilter("CIColorMatrix", parameters: ["inputAVector": CIVector(x: 0.6, y: 0, z: 0, w: 0), "inputBiasVector": CIVector(x: 0, y: 0, z: 0, w: 0)])
+            let colored = tint.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: CIImage(color: .clear).cropped(to: refined.extent), kCIInputMaskImageKey: alpha]).cropped(to: refined.extent)
+            let cg = CIContext().createCGImage(colored, from: colored.extent)
+            await MainActor.run { self.hairOverlay = cg }
         }
     }
 

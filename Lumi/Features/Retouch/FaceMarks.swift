@@ -4,6 +4,7 @@ import SwiftUI
 /// The part of the face a slider is working on; the preview outlines it while the slider moves.
 enum FaceMark: Hashable {
     case face, skin, jaw, chin, faceWidth, lift, eyes, brows, nose, mouth, lips, teeth, cheeks, blush, contour, highlight, underEye
+    case hair            // drawn from the hair mask, not from landmarks
 }
 
 /// An outline in image-normalized coordinates, origin top-left.
@@ -24,6 +25,7 @@ enum FaceMarks {
         func spot(_ s: MakeupRenderer.Spot) -> MarkShape { .ellipse(center: s.center, rx: CGFloat(s.radius), ry: CGFloat(s.radius * s.squash) * aspect) }
         let contour = pts("faceContour")
         switch mark {
+        case .hair: return []
         case .face:
             let b = MakeupRenderer.faceBox(face)
             return [.line([CGPoint(x: b.minX, y: b.minY), CGPoint(x: b.maxX, y: b.minY), CGPoint(x: b.maxX, y: b.maxY), CGPoint(x: b.minX, y: b.maxY)], closed: true)]
