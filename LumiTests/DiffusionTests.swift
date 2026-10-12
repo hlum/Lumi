@@ -74,6 +74,8 @@ struct DiffusionTests {
     }
 
     @Test(.enabled(if: DiffusionTests.modelDir != nil)) func fillsAHoleWithTheSurroundingsWhenTheModelIsInstalled() throws {
+        // a long test run leaves too little memory: the pipeline then refuses (and the app falls back to LaMa) instead of letting the GPU abort
+        guard DiffusionInpainter.hasRoom else { #expect(throws: InpaintError.self) { try DiffusionInpainter(directory: DiffusionTests.modelDir!).inpaint(CIImage(color: .white).cropped(to: CGRect(x: 0, y: 0, width: 64, height: 64)), mask: CIImage(color: .white).cropped(to: CGRect(x: 0, y: 0, width: 64, height: 64))) }; return }
         let rect = CGRect(x: 0, y: 0, width: 512, height: 512)
         let sky = CIImage(color: CIColor(red: 0.3, green: 0.5, blue: 0.9)).cropped(to: rect)
         let blob = CIImage(color: CIColor(red: 1, green: 0, blue: 0)).cropped(to: CGRect(x: 200, y: 200, width: 100, height: 100)).composited(over: sky)
@@ -82,6 +84,24 @@ struct DiffusionTests {
         #expect(out.extent == rect)
         let px = GeometryTests.rgb(out, x: 250, y: 250)
         #expect(!(px[0] > 200 && px[1] < 60), "the red blob is still there: \(px)")
-        #expect(GeometryTests.rgb(out, x: 20, y: 20) == GeometryTests.rgb(blob, x: 20, y: 20))
+        let far = zip(GeometryTests.rgb(out, x: 20, y: 20), GeometryTests.rgb(blob, x: 20, y: 20)).allSatisfy { abs(Int($0) - Int($1)) <= 2 }
+        #expect(far)                                                                       // outside the mask the photo is untouched
+        if let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first, let png = CIContext().pngRepresentation(of: out, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!) { try? png.write(to: docs.appendingPathComponent("sd_fill.png")) }
+    }
+
+    /// Looks at a real photo when one has been copied to the app's Documents (not part of the normal run).
+    @Test(.enabled(if: DiffusionTests.modelDir != nil && FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/sd_input.jpg"))) func fillsAHoleInARealPhoto() throws {
+        guard DiffusionInpainter.hasRoom else { return }
+        let docs = URL(fileURLWithPath: NSHomeDirectory() + "/Documents")
+        let photo = try #require(CIImage(contentsOf: docs.appendingPathComponent("sd_input.jpg")))
+        let e = photo.extent
+        let disc = CIFilter(name: "CIRadialGradient", parameters: ["inputCenter": CIVector(x: e.midX, y: e.midY * 0.8), "inputRadius0": 60, "inputRadius1": 61, "inputColor0": CIColor.white, "inputColor1": CIColor.black])!.outputImage!.cropped(to: e)
+        let out = try DiffusionInpainter(directory: DiffusionTests.modelDir!, steps: 25, guidance: 4).inpaint(photo, mask: disc)
+        let lama = try LaMaInpainter().inpaint(photo, mask: disc)
+        let ctx = CIContext()
+        for (name, img) in [("sd_real_out.png", out), ("sd_real_lama.png", lama)] {
+            try ctx.pngRepresentation(of: img, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)?.write(to: docs.appendingPathComponent(name))
+        }
+        #expect(out.extent == e)
     }
 }

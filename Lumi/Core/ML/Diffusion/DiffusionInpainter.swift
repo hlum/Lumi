@@ -1,6 +1,7 @@
 import CoreImage
 import CoreML
 import Foundation
+import os
 
 /// Pure helpers for the Stable Diffusion inpainting pipeline (tested without the models).
 enum DiffusionMath {
@@ -65,6 +66,9 @@ final class DiffusionInpainter: Inpainting {
     }
     static var isAvailable: Bool { directory() != nil }
 
+    /// Free memory the app may still use. The pipeline peaks around 3 GB.
+    static var hasRoom: Bool { os_proc_available_memory() > 2_800_000_000 }
+
     private let dir: URL
     private let steps: Int, guidance: Float
     private let context = CIContext()
@@ -73,7 +77,7 @@ final class DiffusionInpainter: Inpainting {
 
     private struct Models { var text, chunk1, chunk2, encoder, decoder: MLModel; var tokenizer: CLIPTokenizer }
 
-    init(directory: URL, steps: Int = 20, guidance: Float = 7) { dir = directory; self.steps = steps; self.guidance = guidance }
+    init(directory: URL, steps: Int = 25, guidance: Float = 5) { dir = directory; self.steps = steps; self.guidance = guidance }
 
     /// Frees the ~2 GB of weights; the next fill loads them again.
     func unload() { lock.lock(); models = nil; lock.unlock() }
@@ -83,6 +87,9 @@ final class DiffusionInpainter: Inpainting {
         if let models { return models }
         let cfg = MLModelConfiguration(); cfg.computeUnits = .cpuAndGPU
         func m(_ n: String) throws -> MLModel { try MLModel(contentsOf: dir.appendingPathComponent(n + ".mlmodelc"), configuration: cfg) }
+        // the pipeline needs several GB at once: give back what the other models hold, and refuse rather than let the GPU abort the app
+        ModelStore.shared.unloadCached()
+        guard Self.hasRoom else { throw InpaintError.modelMissing }
         let loaded = Models(text: try m("TextEncoder"), chunk1: try m("UnetChunk1"), chunk2: try m("UnetChunk2"), encoder: try m("VAEEncoder"), decoder: try m("VAEDecoder"),
                             tokenizer: try CLIPTokenizer(vocabURL: dir.appendingPathComponent("vocab.json"), mergesURL: dir.appendingPathComponent("merges.txt")))
         models = loaded
@@ -118,8 +125,8 @@ final class DiffusionInpainter: Inpainting {
               let cg = CGImage(width: DiffusionMath.side, height: DiffusionMath.side, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: DiffusionMath.side * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue), provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { throw InpaintError.predictionFailed }
         let result = CIImage(cgImage: cg).transformed(by: CGAffineTransform(scaleX: crop.width / side, y: crop.height / side))
             .transformed(by: CGAffineTransform(translationX: crop.minX + extent.minX, y: crop.minY + extent.minY))
-        let grown = mask.clampedToExtent().applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 4])
-            .applyingGaussianBlur(sigma: 2.5).cropped(to: extent)
+        let grown = mask.clampedToExtent().applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 6])
+            .applyingGaussianBlur(sigma: 5).cropped(to: extent)
         let blend = CIFilter(name: "CIBlendWithMask", parameters: [kCIInputImageKey: result.cropped(to: extent), kCIInputBackgroundImageKey: image, kCIInputMaskImageKey: grown])!
         return blend.outputImage!.cropped(to: extent)
     }

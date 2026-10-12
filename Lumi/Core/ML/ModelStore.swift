@@ -124,6 +124,9 @@ final class ModelStore {
 
     private var loaded: [ModelSlot: (id: String, revision: Int, model: MLModel)] = [:]
 
+    /// Drops the models kept in memory (they load again on next use). The big fill model asks for this first.
+    func unloadCached() { lock.lock(); loaded.removeAll(); lock.unlock() }
+
     /// Loads the slot's active model. Loading a big model takes seconds, so it is kept until a swap changes `revision`.
     func load(_ slot: ModelSlot, computeUnits: MLComputeUnits? = nil) throws -> (model: MLModel, entry: ModelEntry) {
         guard let e = active(slot), let u = url(for: e) else { throw ModelStoreError.notFound(slot.rawValue) }
