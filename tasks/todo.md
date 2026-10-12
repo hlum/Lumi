@@ -134,8 +134,8 @@ Tick a task when it's done. `[~]` = core logic built and tested, screen or devic
 - [ ] T73 Overlay video, masks, tracking
 - [~] T74 Audio
 - [ ] T75 Captions and teleprompter
-- [ ] T76 Video retouch
-- [ ] T77 Video quality
+- [~] T76 Video retouch
+- [~] T77 Video quality
 - [ ] T78 Video and Live erase
 - [ ] T79 Video extras
 - [ ] ⏸ Checkpoint 11
