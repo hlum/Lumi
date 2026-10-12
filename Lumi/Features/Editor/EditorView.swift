@@ -85,7 +85,7 @@ struct EditorView: View {
         .onChange(of: item) { _, new in
             guard let new else { return }
             Task {
-                if let data = try? await new.loadTransferable(type: Data.self), (try? model.load(data: data)) != nil { loadFailed = false }
+                if let data = try? await new.loadTransferable(type: Data.self), (try? model.load(data: data)) != nil { loadFailed = false; if let startTool, tool == nil { category = startTool.category; open(startTool) } }
                 else { loadFailed = true }
             }
         }
@@ -511,30 +511,39 @@ struct RemoverOverlay: View {
 
 struct CutoutPanel: View {
     @Bindable var model: EditorModel
+    @State private var batch = false
+    @State private var noSubject = false
     private var config: CutoutConfig { model.draft.cutout ?? CutoutConfig() }
     private let choices: [(String, CutoutConfig.Background)] = [
-        ("Clear", .transparent), ("White", .color(.white)), ("Black", .color(.black)),
-        ("Sky", .gradient(RGBA(r: 0.55, g: 0.75, b: 1, a: 1), .white)), ("Blur", .blur(0.5)),
+        ("Clear", .transparent), ("White", .color(.white)), ("Black", .color(.black)), ("Cream", .color(RGBA(r: 0.99, g: 0.96, b: 0.88, a: 1))),
+        ("Blush", .color(RGBA(r: 0.98, g: 0.82, b: 0.85, a: 1))), ("Sky", .gradient(RGBA(r: 0.55, g: 0.75, b: 1, a: 1), .white)), ("Blur", .blur(0.5)),
     ]
 
     var body: some View {
-        VStack {
+        VStack(spacing: 12) {
+            Text("New background").font(LumiFont.caption()).foregroundStyle(LumiColor.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    Button("Off") { model.edit { $0.cutout = nil } }.buttonStyle(LumiButtonStyle())
+                HStack(spacing: 8) {
+                    LumiChip(title: "Off", selected: model.draft.cutout == nil) { model.edit { $0.cutout = nil } }
                     ForEach(choices, id: \.0) { name, bg in
-                        Button(name) { model.edit { var c = $0.cutout ?? CutoutConfig(); c.background = bg; $0.cutout = c } }.buttonStyle(LumiButtonStyle())
+                        LumiChip(title: LocalizedStringKey(name), selected: model.draft.cutout?.background == bg) { model.edit { var c = $0.cutout ?? CutoutConfig(); c.background = bg; $0.cutout = c } }
                     }
-                }.padding(.horizontal)
+                }
             }
-            Button("Save as sticker", systemImage: "face.smiling") { model.makeStickerFromSubject() }.buttonStyle(LumiButtonStyle())
+            Text("Refine edge").font(LumiFont.caption()).foregroundStyle(LumiColor.textSecondary).frame(maxWidth: .infinity, alignment: .leading)
             slider("Soft edge", \.feather, 0...1)
             slider("Edge shift", \.shift, -1...1)
+            HStack(spacing: 8) {
+                LumiChip(title: "Save as sticker", symbol: "face.smiling") { if model.makeStickerFromSubject() == nil { noSubject = true } }
+                LumiChip(title: "Batch cutout", symbol: "person.crop.rectangle.stack") { batch = true }
+            }
         }
+        .sheet(isPresented: $batch) { NavigationStack { BatchCutoutView() } }
+        .alert("No subject found", isPresented: $noSubject) {}
     }
 
     private func slider(_ title: String, _ path: WritableKeyPath<CutoutConfig, Double>, _ range: ClosedRange<Double>) -> some View {
-        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { config[keyPath: path] }, set: { v in var c = config; c[keyPath: path] = v; model.draft.cutout = c }), range: range, onEnd: { model.commit() }).disabled(model.draft.cutout == nil)
+        LumiSliderRow(title: LocalizedStringKey(title), value: Binding(get: { config[keyPath: path] }, set: { v in var c = config; c[keyPath: path] = v; model.draft.cutout = c }), range: range, onEnd: { model.commit() }).disabled(model.draft.cutout == nil).opacity(model.draft.cutout == nil ? 0.5 : 1)
     }
 }
 

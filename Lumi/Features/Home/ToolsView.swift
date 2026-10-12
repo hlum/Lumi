@@ -13,18 +13,32 @@ struct ToolsView: View {
                         ForEach(tools) { row($0) }
                     }
                 } else {
-                    ForEach(results) { row($0) }
+                    if !results.isEmpty { Text("Tools").font(LumiFont.section()).padding(.top, 6); ForEach(results) { row($0) } }
+                    let recipes = RecipeLibrary().mine.filter { $0.name.localizedCaseInsensitiveContains(query) } + RecipeStore.starters.filter { $0.name.localizedCaseInsensitiveContains(query) }
+                    if !recipes.isEmpty {
+                        Text("Recipes").font(LumiFont.section()).padding(.top, 6)
+                        ForEach(recipes) { r in NavigationLink { RecipesView() } label: { HomeRow(symbol: "wand.and.stars", title: LocalizedStringKey(r.name)) }.buttonStyle(.plain) }
+                    }
+                    let materials = MaterialCatalog.bundled().items(query: query).prefix(8)
+                    if !materials.isEmpty {
+                        Text("Materials").font(LumiFont.section()).padding(.top, 6)
+                        ForEach(Array(materials)) { m in NavigationLink { MaterialsView() } label: { HomeRow(symbol: "square.grid.3x3", title: LocalizedStringKey(m.name)) }.buttonStyle(.plain) }
+                    }
                 }
             }.padding(.horizontal, LumiShape.margin).padding(.bottom, 24)
         }
         .background(LumiColor.ground.ignoresSafeArea())
         .searchable(text: $query, prompt: "Search tools")
-        .overlay { if results.isEmpty { ContentUnavailableView.search(text: query) } }
+        .overlay { if results.isEmpty && !query.isEmpty && RecipeStore.starters.allSatisfy({ !$0.name.localizedCaseInsensitiveContains(query) }) && MaterialCatalog.bundled().items(query: query).isEmpty { ContentUnavailableView.search(text: query) } }
         .navigationTitle("All tools")
     }
 
     @ViewBuilder private func row(_ t: ToolInfo) -> some View {
         NavigationLink { destination(t) } label: { HomeRow(symbol: t.symbol, title: LocalizedStringKey(t.name)) }.buttonStyle(.plain)
+    }
+
+    static func editorTool(for id: String) -> EditorTool? {
+        switch id { case "adjust": .adjust; case "crop": .crop; case "text": .text; case "remove": .remove; case "cutout": .cutout; case "enhance": .enhance; case "restore": .enhance; case "expand": .expand; case "retouch": .autoBeauty; default: nil }
     }
 
     @ViewBuilder private func destination(_ t: ToolInfo) -> some View {
@@ -37,7 +51,8 @@ struct ToolsView: View {
         case "stitch": StitchView()
         case "wallpaper": WallpaperView()
         case "materials": MaterialsView()
-        default: EditorView()
+        case "batch-cutout": BatchCutoutView()
+        default: EditorView(startTool: Self.editorTool(for: t.id))
         }
     }
 }
