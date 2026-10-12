@@ -11,7 +11,7 @@ enum HairMask {
     }
 
     /// `person`: white = person (same extent as `image`). `face`: Vision-space box (normalized, origin bottom-left).
-    static func estimate(person: CIImage, face: FaceInfo) -> CIImage {
+    static func estimate(person: CIImage, face: FaceInfo, image: CIImage? = nil) -> CIImage {
         let e = person.extent
         let box = MakeupRenderer.faceBox(face)                                     // y-down
         let head = headRegion(face: box)
@@ -22,9 +22,39 @@ enum HairMask {
         let headMask = ellipseMask(rectMask(head, gray: 1), extent: e)
         // the face itself is not hair
         let faceCut = SkinMask.make(face: face, size: e.size, feather: 0.01) ?? CIImage(color: .black).cropped(to: e)
-        let hair = person.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: headMask]).cropped(to: e)
+        var hair = person.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: headMask]).cropped(to: e)
+        if let image, let gate = colorGate(image: image, person: person, box: box) {
+            hair = hair.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: gate]).cropped(to: e)
+        }
         let result = subtract(hair, faceCut)
         return result.clampedToExtent().applyingGaussianBlur(sigma: Double(min(e.width, e.height)) * 0.004).cropped(to: e)
+    }
+
+    private static let ctx = CIContext(options: [.workingColorSpace: NSNull()])
+
+    /// Hair is the person's pixels near the hair's own colour, sampled just above the forehead; skin, clothes and
+    /// background inside the head region fall away. nil when no hair is found there (bald, hat, cropped).
+    static func colorGate(image: CIImage, person: CIImage, box: CGRect) -> CIImage? {
+        let e = image.extent
+        let strip = CGRect(x: box.midX - box.width * 0.3, y: box.minY - box.height * 0.22, width: box.width * 0.6, height: box.height * 0.25)
+            .intersection(CGRect(x: 0, y: 0, width: 1, height: 1))
+        guard strip.width > 0.005, strip.height > 0.005 else { return nil }
+        let r = CGRect(x: e.minX + strip.minX * e.width, y: e.minY + (1 - strip.maxY) * e.height, width: strip.width * e.width, height: strip.height * e.height)
+        func average(_ i: CIImage) -> [Float] {
+            var px = [Float](repeating: 0, count: 4)
+            ctx.render(i.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: r)]), toBitmap: &px, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBAf, colorSpace: nil)
+            return px
+        }
+        let weight = average(person)[0]
+        guard weight > 0.15 else { return nil }
+        // person-weighted mean colour: mean(image * person) / mean(person)
+        let weighted = average(image.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: person]))
+        let ref = CIColor(red: CGFloat(min(weighted[0] / weight, 1)), green: CGFloat(min(weighted[1] / weight, 1)), blue: CGFloat(min(weighted[2] / weight, 1)))
+        let diff = CIImage(color: ref).cropped(to: e).applyingFilter("CIDifferenceBlendMode", parameters: [kCIInputBackgroundImageKey: image])
+        let (t0, w): (CGFloat, CGFloat) = (0.18, 0.4)                      // full match up to t0, none beyond t0 + w (sum of |dR|+|dG|+|dB|)
+        let k = -1 / w, v = CIVector(x: k, y: k, z: k, w: 0)
+        return diff.applyingFilter("CIColorMatrix", parameters: ["inputRVector": v, "inputGVector": v, "inputBVector": v, "inputBiasVector": CIVector(x: 1 + t0 / w, y: 1 + t0 / w, z: 1 + t0 / w, w: 0)])
+            .applyingFilter("CIColorClamp").cropped(to: e)
     }
 
     private static func subtract(_ a: CIImage, _ b: CIImage) -> CIImage {

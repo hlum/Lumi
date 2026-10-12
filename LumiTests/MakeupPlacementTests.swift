@@ -118,6 +118,18 @@ struct MakeupPlacementTests {
         #expect(MakeupRenderer.apply(p, to: base, face: f).extent == base.extent && !p.isIdentity)
     }
 
+    @Test func foundationSamplesTheFaceNotTheMirroredPatch() {
+        let f = Self.face()
+        let box = MakeupRenderer.ciRect(MakeupRenderer.faceBox(f), size: CGSize(width: 400, height: 400))
+        let bg = CIImage(color: CIColor(red: 0.1, green: 0.9, blue: 0.1)).cropped(to: CGRect(x: 0, y: 0, width: 400, height: 400))
+        let skin = CIImage(color: CIColor(red: 0.8, green: 0.55, blue: 0.45)).cropped(to: box)
+        let base = skin.composited(over: bg)
+        var p = MakeupParams(); p.foundation = 1
+        let out = MakeupRenderer.apply(p, to: base, face: f)
+        let c = GeometryTests.rgb(out, x: Int(box.midX), y: Int(box.midY))
+        #expect(c[0] > c[1] + 40)                      // still skin-toned: the average came from the face, not the green around it
+    }
+
     @Test func oldMakeupSettingsWithoutTheNewFieldsStillOpen() throws {
         let old = #"{"lipOpacity":0.4,"lipFinish":"gloss","blushOpacity":0.2}"#
         let p = try JSONDecoder().decode(MakeupParams.self, from: Data(old.utf8))

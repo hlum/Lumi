@@ -73,4 +73,15 @@ struct RatioRulesTests {
         let out = FaceRetouchRender.apply(f, to: img, faces: [face])
         #expect(out.extent == img.extent)
     }
+
+    @Test func offsetImageStaysOffsetAndMatchesOriginRender() {
+        let base = CIImage(color: CIColor(red: 0.8, green: 0.6, blue: 0.5)).cropped(to: CGRect(x: 0, y: 0, width: 200, height: 200))
+        var f = FaceRetouch(); f.makeup.lipOpacity = 1
+        let at0 = FaceRetouchRender.apply(f, to: base, faces: [face])
+        let moved = FaceRetouchRender.apply(f, to: base.transformed(by: .init(translationX: 50, y: 30)), faces: [face])
+        #expect(moved.extent == at0.extent.offsetBy(dx: 50, dy: 30))
+        let ctx = CIContext(options: [.workingColorSpace: NSNull()])
+        func px(_ i: CIImage, _ x: Int, _ y: Int) -> [UInt8] { var b = [UInt8](repeating: 0, count: 4); ctx.render(i, toBitmap: &b, rowBytes: 4, bounds: CGRect(x: x, y: y, width: 1, height: 1), format: .RGBA8, colorSpace: nil); return b }
+        #expect(px(at0, 100, 70) == px(moved, 150, 100))
+    }
 }

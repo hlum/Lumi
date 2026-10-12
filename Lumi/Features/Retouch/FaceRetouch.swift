@@ -54,6 +54,12 @@ enum FaceRetouchRender {
     /// Skin, makeup and detail are painted first (landmarks match the source), then the reshape warp moves it all.
     static func apply(_ r: FaceRetouch, to image: CIImage, faces: [FaceInfo]) -> CIImage {
         guard !r.isIdentity, !faces.isEmpty else { return image }
+        // every mask below is built at the origin; shift a cropped or offset picture there and back so nothing lands misplaced
+        let origin = image.extent.origin
+        if origin != .zero {
+            let there = CGAffineTransform(translationX: -origin.x, y: -origin.y)
+            return apply(r, to: image.transformed(by: there), faces: faces).transformed(by: there.inverted())
+        }
         var out = image
         let size = image.extent.size
         for face in faces {

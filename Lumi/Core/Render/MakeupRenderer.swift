@@ -58,6 +58,11 @@ enum MakeupRenderer {
     }
 
     /// The face box converted to y-down image space.
+    /// A y-down normalized rect as a Core Image (y-up) pixel rect.
+    static func ciRect(_ r: CGRect, size: CGSize) -> CGRect {
+        CGRect(x: r.minX * size.width, y: (1 - r.maxY) * size.height, width: r.width * size.width, height: r.height * size.height)
+    }
+
     static func faceBox(_ face: FaceInfo) -> CGRect {
         CGRect(x: face.box.minX, y: 1 - face.box.maxY, width: face.box.width, height: face.box.height)
     }
@@ -173,17 +178,17 @@ enum MakeupRenderer {
         }
         if p.foundation > 0, let skin = SkinMask.make(face: face, size: size, feather: 0.03) {
             // pull the face toward its own average color and soften, which evens out patches and redness
-            let avg = out.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: MakeupRenderer.faceBox(face).applying(CGAffineTransform(scaleX: size.width, y: size.height)))])
+            let avg = out.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: MakeupRenderer.ciRect(MakeupRenderer.faceBox(face), size: size))])
             var px = [UInt8](repeating: 0, count: 4)
             CIContext().render(avg, toBitmap: &px, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
             let tone = RGBA(r: Double(px[0]) / 255, g: Double(px[1]) / 255, b: Double(px[2]) / 255, a: 1)
-            out = tint(tone, mask: skin, opacity: p.foundation * 0.5, mode: "CISourceOverCompositing")
+            out = tint(tone, mask: skin, opacity: p.foundation * 0.6, mode: "CIColorBlendMode")   // tone of the face average, light and texture of the photo
         }
         if p.contour > 0, let m = MakeupRenderer.spotsMask(contourSpots(face), size: size) {
             out = tint(RGBA(r: 0.45, g: 0.3, b: 0.25, a: 1), mask: m, opacity: p.contour * 0.7, mode: "CIMultiplyBlendMode")
         }
         if p.highlight > 0, let m = MakeupRenderer.spotsMask(highlightSpots(face), size: size) {
-            out = tint(RGBA(r: 1, g: 0.97, b: 0.9, a: 1), mask: m, opacity: p.highlight * 0.6, mode: "CIScreenBlendMode")
+            out = tint(RGBA.white, mask: m, opacity: min(p.highlight * 1.2, 1), mode: "CISoftLightBlendMode")
         }
         if p.blushOpacity > 0, let blush = blushMask(face, style: p.blushStyle, size: size) {
             out = tint(p.blushColor, mask: blush, opacity: p.blushOpacity, mode: "CISoftLightBlendMode")

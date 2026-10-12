@@ -49,7 +49,7 @@ struct EstimatedHairMasker: HairMasking {
     let subject: SubjectMasking
     func hairMasks(in image: CIImage) throws -> [CIImage] {
         guard let person = try subject.subjectMask(for: image) else { return [] }
-        return try faces.faces(in: image).map { HairMask.estimate(person: person, face: $0) }
+        return try faces.faces(in: image).map { HairMask.estimate(person: person, face: $0, image: image) }
     }
 }
 

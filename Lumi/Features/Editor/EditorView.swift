@@ -285,7 +285,7 @@ struct FilterPanel: View {
                 HStack {
                     Button("Off") { model.edit { $0.filter = nil; $0.filterEraser = nil } }.buttonStyle(.bordered)
                     ForEach(shown) { e in
-                        Button(LocalizedStringKey(e.name)) { prefs.used(e.id); model.edit { $0.filter = (e.id, model.draft.filter?.intensity ?? 1) } }
+                        Button(LocalizedStringKey(e.name)) { prefs.used(e.id); let keep = model.draft.filter?.intensity ?? 1; model.edit { $0.filter = (e.id, keep) } }
                             .buttonStyle(.bordered).tint(model.draft.filter?.id == e.id ? .accentColor : .secondary)
                     }
                 }.padding(.horizontal)
